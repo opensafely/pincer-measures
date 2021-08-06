@@ -30,6 +30,8 @@ study = StudyDefinition(
         return_expectations={"int" : {"distribution": "normal", "mean": 25, "stddev": 5}, "incidence" : 0.5}
     ),
 
+    age = patients.age_as_of(index_date),
+
     ###
     # A - GI BLEED INDICATORS
     ###
@@ -45,6 +47,21 @@ study = StudyDefinition(
         codelist = ulcer_healing_drugs_codelist,
         find_last_match_in_period=True,
         between=["index_date - 3 months", "index_date"],
+    ),
+
+    indicator_a_denominator = patients.satisfying(
+    """
+    (NOT ppi) AND
+    (age >=65 AND age <=120)
+    """,
+    ),
+
+    indicator_a_numerator = patients.satisfying(
+        """
+        (NOT ppi) AND
+        (age >=65 AND age <=120) AND
+        oral_nsaid
+        """,
     ),
 
 

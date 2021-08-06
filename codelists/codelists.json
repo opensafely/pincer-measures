@@ -1,3 +1,10 @@
 {
-  "files": {}
+  "files": {
+    "opensafely-red-blood-cell-rbc-tests.csv": {
+      "id": "opensafely/red-blood-cell-rbc-tests/576a859e",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/red-blood-cell-rbc-tests/576a859e/",
+      "downloaded_at": "2021-08-06 10:20:23.886857Z",
+      "sha": "e111693c2b9ae4e688d859daa73491a978b0795b"
+    }
+  }
 }

@@ -30,6 +30,25 @@ study = StudyDefinition(
         return_expectations={"int" : {"distribution": "normal", "mean": 25, "stddev": 5}, "incidence" : 0.5}
     ),
 
+    ###
+    # A - GI BLEED INDICATORS
+    ###
+
+    oral_nsaid = patients.with_these_medications(
+    codelist = oral_nsaid_codelist,
+    find_last_match_in_period=True,
+    between=["index_date - 3 months", "index_date"],
+    ),
+
+    # gastroprotective proton pump inhibitor
+    ppi = patients.with_these_medications(
+        codelist = ulcer_healing_drugs_codelist,
+        find_last_match_in_period=True,
+        between=["index_date - 3 months", "index_date"],
+    ),
+
+
+
 )
 
 

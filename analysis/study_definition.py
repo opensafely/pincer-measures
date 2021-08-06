@@ -85,7 +85,7 @@ study = StudyDefinition(
 
 measures = [
     Measure(
-        id="indicator_a",
+        id="indicator_a_rate",
         numerator="indicator_a_numerator",
         denominator="indicator_a_denominator",
         group_by=["practice"]

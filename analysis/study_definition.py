@@ -45,6 +45,9 @@ study = StudyDefinition(
     oral_nsaid = patients.with_these_medications(
     codelist = oral_nsaid_codelist,
     find_last_match_in_period=True,
+    returning="binary_flag",
+    include_date_of_match=True,
+    date_format="YYYY-MM-DD",
     between=["index_date - 3 months", "index_date"],
     ),
 
@@ -52,6 +55,9 @@ study = StudyDefinition(
     ppi = patients.with_these_medications(
         codelist = ulcer_healing_drugs_codelist,
         find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
         between=["index_date - 3 months", "index_date"],
     ),
 

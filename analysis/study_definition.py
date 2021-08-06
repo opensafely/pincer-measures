@@ -36,6 +36,12 @@ study = StudyDefinition(
     
 
 measures = [
+    Measure(
+        id="dummmy",
+        numerator="registered",
+        denominator="population",
+        group_by=["practice"]
+    ),
 
 
 ]

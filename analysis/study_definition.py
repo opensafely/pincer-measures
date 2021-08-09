@@ -76,7 +76,18 @@ study = StudyDefinition(
         """,
     ),
 
+    ###
+    # D – Warfarin/NOACS and NSAID audit (GI_P3D)
+    ###
 
+    anticaogulant=patients.with_these_medications(
+        codelist=anticoagulant_codelist,
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        between=["index_date - 3 months", "index_date"],
+    ),
 
 )
 

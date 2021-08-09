@@ -73,7 +73,7 @@ study = StudyDefinition(
         returning="binary_flag",
         include_date_of_match=True,
         date_format="YYYY-MM-DD",
-        between=["index_date - 3 months", "index_date"],
+        on_or_before="index_date - 3 months",
     ),
 
     gi_bleed = patients.with_these_clinical_events(
@@ -82,7 +82,7 @@ study = StudyDefinition(
         returning="binary_flag",
         include_date_of_match=True,
         date_format="YYYY-MM-DD",
-        between=["index_date - 3 months", "index_date"],
+        on_or_before="index_date - 3 months",
     ),
 
     indicator_a_denominator = patients.satisfying(

@@ -89,6 +89,19 @@ study = StudyDefinition(
         between=["index_date - 3 months", "index_date"],
     ),
 
+    indicator_d_denominator=patients.satisfying(
+        """
+    (anticaogulant)
+    """,
+    ),
+
+    indicator_d_numerator=patients.satisfying(
+        """
+        (anticaogulant) AND
+        oral_nsaid
+        """,
+    ),
+
 )
 
 

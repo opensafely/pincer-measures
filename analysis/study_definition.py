@@ -54,6 +54,24 @@ study = StudyDefinition(
     # gastroprotective proton pump inhibitor
     ppi = patients.with_these_medications(
         codelist = ulcer_healing_drugs_codelist,
+
+
+    ###
+    # B - Peptic ulcer/GI bleed, no PPI protect, NSAID audit (GI_P3B)
+    ###
+
+    peptic_ulcer=patients.with_these_clinical_events(
+        codelist=peptic_ulcer_codelist,
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        between=["index_date - 3 months", "index_date"],
+    ),
+
+    # gastroprotective proton pump inhibitor
+    gi_bleed=patients.with_these_clinical_events(
+        codelist=gi_bleed_codelist,
         find_last_match_in_period=True,
         returning="binary_flag",
         include_date_of_match=True,
@@ -72,11 +90,23 @@ study = StudyDefinition(
         """
         (NOT ppi) AND
         (age >=65 AND age <=120) AND
-        oral_nsaid
+        """,
+    )
+
+    indicator_b_denominator=patients.satisfying(
+        """
+        (NOT ppi) AND
+        (gi_bleed AND peptic_ulcer)
         """,
     ),
 
-
+    indicator_b_numerator=patients.satisfying(
+        """
+        (NOT ppi) AND
+        (gi_bleed AND peptic_ulcer) AND
+        oral_nsaid
+        """,
+    ),
 
 )
 

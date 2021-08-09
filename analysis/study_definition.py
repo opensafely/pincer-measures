@@ -110,9 +110,6 @@ study = StudyDefinition(
 
 )
 
-
-    
-
 measures = [
     Measure(
         id="indicator_a_rate",

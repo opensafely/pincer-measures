@@ -30,6 +30,54 @@ study = StudyDefinition(
         return_expectations={"int" : {"distribution": "normal", "mean": 25, "stddev": 5}, "incidence" : 0.5}
     ),
 
+    age = patients.age_as_of(
+        "index_date",
+        return_expectations={
+            "rate": "universal",
+            "int": {"distribution": "population_ages"},
+        },
+        ),
+
+    ###
+    # A - GI BLEED INDICATORS
+    ###
+
+    oral_nsaid = patients.with_these_medications(
+    codelist = oral_nsaid_codelist,
+    find_last_match_in_period=True,
+    returning="binary_flag",
+    include_date_of_match=True,
+    date_format="YYYY-MM-DD",
+    between=["index_date - 3 months", "index_date"],
+    ),
+
+    # gastroprotective proton pump inhibitor
+    ppi = patients.with_these_medications(
+        codelist = ulcer_healing_drugs_codelist,
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        between=["index_date - 3 months", "index_date"],
+    ),
+
+    indicator_a_denominator = patients.satisfying(
+    """
+    (NOT ppi) AND
+    (age >=65 AND age <=120)
+    """,
+    ),
+
+    indicator_a_numerator = patients.satisfying(
+        """
+        (NOT ppi) AND
+        (age >=65 AND age <=120) AND
+        oral_nsaid
+        """,
+    ),
+
+
+
 )
 
 
@@ -37,9 +85,9 @@ study = StudyDefinition(
 
 measures = [
     Measure(
-        id="dummmy",
-        numerator="registered",
-        denominator="population",
+        id="indicator_a_rate",
+        numerator="indicator_a_numerator",
+        denominator="indicator_a_denominator",
         group_by=["practice"]
     ),
 

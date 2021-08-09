@@ -2,7 +2,7 @@ from cohortextractor import (
     codelist_from_csv,
 )
 
-holder_codelist = "codelists/opensafely-red-blood-cell-rbc-tests.csv"
+holder_codelist = "codelists/pincer-gi_bleed.csv"
 
 # Used in AC
 acei_codelist = codelist_from_csv(holder_codelist,

@@ -1,10 +1,148 @@
 {
   "files": {
-    "opensafely-red-blood-cell-rbc-tests.csv": {
-      "id": "opensafely/red-blood-cell-rbc-tests/576a859e",
-      "url": "https://codelists.opensafely.org/codelist/opensafely/red-blood-cell-rbc-tests/576a859e/",
-      "downloaded_at": "2021-08-06 10:20:23.886857Z",
-      "sha": "e111693c2b9ae4e688d859daa73491a978b0795b"
+    "pincer-amio.csv": {
+      "id": "pincer/amio/560cb6d8",
+      "url": "https://codelists.opensafely.org/codelist/pincer/amio/560cb6d8/",
+      "downloaded_at": "2021-08-09 12:45:09.630332Z",
+      "sha": "d2679f8be7473556560b12fa06260ebacd7e8f94"
+    },
+    "pincer-anticoag.csv": {
+      "id": "pincer/anticoag/58bf76ce",
+      "url": "https://codelists.opensafely.org/codelist/pincer/anticoag/58bf76ce/",
+      "downloaded_at": "2021-08-09 12:51:26.874398Z",
+      "sha": "920bba48cb253eab2b9a4a55ae13a450d80caa1b"
+    },
+    "pincer-non_asp_antiplate.csv": {
+      "id": "pincer/non_asp_antiplate/0ade5d39",
+      "url": "https://codelists.opensafely.org/codelist/pincer/non_asp_antiplate/0ade5d39/",
+      "downloaded_at": "2021-08-09 12:46:30.252518Z",
+      "sha": "7349f8876ca09a795f6f0de8737329d5c6b13e7c"
+    },
+    "pincer-aspirin.csv": {
+      "id": "pincer/aspirin/71ceea03",
+      "url": "https://codelists.opensafely.org/codelist/pincer/aspirin/71ceea03/",
+      "downloaded_at": "2021-08-09 12:46:30.648827Z",
+      "sha": "2007424d414e551391204a8c48dad0cfae3f053e"
+    },
+    "pincer-ast.csv": {
+      "id": "pincer/ast/v1.8",
+      "url": "https://codelists.opensafely.org/codelist/pincer/ast/v1.8/",
+      "downloaded_at": "2021-08-09 12:46:31.034414Z",
+      "sha": "76d8ff9674484e54bfe68fa9e4ffdb8b11daf835"
+    },
+    "pincer-ast_res.csv": {
+      "id": "pincer/ast_res/v1.8",
+      "url": "https://codelists.opensafely.org/codelist/pincer/ast_res/v1.8/",
+      "downloaded_at": "2021-08-09 12:51:28.241372Z",
+      "sha": "98e2d004cc77c059f3383e22b6d909c561439040"
+    },
+    "pincer-electro.csv": {
+      "id": "pincer/electro/v1.8",
+      "url": "https://codelists.opensafely.org/codelist/pincer/electro/v1.8/",
+      "downloaded_at": "2021-08-09 12:51:28.619666Z",
+      "sha": "b3301e62cdfa0568afb893db7d88399ed26e160b"
+    },
+    "pincer-fbc.csv": {
+      "id": "pincer/fbc/v1.8",
+      "url": "https://codelists.opensafely.org/codelist/pincer/fbc/v1.8/",
+      "downloaded_at": "2021-08-09 12:51:29.024979Z",
+      "sha": "2957a922fdf056ee0100cc132e91ef545dafc01a"
+    },
+    "pincer-gi_bleed.csv": {
+      "id": "pincer/gi_bleed/v1.8",
+      "url": "https://codelists.opensafely.org/codelist/pincer/gi_bleed/v1.8/",
+      "downloaded_at": "2021-08-09 12:51:29.405252Z",
+      "sha": "1bdde2ff433e8ea8318e0442c118b75363be4808"
+    },
+    "pincer-hf.csv": {
+      "id": "pincer/hf/v1.8",
+      "url": "https://codelists.opensafely.org/codelist/pincer/hf/v1.8/",
+      "downloaded_at": "2021-08-09 12:51:29.792536Z",
+      "sha": "977f8b25f800edc8dbd679407826e20cec7e0f11"
+    },
+    "pincer-lith_lev.csv": {
+      "id": "pincer/lith_lev/v1.8",
+      "url": "https://codelists.opensafely.org/codelist/pincer/lith_lev/v1.8/",
+      "downloaded_at": "2021-08-09 12:51:30.160792Z",
+      "sha": "b1bbe329b27fbe815fe33568543c029614f8f782"
+    },
+    "pincer-lith.csv": {
+      "id": "pincer/lith/6f1c2a0d",
+      "url": "https://codelists.opensafely.org/codelist/pincer/lith/6f1c2a0d/",
+      "downloaded_at": "2021-08-09 12:51:30.532317Z",
+      "sha": "235b796ad5e44f660857a38207e757d9d40f2a53"
+    },
+    "pincer-lft.csv": {
+      "id": "pincer/lft/v1.8",
+      "url": "https://codelists.opensafely.org/codelist/pincer/lft/v1.8/",
+      "downloaded_at": "2021-08-09 12:51:30.914958Z",
+      "sha": "e9ea2ea19529a7ca36acb5e4494a3da1e339b3a8"
+    },
+    "pincer-diur.csv": {
+      "id": "pincer/diur/213b1078",
+      "url": "https://codelists.opensafely.org/codelist/pincer/diur/213b1078/",
+      "downloaded_at": "2021-08-09 12:51:31.322176Z",
+      "sha": "9cf891203e1c05f8663306823bea56ca31389e41"
+    },
+    "pincer-met.csv": {
+      "id": "pincer/met/082b9d43",
+      "url": "https://codelists.opensafely.org/codelist/pincer/met/082b9d43/",
+      "downloaded_at": "2021-08-09 12:51:31.695692Z",
+      "sha": "bc74bcbec94c1c5c642461c66e9f1f51710fa484"
+    },
+    "pincer-nsbb.csv": {
+      "id": "pincer/nsbb/3fb00399",
+      "url": "https://codelists.opensafely.org/codelist/pincer/nsbb/3fb00399/",
+      "downloaded_at": "2021-08-09 12:51:32.125431Z",
+      "sha": "e98a7210e770a6b79ae68a9c2dab018e1f6d9d3d"
+    },
+    "pincer-renal.csv": {
+      "id": "pincer/renal/v1.8",
+      "url": "https://codelists.opensafely.org/codelist/pincer/renal/v1.8/",
+      "downloaded_at": "2021-08-09 12:51:32.505321Z",
+      "sha": "67ad647922c9cd203e8c86efbbf31b32d35be2c4"
+    },
+    "pincer-acei.csv": {
+      "id": "pincer/acei/3a4a83ad",
+      "url": "https://codelists.opensafely.org/codelist/pincer/acei/3a4a83ad/",
+      "downloaded_at": "2021-08-09 12:51:32.968633Z",
+      "sha": "40b85664718dbf3b624bdfa63a05c0a5ac707707"
+    },
+    "pincer-tft.csv": {
+      "id": "pincer/tft/v1.8",
+      "url": "https://codelists.opensafely.org/codelist/pincer/tft/v1.8/",
+      "downloaded_at": "2021-08-09 12:51:33.342893Z",
+      "sha": "4371d672116678912bb875eafc0f008f341be82f"
+    },
+    "pincer-ppi.csv": {
+      "id": "pincer/ppi/3cfd43a3",
+      "url": "https://codelists.opensafely.org/codelist/pincer/ppi/3cfd43a3/",
+      "downloaded_at": "2021-08-09 12:51:33.739807Z",
+      "sha": "c409d1521f097533c8df3462652deb671d8aa594"
+    },
+    "pincer-antiplat.csv": {
+      "id": "pincer/antiplat/26a09064",
+      "url": "https://codelists.opensafely.org/codelist/pincer/antiplat/26a09064/",
+      "downloaded_at": "2021-08-09 12:51:34.098948Z",
+      "sha": "a01650a6119e57a385cb230aa4b6a9985e4315f9"
+    },
+    "pincer-egfr.csv": {
+      "id": "pincer/egfr/v1.8",
+      "url": "https://codelists.opensafely.org/codelist/pincer/egfr/v1.8/",
+      "downloaded_at": "2021-08-09 12:51:34.464800Z",
+      "sha": "eaa84a4eb8e58348ac89274ea0cea8255fcea1f3"
+    },
+    "pincer-nsaid.csv": {
+      "id": "pincer/nsaid/23edd06e",
+      "url": "https://codelists.opensafely.org/codelist/pincer/nsaid/23edd06e/",
+      "downloaded_at": "2021-08-09 12:51:34.870127Z",
+      "sha": "36655feddbfcbf9ec475d6c31e87bf19230a0236"
+    },
+    "pincer-pep.csv": {
+      "id": "pincer/pep/v1.8",
+      "url": "https://codelists.opensafely.org/codelist/pincer/pep/v1.8/",
+      "downloaded_at": "2021-08-09 12:51:35.263362Z",
+      "sha": "b0afab4e1425ed962a8de8eaefc871c622dd1cda"
     }
   }
 }

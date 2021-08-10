@@ -115,6 +115,7 @@ study = StudyDefinition(
         """,
     ),
 
+
     ###
     # GI BLEED INDICATORS
     # C - Peptic ulcer/GI bleed, no PPI protect, NSAID audit (GI_P3B)
@@ -137,6 +138,7 @@ study = StudyDefinition(
     ),
 
     indicator_c_denominator = patients.satisfying(
+
         """
         (NOT ppi) AND
         (gi_bleed OR peptic_ulcer)
@@ -150,8 +152,35 @@ study = StudyDefinition(
         (antiplatelet_excluding_aspirin OR aspirin)
         """,
     ),
+      
+    ###
+    # D – Warfarin/NOACS and NSAID audit (GI_P3D)
+    ###
 
+    anticoagulant=patients.with_these_medications(
+        codelist=anticoagulant_codelist,
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        between=["index_date - 3 months", "index_date"],
+    ),
+    
+    indicator_d_denominator=patients.satisfying(
+        """
+    (anticoagulant)
+    """,
+    ),
+
+    indicator_d_numerator=patients.satisfying(
+        """
+        (anticoagulant) AND
+        oral_nsaid
+        """,
+    ),
   
+
+
     ###
     # OTHER PRESCRIBING INDICATORS
     # I - Heart failure and NSAID audit (HF_P3I)
@@ -165,6 +194,7 @@ study = StudyDefinition(
         date_format="YYYY-MM-DD",
         on_or_before="index_date - 3 months",
     ),
+
 
     indicator_i_denominator = patients.satisfying(
         """

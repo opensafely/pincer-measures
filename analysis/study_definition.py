@@ -103,14 +103,14 @@ study = StudyDefinition(
     indicator_b_denominator=patients.satisfying(
         """
         (NOT ppi) AND
-        (gi_bleed AND peptic_ulcer)
+        (gi_bleed OR peptic_ulcer)
         """,
     ),
 
     indicator_b_numerator=patients.satisfying(
         """
         (NOT ppi) AND
-        (gi_bleed AND peptic_ulcer) AND
+        (gi_bleed OR peptic_ulcer) AND
         oral_nsaid
         """,
     ),    

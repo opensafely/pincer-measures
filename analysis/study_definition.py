@@ -85,6 +85,24 @@ study = StudyDefinition(
         on_or_before="index_date - 3 months",
     ),
   
+
+    ###
+    # D – Warfarin/NOACS and NSAID audit (GI_P3D)
+    ###
+
+    anticoagulant=patients.with_these_medications(
+        codelist=anticoagulant_codelist,
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        between=["index_date - 3 months", "index_date"],
+    ),
+
+    ###
+    # I - Heart failure and NSAID audit (HF_P3I)	
+    ###
+  
     heart_failure=patients.with_these_clinical_events(
         codelist=heart_failure_codelist,
         find_first_match_in_period=True,
@@ -94,6 +112,8 @@ study = StudyDefinition(
         on_or_before="index_date - 3 months",
     ),
 
+
+  
     indicator_a_denominator = patients.satisfying(
         """
         (NOT ppi) AND
@@ -108,7 +128,7 @@ study = StudyDefinition(
         oral_nsaid
         """,
     ),
-
+  
     indicator_b_denominator=patients.satisfying(
         """
         (NOT ppi) AND
@@ -124,6 +144,20 @@ study = StudyDefinition(
         """,
     ),
 
+  
+    indicator_d_denominator=patients.satisfying(
+        """
+    (anticoagulant)
+    """,
+    ),
+
+    indicator_d_numerator=patients.satisfying(
+        """
+        (anticoagulant) AND
+        oral_nsaid
+        """,
+    ),
+  
     indicator_i_denominator = patients.satisfying(
         """
         heart_failure

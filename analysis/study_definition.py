@@ -180,10 +180,16 @@ study = StudyDefinition(
 )
 
 measures = [
-    Measure(
-        id="indicator_a_rate",
-        numerator="indicator_a_numerator",
-        denominator="indicator_a_denominator",
-        group_by=["practice"]
-    ),
 ]
+
+indicators_list = ["a", "b", "c", "i"]
+
+for indicator in indicators_list:
+    m = Measure(
+        id=f"indicator_{indicator}_rate",
+        numerator=f"indicator_{indicator}_numerator",
+        denominator=f"indicator_{indicator}_denominator",
+        group_by=["practice"]
+    )
+
+    measures.append(m)

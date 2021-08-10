@@ -179,6 +179,7 @@ study = StudyDefinition(
     ),
   
     ###
+    # OTHER PRESCRIBING INDICATORS
     # G - Asthma and non-selective betablockers audit (AS_P3G)
     ###
 
@@ -198,6 +199,15 @@ study = StudyDefinition(
         include_date_of_match=True,
         date_format="YYYY-MM-DD",
         on_or_before="index_date",
+    ),
+
+    non_selective_bb = patients.with_these_medications(
+        codelist = non_selective_bb_codelist, 
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        between=["index_date - 3 months", "index_date"],
     ),
 
 

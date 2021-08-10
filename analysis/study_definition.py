@@ -114,6 +114,29 @@ study = StudyDefinition(
         oral_nsaid
         """,
     ),
+
+    ###
+    # GI BLEED INDICATORS
+    # C - Peptic ulcer/GI bleed, no PPI protect, NSAID audit (GI_P3B)
+    ###
+
+    #peptic_ulcer from B
+    #gi_bleed from B
+    #ppi from A
+
+    antiplatelet_excluding_aspirin = patients.with_these_medications(
+    codelist = antiplatelet_excluding_aspirin_codelist, 
+    find_last_match_in_period=True,
+    between=["index_date - 3 months", "index_date"],
+    ),
+
+    aspirin = patients.with_these_medications(
+        codelist = aspirin_codelist, 
+        find_last_match_in_period=True,
+        between=["index_date - 3 months", "index_date"],
+    ),
+
+
   
     ###
     # OTHER PRESCRIBING INDICATORS

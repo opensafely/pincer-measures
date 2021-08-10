@@ -99,7 +99,7 @@ study = StudyDefinition(
         date_format="YYYY-MM-DD",
         on_or_before="index_date - 3 months",
     ),
-
+  
     indicator_b_denominator=patients.satisfying(
         """
         (NOT ppi) AND
@@ -113,8 +113,7 @@ study = StudyDefinition(
         (gi_bleed AND peptic_ulcer) AND
         oral_nsaid
         """,
-    ),
-
+    ),    
 
     ###
     # GI BLEED INDICATORS
@@ -179,6 +178,52 @@ study = StudyDefinition(
         """,
     ),
   
+    ###
+    # OTHER PRESCRIBING INDICATORS
+    # G - Asthma and non-selective betablockers audit (AS_P3G)
+    ###
+
+    asthma=patients.with_these_clinical_events(
+        codelist=asthma_codelist,
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        on_or_before="index_date - 3 months",
+    ),
+
+    asthma_resolved=patients.with_these_clinical_events(
+        codelist=asthma_resolved_codelist,
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        on_or_before="index_date",
+    ),
+
+    non_selective_bb = patients.with_these_medications(
+        codelist = non_selective_bb_codelist, 
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        between=["index_date - 3 months", "index_date"],
+    ),
+
+    indicator_g_denominator = patients.satisfying(
+        """
+        asthma AND 
+        (NOT asthma_resolved)
+        """,
+    ),
+
+    indicator_g_numerator = patients.satisfying(
+        """
+        asthma AND 
+        (NOT asthma_resolved) AND
+        non_selective_bb
+        """,
+    ),
 
 
     ###
@@ -212,7 +257,7 @@ study = StudyDefinition(
 measures = [
 ]
 
-indicators_list = ["a", "b", "c", "i"]
+indicators_list = ["a", "b", "c", "d", "g", "i"]
 
 for indicator in indicators_list:
     m = Measure(

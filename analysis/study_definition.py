@@ -84,6 +84,15 @@ study = StudyDefinition(
         date_format="YYYY-MM-DD",
         on_or_before="index_date - 3 months",
     ),
+  
+    heart_failure=patients.with_these_clinical_events(
+        codelist=heart_failure_codelist,
+        find_first_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        on_or_before="index_date - 3 months",
+    ),
 
     indicator_a_denominator = patients.satisfying(
         """
@@ -114,6 +123,18 @@ study = StudyDefinition(
         oral_nsaid
         """,
     ),
+
+    indicator_i_denominator = patients.satisfying(
+        """
+        heart_failure
+        """
+    ),
+
+    indicator_i_numerator = patients.satisfying(
+        """
+        heart_failure AND oral_nsaid
+        """
+    )
 )
 
 measures = [

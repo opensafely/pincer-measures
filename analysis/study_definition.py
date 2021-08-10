@@ -91,13 +91,13 @@ study = StudyDefinition(
 
     indicator_d_denominator=patients.satisfying(
         """
-    (anticaogulant)
+    (anticoagulant)
     """,
     ),
 
     indicator_d_numerator=patients.satisfying(
         """
-        (anticaogulant) AND
+        (anticoagulant) AND
         oral_nsaid
         """,
     ),

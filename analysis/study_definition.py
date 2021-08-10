@@ -257,7 +257,7 @@ study = StudyDefinition(
 measures = [
 ]
 
-indicators_list = ["a", "b", "c", "i"]
+indicators_list = ["a", "b", "c", "d", "g", "i"]
 
 for indicator in indicators_list:
     m = Measure(

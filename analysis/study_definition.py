@@ -100,6 +100,28 @@ study = StudyDefinition(
     ),
 
     ###
+    # G - Asthma and non-selective betablockers audit (AS_P3G)
+    ###
+
+    asthma=patients.with_these_clinical_events(
+        codelist=asthma_codelist,
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        on_or_before="index_date - 3 months",
+    ),
+
+    asthma_resolved=patients.with_these_clinical_events(
+        codelist=asthma_resolved_codelist,
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        on_or_before="index_date",
+    ),
+
+    ###
     # I - Heart failure and NSAID audit (HF_P3I)	
     ###
   

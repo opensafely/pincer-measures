@@ -36,19 +36,20 @@ study = StudyDefinition(
             "rate": "universal",
             "int": {"distribution": "population_ages"},
         },
-        ),
+    ),
 
     ###
-    # A - GI BLEED INDICATORS
+    # GI BLEED INDICATORS
+    # A - 65 or over, no GI protect, NSAID audit (GI_P3A)
     ###
 
-    oral_nsaid = patients.with_these_medications(
-    codelist = oral_nsaid_codelist,
-    find_last_match_in_period=True,
-    returning="binary_flag",
-    include_date_of_match=True,
-    date_format="YYYY-MM-DD",
-    between=["index_date - 3 months", "index_date"],
+    oral_nsaid=patients.with_these_medications(
+        codelist=oral_nsaid_codelist,
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        between=["index_date - 3 months", "index_date"],
     ),
 
     # gastroprotective proton pump inhibitor
@@ -61,20 +62,29 @@ study = StudyDefinition(
         between=["index_date - 3 months", "index_date"],
     ),
 
-    indicator_a_denominator = patients.satisfying(
-    """
-    (NOT ppi) AND
-    (age >=65 AND age <=120)
-    """,
+    ###
+    # GI BLEED INDICATORS
+    # B - Peptic ulcer/GI bleed, no PPI protect, NSAID audit (GI_P3B)
+    ###
+
+    peptic_ulcer = patients.with_these_clinical_events(
+        codelist=peptic_ulcer_codelist,
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        on_or_before="index_date - 3 months",
     ),
 
-    indicator_a_numerator = patients.satisfying(
-        """
-        (NOT ppi) AND
-        (age >=65 AND age <=120) AND
-        oral_nsaid
-        """,
+    gi_bleed = patients.with_these_clinical_events(
+        codelist=gi_bleed_codelist,
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        on_or_before="index_date - 3 months",
     ),
+  
 
     ###
     # D – Warfarin/NOACS and NSAID audit (GI_P3D)
@@ -89,6 +99,52 @@ study = StudyDefinition(
         between=["index_date - 3 months", "index_date"],
     ),
 
+    ###
+    # I - Heart failure and NSAID audit (HF_P3I)	
+    ###
+  
+    heart_failure=patients.with_these_clinical_events(
+        codelist=heart_failure_codelist,
+        find_first_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        on_or_before="index_date - 3 months",
+    ),
+
+
+  
+    indicator_a_denominator = patients.satisfying(
+        """
+        (NOT ppi) AND
+        (age >=65 AND age <=120)
+        """,
+    ),
+
+    indicator_a_numerator = patients.satisfying(
+        """
+        (NOT ppi) AND
+        (age >=65 AND age <=120) AND
+        oral_nsaid
+        """,
+    ),
+  
+    indicator_b_denominator=patients.satisfying(
+        """
+        (NOT ppi) AND
+        (gi_bleed AND peptic_ulcer)
+        """,
+    ),
+
+    indicator_b_numerator=patients.satisfying(
+        """
+        (NOT ppi) AND
+        (gi_bleed AND peptic_ulcer) AND
+        oral_nsaid
+        """,
+    ),
+
+  
     indicator_d_denominator=patients.satisfying(
         """
     (anticoagulant)
@@ -101,11 +157,19 @@ study = StudyDefinition(
         oral_nsaid
         """,
     ),
+  
+    indicator_i_denominator = patients.satisfying(
+        """
+        heart_failure
+        """
+    ),
 
+    indicator_i_numerator = patients.satisfying(
+        """
+        heart_failure AND oral_nsaid
+        """
+    )
 )
-
-
-    
 
 measures = [
     Measure(
@@ -114,7 +178,4 @@ measures = [
         denominator="indicator_a_denominator",
         group_by=["practice"]
     ),
-
-
 ]
-

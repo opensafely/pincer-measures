@@ -210,6 +210,21 @@ study = StudyDefinition(
         between=["index_date - 3 months", "index_date"],
     ),
 
+    indicator_g_denominator = patients.satisfying(
+        """
+        asthma AND 
+        (NOT asthma_resolved)
+        """,
+    ),
+
+    indicator_g_numerator = patients.satisfying(
+        """
+        asthma AND 
+        (NOT asthma_resolved) AND
+        non_selective_bb
+        """,
+    ),
+
 
     ###
     # OTHER PRESCRIBING INDICATORS

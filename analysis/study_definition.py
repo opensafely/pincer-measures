@@ -62,6 +62,21 @@ study = StudyDefinition(
         between=["index_date - 3 months", "index_date"],
     ),
 
+    indicator_a_denominator = patients.satisfying(
+        """
+        (NOT ppi) AND
+        (age >=65 AND age <=120)
+        """,
+    ),
+
+    indicator_a_numerator = patients.satisfying(
+        """
+        (NOT ppi) AND
+        (age >=65 AND age <=120) AND
+        oral_nsaid
+        """,
+    ),
+
     ###
     # GI BLEED INDICATORS
     # B - Peptic ulcer/GI bleed, no PPI protect, NSAID audit (GI_P3B)
@@ -92,21 +107,6 @@ study = StudyDefinition(
         include_date_of_match=True,
         date_format="YYYY-MM-DD",
         on_or_before="index_date - 3 months",
-    ),
-
-    indicator_a_denominator = patients.satisfying(
-        """
-        (NOT ppi) AND
-        (age >=65 AND age <=120)
-        """,
-    ),
-
-    indicator_a_numerator = patients.satisfying(
-        """
-        (NOT ppi) AND
-        (age >=65 AND age <=120) AND
-        oral_nsaid
-        """,
     ),
 
     indicator_b_denominator=patients.satisfying(

@@ -136,6 +136,20 @@ study = StudyDefinition(
         between=["index_date - 3 months", "index_date"],
     ),
 
+    indicator_c_denominator = patients.satisfying(
+        """
+        (NOT ppi) AND
+        (gi_bleed OR peptic_ulcer)
+        """,
+    ),
+
+    indicator_c_numerator = patients.satisfying(
+        """
+        (NOT ppi) AND
+        (gi_bleed OR peptic_ulcer) AND
+        (antiplatelet_excluding_aspirin OR aspirin)
+        """,
+    ),
 
   
     ###

@@ -1,0 +1,228 @@
+code,term
+1000301000000100,Band neutrophil count
+1000321000000109,Percentage count of lymphocytes and blast cells positive for human leucocyte antigen DR
+1001391000000101,Total T lymphocyte count
+1001551000000103,T cell total percentage
+1013791000000103,Absolute smear cell count
+1015421000000106,Differential white cell count
+1015461000000103,Percentage cell count
+1015471000000105,Percentage neutrophils
+1015481000000107,Percentage lymphocytes
+1015491000000109,Percentage monocytes
+1015501000000103,Percentage basophils
+1015511000000101,Percentage metamyelocytes
+1015521000000107,Percentage blast cells
+1015531000000109,Percentage smear cells
+1015541000000100,Percentage granulocytes
+1015551000000102,Percentage nucleated red blood cells
+1015561000000104,Percentage eosinophils
+1019521000000109,Percentage myelocyte count
+1019531000000106,Percentage promyelocyte count
+1019541000000102,Percentage reticulocyte count
+1022431000000105,Haemoglobin estimation
+1022441000000101,Full blood count
+1022451000000103,Red blood cell count
+1022461000000100,Nucleated red blood cell count
+1022541000000102,Total white cell count
+1022551000000104,Neutrophil count
+1022561000000101,Eosinophil count
+1022571000000108,Basophil count
+1022581000000105,Lymphocyte count
+1022591000000107,Monocyte count
+1022611000000104,Promyelocyte count
+1022621000000105,Myelocyte count
+1022631000000107,Metamyelocyte count
+1022641000000103,Myeloblast count
+1022651000000100,Platelet count
+1027521000000106,Absolute atypical mononuclear cell count
+1027691000000105,Leucocyte count
+1028521000000107,Polymorphonuclear leucocyte count
+1032051000000105,White blood cell test observable
+103759004,"Metamyelocyte count, blood"
+104091002,"Hemogram, automated, with red blood cells, white blood cells, hemoglobin, hematocrit, indices, platelet count, and manual white blood cell differential"
+104092009,"Hemogram, automated, with red blood cell, white blood cell, hemoglobin, hematocrit, Indices, Platelet count, and automated partial white blood cell differential"
+104093004,"Hemogram, automated, with red blood cells, white blood cells, hemoglobin, hematocrit, Indices, Platelet count, and automated complete white blood cell differential"
+104096007,"Segmented neutrophil count, blood"
+104097003,"Hypersegmented neutrophil count, blood"
+104099000,"Myelocyte count, blood"
+104100008,"Promyelocyte count, blood"
+104101007,"Prolymphocyte count, blood"
+104105003,"Lymphocytes and monocytes, count, blood"
+104112007,"White blood cell count, automated, cerebrospinal fluid"
+104115009,"White blood cell count, automated, peritoneal fluid"
+104119003,"White blood cell count, automated, pleural fluid"
+104124000,"White blood cell count, automated, semen"
+104142005,Measurement of total hemoglobin concentration in plasma specimen
+104373001,"T cells, total count"
+1052251000000101,Abnormal lymphocyte count
+1083891000000108,Percentage band neutrophil count
+1083971000000101,Percentage polymorphonuclear leucocyte count in urine
+1087951000000101,Percentage atypical mononuclear cell count
+1106091000000103,Basophil count in blood
+1106101000000106,Basophil percent count in blood
+1107291000000107,Corrected reticulocyte count
+1107391000000104,Eosinophil count in blood
+1107401000000101,Eosinophil percent count in blood
+1107961000000106,Lymphocyte count in blood
+1107971000000104,Lymphocyte percent count in blood
+1107991000000100,Monocyte count in blood
+1108001000000109,Monocyte percent count in blood
+1108051000000105,Reticulocyte count in blood
+1108061000000108,Neutrophil percent count in blood
+1108071000000101,Neutrophil count in blood
+1110441000000100,White blood cell count in blood
+1110451000000102,Reticulocyte production index
+1111581000000104,Hypochromic red blood cells percent count in blood
+116708001,Polymorphonuclear leukocyte count
+116710004,Mononuclear cell count
+116786000,Leukocyte count corrected for nucleated erythrocytes
+117620005,Lymphocyte count by cell surface antigen phenotype
+118135005,B lymphocyte count
+118136006,T lymphocyte count
+118138007,Granulocyte count
+118140002,Macrophage count
+127062003,Erythrocytosis
+128091003,Autoimmune thrombocytopenia
+131141003,Increased hemoglobin
+134199001,White blood cell abnormality
+15111002,Pelger-Huët cell
+165396004,Hemoglobin very low
+165397008,Hemoglobin low
+165398003,Hemoglobin borderline low
+165399006,Hemoglobin normal
+165400004,Hemoglobin borderline high
+165402007,Hemoglobin very high
+165406005,Full blood count normal
+165407001,Full blood count borderline
+165408006,Full blood count abnormal
+165421004,Red blood cell count normal
+165422006,Red blood cell count borderline low
+165423001,Red blood cell count low
+165424007,Red blood cell count raised
+165425008,Red blood cell count borderline raised
+165427000,Red blood cell count abnormal
+165507003,White blood cell count normal
+165509000,White blood cell count abnormal
+165511009,Differential white blood cell count procedure
+165512002,Differential white cell count normal
+165516004,Neutrophil count normal
+165518003,Neutrophilia
+165519006,Neutrophil count abnormal
+165522008,Eosinophil count normal
+165527002,Basophil count normal
+165528007,Basophil count abnormal
+165530009,Lymphocyte count normal
+165532001,Relative lymphocytosis
+165537007,Monocyte count normal
+165539005,Monocytopenia
+165540007,Abnormal monocytes
+165541006,Monocyte count abnormal
+165543009,Immature white blood cells
+165549008,Promyelocyte count procedure
+165550008,Myelocyte count procedure
+165551007,Metamyelocyte count procedure
+165552000,Myeloblast count procedure
+165555003,Platelet count normal
+165558001,Platelet count abnormal
+250271003,White blood cell finding
+250274006,Neutrophil abnormality
+250275007,Hypersegmentation
+250276008,Pseudo-Pelger-Huet form
+250277004,Ring-form neutrophil
+250280003,Alius-Grignaschi anomaly
+250281004,Cytoplasmic vacuolation
+250282006,Drumstick nuclear appendage
+250284007,Lymphocyte abnormality
+250286009,Plasmacytoid lymphocytes
+250294002,Giant granulation
+250297009,Reversed differential
+250298004,Reversed neutrophil/lymphocyte ratio measurement
+250306005,White blood cell chromosome abnormality
+25340006,Neutrophil band count
+259714005,Toxic granulation
+259715006,Döhle body
+26604007,Complete blood count
+270924002,Plasma cell count
+271026005,Hemoglobin level estimation
+271035003,Neutrophil percent differential count
+271036002,Lymphocyte percent differential count
+271037006,Monocyte percent differential count
+271038001,Basophil percent differential count
+271039009,Metamyelocyte percent differential count
+271040006,Blast cell percent differential count
+271041005,Smear cell percent differential count
+271042003,Granulocyte percent differential count
+2902006,Decreased lymphocyte life span
+302560003,Determination of percentage differential white blood cells
+30630007,Neutrophil count
+310540006,Eosinophil percent differential count
+313478005,Promyelocyte percent differential count
+313696009,Myelocyte percent differential count
+35774004,"Complete blood count with white cell differential, manual"
+365626003,Finding of white blood cell morphology
+365627007,Finding of white blood cell age
+365629005,Finding of white blood cell granularity
+365630000,Finding of white blood cell number
+365631001,Finding of monocyte count
+365632008,Finding of platelet count
+370508005,Lymphocyte depletion
+386789004,Eosinophil count raised
+391305007,Percentage CD10 count
+391558003,Total white blood cell count
+391560001,T cell total %
+391561002,T cell subsets
+391575009,Total T lymphocyte count
+401074004,Total B lymphocyte count
+401094008,Natural killer cell level
+401133001,Lymphocyte subset measurement
+405274002,Alder-Reilly body
+407663004,Percentage plasma cell count
+408221008,Absolute atypical mononuclear cell count
+408222001,Percentage atypical mononuclear cell count
+41350008,Decreased granulocyte life span
+414478003,Increased blood leukocyte number
+414627001,Lymphocyte finding
+414774002,Monocyte finding
+415115007,Platelet count above reference range
+415116008,Platelet count below reference range
+416955003,Granulocyte count below reference range
+418697001,Increased blood monocyte number
+418928000,Decreased blood eosinophil number
+419188005,Decreased blood leukocyte number
+42351005,Basophil count
+42396003,White blood cell estimate
+43789009,Complete blood count without differential
+440577009,Morulae in leukocyte
+441793007,Hemoglobin level outside reference range
+442113000,Band neutrophil count above reference range
+445920003,Cytoplasmic vacuolation of lymphocyte
+446325007,Total lymphocyte count
+50551008,Right shifted white blood cells
+6346007,Leukocyte maturation arrest
+64668006,Sensitized leukocyte
+65209002,Basophilia
+67776007,Monocyte count
+71960002,Eosinophil count
+74765001,Lymphocyte count
+767002,White blood cell count
+797781000000106,Count of cells positive for both CD33 antigen and CD34 antigen
+797791000000108,Count of cells negative for CD33 antigen and positive for CD34 antigen
+827591000000105,Band neutrophil percent differential count
+85559002,Pelger-Huët anomaly
+86528005,Reactive lymphocyte count
+87361006,Left shifted white blood cells
+876581000000106,Natural killer (bright) cell absolute count
+876601000000102,Natural killer (dim) cell absolute count
+876661000000103,Count of natural killer (dim) cells as a percentage of total lymphocytes
+876681000000107,Count of natural killer (bright) cells as a percentage of total lymphocytes
+887911000000101,Percentage count of lymphocytes and blast cells positive for human leucocyte antigen DR
+9564003,"Complete blood count with white cell differential, automated"
+977691000000102,Absolute smear cell count
+991641000000108,Immature reticulocyte fraction
+993161000000104,Percentage reticulated platelet count
+993441000000109,Reticulocyte count
+993511000000107,Neutrophil alkaline phosphatase level
+993901000000100,Percentage hypochromic cells
+996661000000101,Total B lymphocyte count
+999551000000108,Prolymphocyte count
+999561000000106,Reactive lymphocyte count

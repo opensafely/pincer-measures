@@ -1,0 +1,61 @@
+code,term
+1000621000000104,Serum alkaline phosphatase level
+1000841000000105,Serum alkaline phosphatase liver isoenzyme level
+1000851000000108,Plasma gamma-glutamyl transferase level
+1000861000000106,Serum gamma-glutamyl transferase level
+1000881000000102,Serum aspartate aminotransferase level
+1000891000000100,Plasma aspartate transaminase level
+1002541000000108,Aspartate aminotransferase/alanine aminotransferase ratio
+1013041000000106,Plasma alkaline phosphatase level
+1013191000000102,Alkaline phosphatase liver isoenzyme level
+1013211000000103,Plasma alanine aminotransferase level
+1018251000000107,Serum alanine aminotransferase level
+1028091000000102,Gamma-glutamyl transferase level
+1031081000000108,Liver function tests
+1031101000000102,Aspartate aminotransferase level
+104481004,"Alanine aminotransferase measurement, method with pyridoxal-5'-phosphate"
+104482006,"Alanine aminotransferase measurement, method without pyridoxal-5'-phosphate"
+1106041000000108,Enzyme activity of alkaline phosphatase in plasma
+1106071000000102,Enzyme activity of aspartate aminotransferase in serum
+1106081000000100,Enzyme activity of alanine aminotransferase in serum
+1106681000000105,Enzyme activity of aspartate aminotransferase in plasma
+1107431000000107,Enzyme activity of gamma-glutamyl transferase in plasma
+1107441000000103,Enzyme activity of gamma-glutamyl transferase in serum
+166602006,Liver function tests normal
+166603001,Liver function tests abnormal
+166626008,Serum alkaline phosphatase normal
+166627004,Serum alkaline phosphatase raised
+166642001,Liver enzymes normal
+166643006,Liver enzymes abnormal
+166645004,Alanine aminotransferase (serum glutamic-pyruvic transaminase) level normal
+166646003,Alanine aminotransferase (serum glutamic-pyruvic transaminase) level abnormal
+166648002,Gamma-glutamyl transferase level normal
+166649005,Gamma-glutamyl transferase level abnormal
+166667003,Aspartate aminotransferase/serum glutamic oxaloacetic transaminase level normal
+166668008,Aspartate aminotransferase/serum glutamic oxaloacetic transaminase level abnormal
+166669000,Aspartate aminotransferase serum level raised
+201321000000108,Serum alanine aminotransferase level
+250637003,Alanine aminotransferase - blood measurement
+26958001,Hepatic function panel
+271234008,Serum alkaline phosphatase measurement
+271548009,Alkaline phosphatase liver isoenzyme measurement
+274770006,Alkaline phosphatase raised
+274782002,Gamma-glutamyl transferase raised
+275796002,Alkaline phosphatase in sample
+313843003,Serum alkaline phosphatase liver isoenzyme measurement
+313844009,Plasma alkaline phosphatase liver isoenzyme measurement
+34608000,Alanine aminotransferase measurement
+365769003,Finding of liver enzyme levels
+365771003,Finding of alkaline phosphatase level
+365772005,Finding of serum alkaline phosphatase level
+370979009,Normal alanine aminotransferase with persistent viremia by polymerase chain reaction
+390961000,Plasma alanine aminotransferase level
+409673008,Alanine aminotransferase (serum glutamic-pyruvic transaminase) level raised
+707724006,Elevated liver enzymes level
+707734002,Elevated liver enzymes level due to cystic fibrosis
+790541000000108,Aspartate transaminase/alanine transaminase ratio measurement
+88810008,Alkaline phosphatase measurement
+889391000000100,Measurement of alanine transaminase activity
+997531000000108,Liver function test
+997611000000101,Total alkaline phosphatase level
+997641000000100,Plasma alkaline phosphatase liver isoenzyme level

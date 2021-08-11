@@ -5,9 +5,11 @@ from cohortextractor import (
 )
 
 from codelists import *
+from co_prescribing_variables import create_co_prescribing_variables
 
 start_date = "2019-01-01"
 end_date = "2021-07-01"
+
 
 study = StudyDefinition(
     index_date = start_date,
@@ -37,6 +39,17 @@ study = StudyDefinition(
             "int": {"distribution": "population_ages"},
         },
     ),
+
+    ###
+    # CO-PRESCRIBING-VARS
+    ###
+
+    # Used in indicator E
+    **create_co_prescribing_variables(anticoagulant_codelist, antiplatelet_including_aspirin_codelist, "anticoagulant", "antiplatelet_including_aspirin"),
+
+     # Used in indicator F
+    **create_co_prescribing_variables(aspirin_codelist, antiplatelet_excluding_aspirin_codelist, "aspirin", "antiplatelet_excluding_aspirin"),
+    
 
     ###
     # GI BLEED INDICATORS
@@ -163,15 +176,8 @@ study = StudyDefinition(
     # D – Warfarin/NOACS and NSAID audit (GI_P3D)
     ###
 
-    anticoagulant=patients.with_these_medications(
-        codelist=anticoagulant_codelist,
-        find_last_match_in_period=True,
-        returning="binary_flag",
-        include_date_of_match=True,
-        date_format="YYYY-MM-DD",
-        between=["index_date - 3 months", "index_date"],
-    ),
-    
+    #anticoagulant from co-prescribing variables
+
     indicator_d_denominator=patients.satisfying(
         """
     (anticoagulant)
@@ -191,113 +197,10 @@ study = StudyDefinition(
     ###
 
     #ppi from A
-    #anticoagulant from D
+    #anticoagulant from co-prescribing variables
 
-    antiplatelet_including_aspirin = patients.with_these_medications(
-        codelist = antiplatelet_including_aspirin_codelist, 
-        find_last_match_in_period=True,
-        returning="binary_flag",
-        include_date_of_match=True,
-        date_format="YYYY-MM-DD",
-        between=["index_date - 3 months", "index_date"],
-    ),
-
-    earliest_anticoagulant_month_3=patients.with_these_medications(
-        codelist=anticoagulant_codelist,
-        find_first_match_in_period=True,
-        returning="date",
-        date_format="YYYY-MM-DD",
-        between=["index_date - 3 months", "index_date - 2 months"],
-    ),
-
-    earliest_anticoagulant_month_2=patients.with_these_medications(
-        codelist=anticoagulant_codelist,
-        find_first_match_in_period=True,
-        returning="date",
-        date_format="YYYY-MM-DD",
-        between=["index_date - 2 months", "index_date - 1 month"],
-    ),
-
-    earliest_anticoagulant_month_1=patients.with_these_medications(
-        codelist=anticoagulant_codelist,
-        find_first_match_in_period=True,
-        returning="date",
-        date_format="YYYY-MM-DD",
-        between=["index_date - 1 month", "index_date"],
-    ),
-
-    latest_anticoagulant_month_3=patients.with_these_medications(
-        codelist=anticoagulant_codelist,
-        find_last_match_in_period=True,
-        returning="date",
-        date_format="YYYY-MM-DD",
-        between=["index_date - 3 months", "index_date - 2 months"],
-    ),
-
-    latest_anticoagulant_month_2=patients.with_these_medications(
-        codelist=anticoagulant_codelist,
-        find_last_match_in_period=True,
-        returning="date",
-        date_format="YYYY-MM-DD",
-        between=["index_date - 2 months", "index_date - 1 month"],
-    ),
-
-    latest_anticoagulant_month_1=patients.with_these_medications(
-        codelist=anticoagulant_codelist,
-        find_last_match_in_period=True,
-        returning="date",
-        date_format="YYYY-MM-DD",
-        between=["index_date - 1 month", "index_date"],
-    ),
-
-    earliest_antiplatelet_month_3=patients.with_these_medications(
-        codelist=antiplatelet_including_aspirin_codelist,
-        find_first_match_in_period=True,
-        returning="date",
-        date_format="YYYY-MM-DD",
-        between=["index_date - 3 months", "index_date - 2 months"],
-    ),
-
-    earliest_antiplatelet_month_2=patients.with_these_medications(
-        codelist=antiplatelet_including_aspirin_codelist,
-        find_first_match_in_period=True,
-        returning="date",
-        date_format="YYYY-MM-DD",
-        between=["index_date - 2 months", "index_date - 1 month"],
-    ),
-
-    earliest_antiplatelet_month_1=patients.with_these_medications(
-        codelist=antiplatelet_including_aspirin_codelist,
-        find_first_match_in_period=True,
-        returning="date",
-        date_format="YYYY-MM-DD",
-        between=["index_date - 1 month", "index_date"],
-    ),
-
-    latest_antiplatelet_month_3=patients.with_these_medications(
-        codelist=antiplatelet_including_aspirin_codelist,
-        find_last_match_in_period=True,
-        returning="date",
-        date_format="YYYY-MM-DD",
-        between=["index_date - 3 months", "index_date - 2 months"],
-    ),
-
-    latest_antiplatelet_month_2=patients.with_these_medications(
-        codelist=antiplatelet_including_aspirin_codelist,
-        find_last_match_in_period=True,
-        returning="date",
-        date_format="YYYY-MM-DD",
-        between=["index_date - 2 months", "index_date - 1 month"],
-    ),
-
-    latest_antiplatelet_month_1=patients.with_these_medications(
-        codelist=antiplatelet_including_aspirin_codelist,
-        find_last_match_in_period=True,
-        returning="date",
-        date_format="YYYY-MM-DD",
-        between=["index_date - 1 month", "index_date"],
-    ),
-
+    
+   
     indicator_e_denominator = patients.satisfying(
         """
         anticoagulant AND

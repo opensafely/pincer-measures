@@ -284,6 +284,13 @@ study = StudyDefinition(
         between=["index_date - 1 month", "index_date"],
     ),
 
+    indicator_f_denominator = patients.satisfying(
+        """
+        aspirin AND
+        (NOT ppi)
+        """
+    )
+
 
 
     ###

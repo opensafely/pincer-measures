@@ -136,24 +136,9 @@ study = StudyDefinition(
     #peptic_ulcer from B
     #gi_bleed from B
     #ppi from A
+    #antiplatelet_excluding_aspirin from co-prescribing vars
+    #aspirin from co-prescribing vars
 
-    antiplatelet_excluding_aspirin = patients.with_these_medications(
-        codelist = antiplatelet_excluding_aspirin_codelist, 
-        find_last_match_in_period=True,
-        returning="binary_flag",
-        include_date_of_match=True,
-        date_format="YYYY-MM-DD",
-        between=["index_date - 3 months", "index_date"],
-    ),
-
-    aspirin = patients.with_these_medications(
-        codelist = aspirin_codelist, 
-        find_last_match_in_period=True,
-        returning="binary_flag",
-        include_date_of_match=True,
-        date_format="YYYY-MM-DD",
-        between=["index_date - 3 months", "index_date"],
-    ),
 
     indicator_c_denominator = patients.satisfying(
 

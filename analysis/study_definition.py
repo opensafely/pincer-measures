@@ -336,6 +336,79 @@ study = StudyDefinition(
         """,
     ),
 
+    ###
+    # MONITORING COMPOSITE INDICATOR
+    # AC - ACEI Audit (MO_P13)
+    ####
+
+    acei = patients.with_these_medications(
+        codelist = acei_codelist, 
+        find_first_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        on_or_before=["index_date - 15 months"],
+    ),
+
+    loop_diuretic = patients.with_these_medications(
+        codelist = loop_diuretic_codelist, 
+        find_first_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        on_or_before=["index_date - 15 months"],
+    ),
+
+    acei_recent = patients.with_these_medications(
+        codelist = acei_codelist, 
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        between=["index_date - 6 months", "index_date"],
+    ),
+
+    loop_diuretic_recent = patients.with_these_medications(
+        codelist = loop_diuretic_codelist, 
+        find_last_match_in_period=True,
+        between=["index_date - 6 months", "index_date"],
+    ),
+
+    renal_function_test = patients.with_these_clinical_events(
+        codelist = renal_function_test_codelist,
+        find_last_match_in_period = True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        between = ["index_date - 15 months", "index_date"],
+    ),
+
+    electrolytes_test = patients.with_these_clinical_events(
+        codelist = electrolytes_test_codelist,
+        find_last_match_in_period = True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        between = ["index_date - 15 months", "index_date"],
+    ),
+
+    indicator_ac_denominator = patients.satisfying(
+        """
+        (age >=75 AND age <=120) AND
+        (acei AND acei_recent) OR
+        (loop_diuretic AND loop_diuretic_recent)
+        """,
+    ),
+
+    indicator_ac_numerator = patients.satisfying(
+        """
+        (age >=75 AND age <=120) AND
+        (loop_diuretic AND loop_diuretic_recent) OR
+        (acei AND acei_recent) AND
+        ((NOT renal_function_test) OR (NOT electrolytes_test))
+        """,
+    ),
+
     
 )
 

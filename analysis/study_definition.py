@@ -127,12 +127,18 @@ study = StudyDefinition(
     antiplatelet_excluding_aspirin = patients.with_these_medications(
     codelist = antiplatelet_excluding_aspirin_codelist, 
     find_last_match_in_period=True,
+    returning="binary_flag",
+    include_date_of_match=True,
+    date_format="YYYY-MM-DD",
     between=["index_date - 3 months", "index_date"],
     ),
 
     aspirin = patients.with_these_medications(
         codelist = aspirin_codelist, 
         find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
         between=["index_date - 3 months", "index_date"],
     ),
 
@@ -153,6 +159,7 @@ study = StudyDefinition(
     ),
       
     ###
+    # GI BLEED INDICATORS
     # D – Warfarin/NOACS and NSAID audit (GI_P3D)
     ###
 
@@ -178,6 +185,7 @@ study = StudyDefinition(
         """,
     ),
   
+    
     ###
     # OTHER PRESCRIBING INDICATORS
     # G - Asthma and non-selective betablockers audit (AS_P3G)

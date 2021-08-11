@@ -285,13 +285,64 @@ study = StudyDefinition(
         """
         heart_failure AND oral_nsaid
         """
-    )
+    ),
+
+    ###
+    # OTHER PRESCRIBING INDICATORS
+    # K - Chronic Renal Impairment & NSAID Audit (KI_P3K)
+    ###
+
+    #oral_nsaid from A
+
+    egfr=patients.with_these_clinical_events(
+        codelist=egfr_codelist,
+        find_last_match_in_period=True,
+        returning="numeric_value",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        between=["index_date - 3 months", "index_date"],
+        return_expectations={
+            "float": {"distribution": "normal", "mean": 45.0, "stddev": 20},
+            "incidence": 0.5,
+        },
+    ),
+
+    egfr_less_than_45 = patients.categorised_as(
+        {
+            "0": "DEFAULT",
+            "1": """ 0 <= egfr < 45"""
+        },
+        return_expectations = {
+            "rate": "universal",
+            "category": {
+                        "ratios": {
+                            "0": 0.94,
+                            "1": 0.06,
+                                }
+                        },
+            },
+    ),
+
+    indicator_k_denominator = patients.satisfying(
+        """
+        egfr_less_than_45
+        """,
+    ),
+
+    indicator_k_numerator = patients.satisfying(
+        """
+        egfr_less_than_45 AND
+        oral_nsaid
+        """,
+    ),
+
+    
 )
 
 measures = [
 ]
 
-indicators_list = ["a", "b", "c", "d", "e", "f", "g", "i"]
+indicators_list = ["a", "b", "c", "d", "e", "f", "g", "i", "k"]
 
 for indicator in indicators_list:
     m = Measure(

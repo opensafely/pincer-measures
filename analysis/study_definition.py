@@ -298,6 +298,13 @@ study = StudyDefinition(
         between=["index_date - 1 month", "index_date"],
     ),
 
+    indicator_e_denominator = patients.satisfying(
+        """
+        anticoagulant AND
+        (NOT ppi)
+        """
+    )
+
 
     ###
     # OTHER PRESCRIBING INDICATORS

@@ -125,14 +125,20 @@ study = StudyDefinition(
     #ppi from A
 
     antiplatelet_excluding_aspirin = patients.with_these_medications(
-    codelist = antiplatelet_excluding_aspirin_codelist, 
-    find_last_match_in_period=True,
-    between=["index_date - 3 months", "index_date"],
+        codelist = antiplatelet_excluding_aspirin_codelist, 
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        between=["index_date - 3 months", "index_date"],
     ),
 
     aspirin = patients.with_these_medications(
         codelist = aspirin_codelist, 
         find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
         between=["index_date - 3 months", "index_date"],
     ),
 
@@ -153,6 +159,7 @@ study = StudyDefinition(
     ),
       
     ###
+    # GI BLEED INDICATORS
     # D – Warfarin/NOACS and NSAID audit (GI_P3D)
     ###
 
@@ -178,6 +185,127 @@ study = StudyDefinition(
         """,
     ),
   
+    ###
+    # GI BLEED INDICATORS
+    # E – Anticoagulation & Antiplatelet & No GI Protection Audit (GI_P3E)
+    ###
+
+    #ppi from A
+    #anticoagulant from D
+
+    antiplatelet_including_aspirin = patients.with_these_medications(
+        codelist = antiplatelet_including_aspirin_codelist, 
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        between=["index_date - 3 months", "index_date"],
+    ),
+
+    earliest_anticoagulant_month_3=patients.with_these_medications(
+        codelist=anticoagulant_codelist,
+        find_first_match_in_period=True,
+        returning="date",
+        date_format="YYYY-MM-DD",
+        between=["index_date - 3 months", "index_date - 2 months"],
+    ),
+
+    earliest_anticoagulant_month_2=patients.with_these_medications(
+        codelist=anticoagulant_codelist,
+        find_first_match_in_period=True,
+        returning="date",
+        date_format="YYYY-MM-DD",
+        between=["index_date - 2 months", "index_date - 1 month"],
+    ),
+
+    earliest_anticoagulant_month_1=patients.with_these_medications(
+        codelist=anticoagulant_codelist,
+        find_first_match_in_period=True,
+        returning="date",
+        date_format="YYYY-MM-DD",
+        between=["index_date - 1 month", "index_date"],
+    ),
+
+    latest_anticoagulant_month_3=patients.with_these_medications(
+        codelist=anticoagulant_codelist,
+        find_last_match_in_period=True,
+        returning="date",
+        date_format="YYYY-MM-DD",
+        between=["index_date - 3 months", "index_date - 2 months"],
+    ),
+
+    latest_anticoagulant_month_2=patients.with_these_medications(
+        codelist=anticoagulant_codelist,
+        find_last_match_in_period=True,
+        returning="date",
+        date_format="YYYY-MM-DD",
+        between=["index_date - 2 months", "index_date - 1 month"],
+    ),
+
+    latest_anticoagulant_month_1=patients.with_these_medications(
+        codelist=anticoagulant_codelist,
+        find_last_match_in_period=True,
+        returning="date",
+        date_format="YYYY-MM-DD",
+        between=["index_date - 1 month", "index_date"],
+    ),
+
+    earliest_antiplatelet_month_3=patients.with_these_medications(
+        codelist=antiplatelet_including_aspirin_codelist,
+        find_first_match_in_period=True,
+        returning="date",
+        date_format="YYYY-MM-DD",
+        between=["index_date - 3 months", "index_date - 2 months"],
+    ),
+
+    earliest_antiplatelet_month_2=patients.with_these_medications(
+        codelist=antiplatelet_including_aspirin_codelist,
+        find_first_match_in_period=True,
+        returning="date",
+        date_format="YYYY-MM-DD",
+        between=["index_date - 2 months", "index_date - 1 month"],
+    ),
+
+    earliest_antiplatelet_month_1=patients.with_these_medications(
+        codelist=antiplatelet_including_aspirin_codelist,
+        find_first_match_in_period=True,
+        returning="date",
+        date_format="YYYY-MM-DD",
+        between=["index_date - 1 month", "index_date"],
+    ),
+
+    latest_antiplatelet_month_3=patients.with_these_medications(
+        codelist=antiplatelet_including_aspirin_codelist,
+        find_last_match_in_period=True,
+        returning="date",
+        date_format="YYYY-MM-DD",
+        between=["index_date - 3 months", "index_date - 2 months"],
+    ),
+
+    latest_antiplatelet_month_2=patients.with_these_medications(
+        codelist=antiplatelet_including_aspirin_codelist,
+        find_last_match_in_period=True,
+        returning="date",
+        date_format="YYYY-MM-DD",
+        between=["index_date - 2 months", "index_date - 1 month"],
+    ),
+
+    latest_antiplatelet_month_1=patients.with_these_medications(
+        codelist=antiplatelet_including_aspirin_codelist,
+        find_last_match_in_period=True,
+        returning="date",
+        date_format="YYYY-MM-DD",
+        between=["index_date - 1 month", "index_date"],
+    ),
+
+    indicator_e_denominator = patients.satisfying(
+        """
+        anticoagulant AND
+        (NOT ppi)
+        """
+    ),
+
+
     ###
     # OTHER PRESCRIBING INDICATORS
     # G - Asthma and non-selective betablockers audit (AS_P3G)

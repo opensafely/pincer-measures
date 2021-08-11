@@ -322,6 +322,20 @@ study = StudyDefinition(
                         },
             },
     ),
+
+    indicator_k_denominator = patients.satisfying(
+        """
+        egfr_less_than_45
+        """,
+    ),
+
+    indicator_k_numerator = patients.satisfying(
+        """
+        egfr_less_than_45 AND
+        oral_nsaid
+        """,
+    ),
+
     
 )
 

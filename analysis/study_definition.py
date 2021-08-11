@@ -289,7 +289,7 @@ study = StudyDefinition(
         aspirin AND
         (NOT ppi)
         """
-    )
+    ),
 
 
 

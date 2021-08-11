@@ -482,14 +482,23 @@ study = StudyDefinition(
 measures = [
 ]
 
-indicators_list = ["a", "b", "c", "d", "e", "f", "g", "i", "k"]
+indicators_list = ["a", "b", "c", "d", "e", "f", "g", "i", "k", "ac", "me_no_fbc", "me_no_lft"]
 
 for indicator in indicators_list:
-    m = Measure(
+
+    if indicator in ["me_no_fbc", "me_no_lft"]:
+        m = Measure(
         id=f"indicator_{indicator}_rate",
         numerator=f"indicator_{indicator}_numerator",
-        denominator=f"indicator_{indicator}_denominator",
+        denominator=f"indicator_me_denominator",
         group_by=["practice"]
     )
+    else:
+        m = Measure(
+            id=f"indicator_{indicator}_rate",
+            numerator=f"indicator_{indicator}_numerator",
+            denominator=f"indicator_{indicator}_denominator",
+            group_by=["practice"]
+        )
 
     measures.append(m)

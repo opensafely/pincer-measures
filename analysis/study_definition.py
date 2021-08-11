@@ -310,7 +310,7 @@ study = StudyDefinition(
     egfr_less_than_45 = patients.categorised_as(
         {
             "0": "DEFAULT",
-            "1": """egfr < 45"""
+            "1": """ 0 <= egfr < 45"""
         },
         return_expectations = {
             "rate": "universal",

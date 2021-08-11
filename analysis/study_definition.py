@@ -177,7 +177,115 @@ study = StudyDefinition(
         oral_nsaid
         """,
     ),
-  
+    
+
+    ###
+    # GI BLEED INDICATORS
+    # F – Aspirin, antiplatelet and no GI protection audit (GI_P3F)
+    ###
+
+    #aspirin from C
+    #antiplatelet_excluding_aspirin from C
+    #ppi from A
+
+    earliest_antiplatelet_excluding_aspirin_month_3=patients.with_these_medications(
+        codelist=antiplatelet_excluding_aspirin_codelist,
+        find_first_match_in_period=True,
+        returning="date",
+        date_format="YYYY-MM-DD",
+        between=["index_date - 3 months", "index_date - 2 months"],
+    ),
+
+    earliest_antiplatelet_excluding_aspirin_month_2=patients.with_these_medications(
+        codelist=antiplatelet_excluding_aspirin_codelist,
+        find_first_match_in_period=True,
+        returning="date",
+        date_format="YYYY-MM-DD",
+        between=["index_date - 2 months", "index_date - 1 month"],
+    ),
+
+    earliest_antiplatelet_excluding_aspirin_month_1=patients.with_these_medications(
+        codelist=antiplatelet_excluding_aspirin_codelist,
+        find_first_match_in_period=True,
+        returning="date",
+        date_format="YYYY-MM-DD",
+        between=["index_date - 1 month", "index_date"],
+    ),
+
+    latest_antiplatelet_excluding_aspirin_month_3=patients.with_these_medications(
+        codelist=antiplatelet_excluding_aspirin_codelist,
+        find_last_match_in_period=True,
+        returning="date",
+        date_format="YYYY-MM-DD",
+        between=["index_date - 3 months", "index_date - 2 months"],
+    ),
+
+    latest_antiplatelet_excluding_aspirin_month_2=patients.with_these_medications(
+        codelist=antiplatelet_excluding_aspirin_codelist,
+        find_last_match_in_period=True,
+        returning="date",
+        date_format="YYYY-MM-DD",
+        between=["index_date - 2 months", "index_date - 1 month"],
+    ),
+
+    latest_antiplatelet_excluding_aspirin_month_1=patients.with_these_medications(
+        codelist=antiplatelet_excluding_aspirin_codelist,
+        find_last_match_in_period=True,
+        returning="date",
+        date_format="YYYY-MM-DD",
+        between=["index_date - 1 month", "index_date"],
+    ),
+
+    earliest_aspirin_month_3=patients.with_these_medications(
+        codelist=aspirin_codelist,
+        find_first_match_in_period=True,
+        returning="date",
+        date_format="YYYY-MM-DD",
+        between=["index_date - 3 months", "index_date - 2 months"],
+    ),
+
+    earliest_aspirin_month_2=patients.with_these_medications(
+        codelist=aspirin_codelist,
+        find_first_match_in_period=True,
+        returning="date",
+        date_format="YYYY-MM-DD",
+        between=["index_date - 2 months", "index_date - 1 month"],
+    ),
+
+    earliest_aspirin_month_1=patients.with_these_medications(
+        codelist=aspirin_codelist,
+        find_first_match_in_period=True,
+        returning="date",
+        date_format="YYYY-MM-DD",
+        between=["index_date - 1 month", "index_date"],
+    ),
+
+    latest_aspirin_month_3=patients.with_these_medications(
+        codelist=aspirin_codelist,
+        find_last_match_in_period=True,
+        returning="date",
+        date_format="YYYY-MM-DD",
+        between=["index_date - 3 months", "index_date - 2 months"],
+    ),
+
+    latest_aspirin_month_2=patients.with_these_medications(
+        codelist=aspirin_codelist,
+        find_last_match_in_period=True,
+        returning="date",
+        date_format="YYYY-MM-DD",
+        between=["index_date - 2 months", "index_date - 1 month"],
+    ),
+
+    latest_aspirin_month_1=patients.with_these_medications(
+        codelist=aspirin_codelist,
+        find_last_match_in_period=True,
+        returning="date",
+        date_format="YYYY-MM-DD",
+        between=["index_date - 1 month", "index_date"],
+    ),
+
+
+
     ###
     # OTHER PRESCRIBING INDICATORS
     # G - Asthma and non-selective betablockers audit (AS_P3G)

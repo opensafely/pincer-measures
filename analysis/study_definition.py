@@ -303,7 +303,7 @@ study = StudyDefinition(
         anticoagulant AND
         (NOT ppi)
         """
-    )
+    ),
 
 
     ###

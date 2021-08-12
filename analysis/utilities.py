@@ -25,28 +25,6 @@ def validate_directory(dirpath):
     if not dirpath.is_dir():
         raise ValueError(f"Not a directory")
 
-def add_ethnicity(cohort):
-    """Add ethnicity using bandings from PRIMIS spec."""
-
-    # eth2001 already indicates whether a patient is in any of bands 1-16
-    cohort["ethnicity"] = cohort["ethnicity"].astype("category")
-    s = cohort["ethnicity"].copy()
-    s = s.cat.add_categories(6)
-
-    # Add band 17 (Patients with any other ethnicity code)
-    s.mask(s.isna() & cohort["non_eth2001_dat"].notna(), 6, inplace=True)
-
-    # Add band 18 (Ethnicity not given - patient refused)
-    s.mask(s.isna() & cohort["eth_notgiptref_dat"].notna(), 6, inplace=True)
-
-    # Add band 19 (Ethnicity not stated)
-    s.mask(s.isna() & cohort["eth_notstated_dat"].notna(), 6, inplace=True)
-
-    # Add band 20 (Ethnicity not recorded)
-    s.mask(s.isna(), 6, inplace=True)
-
-    cohort["ethnicity"] = s.astype("int8")
-
 def join_ethnicity(directory: str) -> None:
     """Finds 'input_ethnicity.csv' in directory and combines with each input file."""
 

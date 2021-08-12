@@ -1,6 +1,7 @@
 import re
 from pathlib import Path
 import pandas as pd
+import numpy as np
 
 BASE_DIR = Path(__file__).parents[1]
 OUTPUT_DIR = BASE_DIR / "output"
@@ -42,3 +43,55 @@ def join_ethnicity(directory: str) -> None:
             merged_df = df.merge(ethnicity_df, how='left', on='patient_id')
             
             merged_df.to_csv(dirpath / file.name, index=False)
+
+
+def calculate_rate(df, value_col: str, population_col: str, rate_per: int): 
+    """Calculates the rate of events for given number of the population.
+
+    Args:
+        df: A measure table.
+        value_col: The name of the numerator column in the measure table.
+        population_col: The name of the denominator column in the measure table.
+        rate_per: Population size to calculate rate by.
+    
+    Returns:
+        A pandas series with rate values
+    """
+    rate = df[value_col] / (df[population_col] / rate_per)
+    return rate
+
+def redact_small_numbers(df, n, numerator, denominator, rate_column):
+    """
+    Takes counts df as input and suppresses low numbers.  Sequentially redacts
+    low numbers from numerator and denominator until count of redcted values >=n.
+    Rates corresponding to redacted values are also redacted.
+    
+    df: input df
+    n: threshold for low number suppression
+    numerator: numerator column to be redacted
+    denominator: denominator column to be redacted
+    """
+    
+    def suppress_column(column):    
+        suppressed_count = column[column<=n].sum()
+        
+        #if 0 dont need to suppress anything
+        if suppressed_count == 0:
+            pass
+        
+        else:
+            df[column.name][df[column.name]<=n] = np.nan
+            
+
+            while suppressed_count <=n:
+                suppressed_count += column.min()
+                column.iloc[column.idxmin()] = np.nan   
+        return column
+    
+    
+    for column in [numerator, denominator]:
+        df[column] = suppress_column(df[column])
+    
+    df[rate_column][(df[numerator].isna())| (df[denominator].isna())] = np.nan
+    
+    return df  

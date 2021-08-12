@@ -110,4 +110,7 @@ for file in OUTPUT_DIR.iterdir():
         # for indicator F
         co_prescription(df, "aspirin", "antiplatelet_excluding_aspirin")
         df['indicator_f_numerator'] = df["aspirin"].notnull() & df["ppi"].isnull() & df["co_prescribed_aspirin_antiplatelet_excluding_aspirin"].notnull()
+        
+        df.replace({False: 0, True: 1}, inplace=True)
+        
         df.to_csv(OUTPUT_DIR / file.name)

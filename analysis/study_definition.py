@@ -18,9 +18,25 @@ study = StudyDefinition(
         "rate": "uniform",
         "incidence": 0.5,
     },
+
     population=patients.satisfying(
        """
-       registered
+       registered AND
+       (age >=18 AND age <=120) AND
+       (
+           (age >=65 AND ppi) OR
+           (methotrexate_6_3_months AND methotrexate_3_months) OR
+           (lithium_6_3_months AND lithium_3_months) OR
+           (amiodarone_12_6_months AND amiodarone_6_months) OR
+           ((gi_bleed OR peptic_ulcer) AND (NOT ppi)) OR
+           (anticoagulant) OR
+           (aspirin AND (NOT ppi)) OR
+           ((asthma AND (NOT asthma_resolved)) OR (asthma_resolved_date <= asthma_date)) OR
+           (heart_failure) OR
+           (egfr_less_than_45) OR
+           (age >= 75 AND acei AND acei_recent) OR
+           (age >=75 AND loop_diuretic AND loop_diuretic_recent)
+       )
        """
     ),
 
@@ -253,8 +269,8 @@ study = StudyDefinition(
 
     indicator_g_denominator = patients.satisfying(
         """
-        asthma AND 
-        (NOT asthma_resolved)
+        (asthma AND (NOT asthma_resolved)) OR
+        (asthma_resolved_date <= asthma_date)
         """,
     ),
 
@@ -633,7 +649,7 @@ study = StudyDefinition(
 measures = [
     Measure(
         id="practice_population_rate",
-        numerator=practice_population,
+        numerator="practice_population",
         denominator="population",
         group_by=["practice"]
     )

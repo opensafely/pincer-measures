@@ -58,3 +58,39 @@ def calculate_rate(df, value_col: str, population_col: str, rate_per: int):
     """
     rate = df[value_col] / (df[population_col] / rate_per)
     return rate
+
+def redact_small_numbers(df, n, numerator, denominator, rate_column):
+    """
+    Takes counts df as input and suppresses low numbers.  Sequentially redacts
+    low numbers from numerator and denominator until count of redcted values >=n.
+    Rates corresponding to redacted values are also redacted.
+    
+    df: input df
+    n: threshold for low number suppression
+    numerator: numerator column to be redacted
+    denominator: denominator column to be redacted
+    """
+    
+    def suppress_column(column):    
+        suppressed_count = column[column<=n].sum()
+        
+        #if 0 dont need to suppress anything
+        if suppressed_count == 0:
+            pass
+        
+        else:
+            df[column.name][df[column.name]<=n] = np.nan
+            
+
+            while suppressed_count <=n:
+                suppressed_count += column.min()
+                column.iloc[column.idxmin()] = np.nan   
+        return column
+    
+    
+    for column in [numerator, denominator]:
+        df[column] = suppress_column(df[column])
+    
+    df[rate_column][(df[numerator].isna())| (df[denominator].isna())] = np.nan
+    
+    return df  

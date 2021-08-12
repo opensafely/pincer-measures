@@ -569,6 +569,58 @@ study = StudyDefinition(
         (NOT thyroid_function_test)
         """,
     ),
+
+    ###
+    # GI BLEED COMPOSITE INDICATORS
+    ###
+
+    gi_bleed_composite_denominator = patients.satisfying(
+        """
+        indicator_a_denominator OR
+        indicator_b_denominator OR
+        indicator_c_denominator OR
+        indicator_d_denominator OR
+        indicator_e_denominator OR
+        indicator_f_denominator
+        """
+    ),
+
+    ###
+    # OTHER PRESCRIBING COMPOSITE INDICATOR
+    ###
+
+    other_prescribing_composite_denominator = patients.satisfying(
+        """
+        indicator_g_denominator OR
+        indicator_i_denominator OR
+        indicator_k_denominator
+        """,
+    ),
+
+    ###
+    #  MONITORING COMPOSITE INDICATOR
+    ###
+
+    monitoring_composite_denominator = patients.satisfying(
+        """
+        indicator_ac_denominator OR
+        indicator_me_denominator OR
+        indicator_li_denominator OR
+        indicator_am_denominator
+        """
+    ),
+
+    ###
+    # ALL COMPOSITE INDICATOR
+    #
+
+    all_composite_denominator = patients.satisfying(
+        """
+        gi_bleed_composite_denominator OR
+        other_prescribing_composite_denominator OR
+        monitoring_composite_denominator
+        """
+    )
 )
 
 measures = [

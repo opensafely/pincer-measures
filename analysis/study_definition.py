@@ -32,6 +32,13 @@ study = StudyDefinition(
         return_expectations={"int" : {"distribution": "normal", "mean": 25, "stddev": 5}, "incidence" : 0.5}
     ),
 
+    practice_population = patients.satisfying(
+        """
+        age <=120 AND
+        registered
+        """
+    ),
+
     age = patients.age_as_of(
         "index_date",
         return_expectations={
@@ -624,6 +631,12 @@ study = StudyDefinition(
 )
 
 measures = [
+    Measure(
+        id="practice_population_rate",
+        numerator=practice_population,
+        denominator="population",
+        group_by=["practice"]
+    )
 ]
 
 indicators_list = ["a", "b", "c", "d", "e", "f", "g", "i", "k", "ac", "me_no_fbc", "me_no_lft", "li", "am"]

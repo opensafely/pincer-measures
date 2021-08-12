@@ -25,8 +25,8 @@ study = StudyDefinition(
             "Mixed": """ eth2001=2 """,
             "South Asian": """ eth2001=3 """, 
             "Black": """ eth2001=4 """,
-            "Other": """ eth2001=5 OR non_eth2001_dat""",
-            "Unknown": """ eth_notgiptref_dat OR eth_notstated_dat OR eth_norecord_dat"""
+            "Other": """ eth2001=5 """,
+            "Unknown": """ non_eth2001_dat OR eth_notgiptref_dat OR eth_notstated_dat OR eth_norecord_dat"""
         },
         return_expectations = {
             "rate": "universal",

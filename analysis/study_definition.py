@@ -507,6 +507,21 @@ study = StudyDefinition(
         between=["index_date - 3 months", "index_date"],
     ),
 
+
+    indicator_li_denominator = patients.satisfying(
+        """
+        lithium_6_3_months AND
+        lithium_3_months
+        """,
+    ),
+
+    indicator_li_numerator = patients.satisfying(
+        """
+        lithium_6_3_months AND
+        lithium_3_months AND 
+        (NOT lithium_level_3_months)
+        """,
+    ),
     
     
 )
@@ -514,7 +529,7 @@ study = StudyDefinition(
 measures = [
 ]
 
-indicators_list = ["a", "b", "c", "d", "e", "f", "g", "i", "k", "ac", "me_no_fbc", "me_no_lft"]
+indicators_list = ["a", "b", "c", "d", "e", "f", "g", "i", "k", "ac", "me_no_fbc", "me_no_lft", "li"]
 
 for indicator in indicators_list:
 

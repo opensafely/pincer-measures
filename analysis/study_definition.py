@@ -48,19 +48,19 @@ study = StudyDefinition(
         return_expectations={"int" : {"distribution": "normal", "mean": 25, "stddev": 5}, "incidence" : 0.5}
     ),
 
-    practice_population = patients.satisfying(
-        """
-        age <=120 AND
-        registered
-        """
-    ),
-
     age = patients.age_as_of(
         "index_date",
         return_expectations={
             "rate": "universal",
             "int": {"distribution": "population_ages"},
         },
+    ),
+
+    practice_population = patients.satisfying(
+        """
+        age <=120 AND
+        registered
+        """
     ),
 
     ###

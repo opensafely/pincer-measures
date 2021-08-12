@@ -554,12 +554,27 @@ study = StudyDefinition(
         date_format="YYYY-MM-DD",
         between=["index_date - 6 months", "index_date"],
     ),
+
+    indicator_am_denominator = patients.satisfying(
+        """
+        amiodarone_12_6_months AND
+        amiodarone_6_months
+        """,
+    ),
+
+    indicator_am_numerator = patients.satisfying(
+        """
+        amiodarone_12_6_months AND
+        amiodarone_6_months AND
+        (NOT thyroid_function_test)
+        """,
+    ),
 )
 
 measures = [
 ]
 
-indicators_list = ["a", "b", "c", "d", "e", "f", "g", "i", "k", "ac", "me_no_fbc", "me_no_lft", "li"]
+indicators_list = ["a", "b", "c", "d", "e", "f", "g", "i", "k", "ac", "me_no_fbc", "me_no_lft", "li", "am"]
 
 for indicator in indicators_list:
 

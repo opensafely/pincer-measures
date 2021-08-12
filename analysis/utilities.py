@@ -124,13 +124,13 @@ def plot_measures(df, filename: str, title: str, column_to_plot: str, y_label: s
     plt.ylabel(y_label)
     plt.xlabel('Date')
     plt.xticks(rotation='vertical')
-    plt.title(title
-    plt.ylim(bottom=0, top=df[column_to_plot].max() + df[column_to_plot].max()* 0.1))
+    plt.title(title)
+    plt.ylim(bottom=0, top=df[column_to_plot].max() + df[column_to_plot].max()* 0.1)
 
     if category:
         plt.legend(df[category].unique(), bbox_to_anchor=(
             1.04, 1), loc="upper left")
     
     plt.tight_layout()
-    plt.savefig(f'outputs/{filename}.jpeg')
+    plt.savefig(f'output/{filename}.jpeg')
     plt.clf()

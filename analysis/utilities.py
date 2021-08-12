@@ -42,3 +42,19 @@ def join_ethnicity(directory: str) -> None:
             merged_df = df.merge(ethnicity_df, how='left', on='patient_id')
             
             merged_df.to_csv(dirpath / file.name, index=False)
+
+
+def calculate_rate(df, value_col: str, population_col: str, rate_per: int): 
+    """Calculates the rate of events for given number of the population.
+
+    Args:
+        df: A measure table.
+        value_col: The name of the numerator column in the measure table.
+        population_col: The name of the denominator column in the measure table.
+        rate_per: Population size to calculate rate by.
+    
+    Returns:
+        A pandas series with rate values
+    """
+    rate = df[value_col] / (df[population_col] / rate_per)
+    return rate

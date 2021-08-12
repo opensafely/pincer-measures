@@ -1,10 +1,6 @@
 import pandas as pd
-from pathlib import Path
 from datetime import timedelta as td
-from utilities import match_input_files
-
-BASE_DIR = Path(__file__).parents[1]
-OUTPUT_DIR = BASE_DIR / "output"
+from utilities import OUTPUT_DIR, match_input_files
 
 def co_prescription(df, a: str, b: str) -> None:
     columns = [ f"earliest_{a}_month_3",

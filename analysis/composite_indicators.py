@@ -1,10 +1,6 @@
 import pandas as pd
-from utilities import match_input_files, get_date_input_file
-from pathlib import Path
+from utilities import OUTPUT_DIR, match_input_files, get_date_input_file
 from collections import Counter
-
-BASE_DIR = Path(__file__).parents[1]
-OUTPUT_DIR = BASE_DIR / "output"
 
 gi_bleed_numerators = [
     "indicator_a_numerator",

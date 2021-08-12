@@ -475,6 +475,38 @@ study = StudyDefinition(
         """,
     ),
 
+    ###
+    # MONITORING COMPOSITE INDICATOR
+    # LI - Lithium audit (MO_P17)
+    ####
+
+    lithium_6_3_months = patients.with_these_medications(
+        codelist = lithium_codelist, 
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        between=["index_date - 6 months", "index_date - 3 months"],
+    ),
+
+    lithium_3_months = patients.with_these_medications(
+        codelist = lithium_codelist, 
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        between=["index_date - 3 months", "index_date"],
+    ),
+
+    lithium_level_3_months = patients.with_these_medications(
+        codelist = lithium_level_codelist, 
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        between=["index_date - 3 months", "index_date"],
+    ),
+
     
     
 )

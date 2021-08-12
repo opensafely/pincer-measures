@@ -18,6 +18,13 @@ actions:
       highly_sensitive:
         cohort: output/input*.csv
 
+  calculate_composite_indicators:
+    run: python:latest analysis/composite_indicators.py
+    needs: [calculate_numerators]
+    outputs:
+      highly_sensitive:
+        counts: output/*_composite_measure.csv
+
   generate_measures:
     run: cohortextractor:latest generate_measures --study-definition study_definition --output-dir=output
     needs: [calculate_numerators]

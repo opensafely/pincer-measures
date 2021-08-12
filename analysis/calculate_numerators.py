@@ -1,15 +1,10 @@
 import pandas as pd
-import re
 from pathlib import Path
 from datetime import timedelta as td
+from utilities import match_input_files
 
 BASE_DIR = Path(__file__).parents[1]
 OUTPUT_DIR = BASE_DIR / "output"
-
-def match_input_files(file: str) -> bool:
-    """Checks if file name has format outputted by cohort extractor"""
-    pattern = r'^input_20\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\.csv' 
-    return True if re.match(pattern, file) else False
 
 def co_prescription(df, a: str, b: str) -> None:
     columns = [ f"earliest_{a}_month_3",
@@ -115,4 +110,7 @@ for file in OUTPUT_DIR.iterdir():
         # for indicator F
         co_prescription(df, "aspirin", "antiplatelet_excluding_aspirin")
         df['indicator_f_numerator'] = df["aspirin"].notnull() & df["ppi"].isnull() & df["co_prescribed_aspirin_antiplatelet_excluding_aspirin"].notnull()
+        
+        df.replace({False: 0, True: 1}, inplace=True)
+        
         df.to_csv(OUTPUT_DIR / file.name)

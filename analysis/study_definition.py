@@ -522,8 +522,38 @@ study = StudyDefinition(
         (NOT lithium_level_3_months)
         """,
     ),
+
+    ###
+    # MONITORING COMPOSITE INDICATOR
+    # AM - Amiodarone audit (MO_P18)
+    ####
     
-    
+    amiodarone_12_6_months = patients.with_these_medications(
+        codelist = amiodarone_codelist, 
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        between=["index_date - 12 months", "index_date - 6 months"],
+    ),
+
+    amiodarone_6_months = patients.with_these_medications(
+        codelist = amiodarone_codelist, 
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        between=["index_date - 6 months", "index_date"],
+    ),
+
+    thyroid_function_test = patients.with_these_clinical_events(
+        codelist = thyroid_function_test_codelist, 
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        between=["index_date - 6 months", "index_date"],
+    ),
 )
 
 measures = [

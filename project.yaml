@@ -23,12 +23,11 @@ actions:
     needs: [calculate_numerators]
     outputs:
       highly_sensitive:
-        cohort: output/inpu*.csv
-
+        counts: output/*_composite_measure.csv
 
   generate_measures:
     run: cohortextractor:latest generate_measures --study-definition study_definition --output-dir=output
-    needs: [calculate_composite_indicators]
+    needs: [calculate_numerators]
     outputs:
         moderately_sensitive:
           measure_csv: output/measure_*_rate.csv

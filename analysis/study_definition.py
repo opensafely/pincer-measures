@@ -475,14 +475,106 @@ study = StudyDefinition(
         """,
     ),
 
+    ###
+    # MONITORING COMPOSITE INDICATOR
+    # LI - Lithium audit (MO_P17)
+    ####
+
+    lithium_6_3_months = patients.with_these_medications(
+        codelist = lithium_codelist, 
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        between=["index_date - 6 months", "index_date - 3 months"],
+    ),
+
+    lithium_3_months = patients.with_these_medications(
+        codelist = lithium_codelist, 
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        between=["index_date - 3 months", "index_date"],
+    ),
+
+    lithium_level_3_months = patients.with_these_medications(
+        codelist = lithium_level_codelist, 
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        between=["index_date - 3 months", "index_date"],
+    ),
+
+
+    indicator_li_denominator = patients.satisfying(
+        """
+        lithium_6_3_months AND
+        lithium_3_months
+        """,
+    ),
+
+    indicator_li_numerator = patients.satisfying(
+        """
+        lithium_6_3_months AND
+        lithium_3_months AND 
+        (NOT lithium_level_3_months)
+        """,
+    ),
+
+    ###
+    # MONITORING COMPOSITE INDICATOR
+    # AM - Amiodarone audit (MO_P18)
+    ####
     
-    
+    amiodarone_12_6_months = patients.with_these_medications(
+        codelist = amiodarone_codelist, 
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        between=["index_date - 12 months", "index_date - 6 months"],
+    ),
+
+    amiodarone_6_months = patients.with_these_medications(
+        codelist = amiodarone_codelist, 
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        between=["index_date - 6 months", "index_date"],
+    ),
+
+    thyroid_function_test = patients.with_these_clinical_events(
+        codelist = thyroid_function_test_codelist, 
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        include_date_of_match=True,
+        date_format="YYYY-MM-DD",
+        between=["index_date - 6 months", "index_date"],
+    ),
+
+    indicator_am_denominator = patients.satisfying(
+        """
+        amiodarone_12_6_months AND
+        amiodarone_6_months
+        """,
+    ),
+
+    indicator_am_numerator = patients.satisfying(
+        """
+        amiodarone_12_6_months AND
+        amiodarone_6_months AND
+        (NOT thyroid_function_test)
+        """,
+    ),
 )
 
 measures = [
 ]
 
-indicators_list = ["a", "b", "c", "d", "e", "f", "g", "i", "k", "ac", "me_no_fbc", "me_no_lft"]
+indicators_list = ["a", "b", "c", "d", "e", "f", "g", "i", "k", "ac", "me_no_fbc", "me_no_lft", "li", "am"]
 
 for indicator in indicators_list:
 

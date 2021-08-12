@@ -31,7 +31,7 @@ monitoring_numerators = [
 
 all_numerators = gi_bleed_numerators + other_prescribing_numerators + monitoring_numerators
 
-def get_composite_indicator_counts(df, numerators: list[str], denominator: str, date: str):
+def get_composite_indicator_counts(df, numerators, denominator: str, date: str):
     """
     Takes a df and list of numerators that form a composite indicator and returns a
     dataframe with the counts of individuals who have varying numbers of the indicators

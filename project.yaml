@@ -35,7 +35,7 @@ actions:
     run: python:latest analysis/composite_indicators.py
     needs: [calculate_numerators]
     outputs:
-      highly_sensitive:
+      moderately_sensitive:
         counts: output/*_composite_measure.csv
 
   generate_measures:
@@ -44,4 +44,11 @@ actions:
     outputs:
         moderately_sensitive:
           measure_csv: output/measure_*_rate.csv
+  
+  generate_measures_demographics:
+    run: python:latest analysis/calculate_measures.py
+    needs: [calculate_numerators]
+    outputs:
+      moderately_sensitive:
+        counts: output/indicator_measure_*.csv
 

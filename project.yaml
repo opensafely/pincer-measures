@@ -51,4 +51,10 @@ actions:
     outputs:
       moderately_sensitive:
         counts: output/indicator_measure_*.csv
-
+  
+  generate_plots:
+    run: python:latest analysis/plot_measures.py
+    needs: [generate_measures, generate_measures_demographics]
+    outputs:
+      moderately_sensitive:
+        counts: output/plot_*.jpeg

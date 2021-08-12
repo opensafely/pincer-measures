@@ -16,13 +16,27 @@ actions:
     outputs:
       highly_sensitive:
         cohort: output/input_ethnicity.csv
+  
+  group_ethnicity:
+    run: python:latest python analysis/group_ethnicity.py
+    needs: [generate_study_population_ethnicity]
+    outputs:
+      highly_sensitive:
+        cohort: output/input_ethnicit*.csv
       
-  calculate_numerators:
-    run: python:latest analysis/calculate_numerators.py
-    needs: [generate_study_population]
+  join_ethnicity:
+    run: python:latest python analysis/join_ethnicity.py
+    needs: [generate_study_population, group_ethnicity]
     outputs:
       highly_sensitive:
         cohort: output/input*.csv
+
+  calculate_numerators:
+    run: python:latest analysis/calculate_numerators.py
+    needs: [join_ethnicity]
+    outputs:
+      highly_sensitive:
+        cohort: output/inpu*.csv
 
   calculate_composite_indicators:
     run: python:latest analysis/composite_indicators.py

@@ -134,3 +134,14 @@ def plot_measures(df, filename: str, title: str, column_to_plot: str, y_label: s
     plt.tight_layout()
     plt.savefig(f'output/{filename}.jpeg')
     plt.clf()
+
+def drop_irrelevant_practices(df):
+    """Drops irrelevant practices from the given measure table.
+    An irrelevant practice has zero events during the study period.
+    Args:
+        df: A measure table.
+    Returns:
+        A copy of the given measure table with irrelevant practices dropped.
+    """
+    is_relevant = df.groupby("practice").value.any()
+    return df[df.practice.isin(is_relevant[is_relevant == True].index)]

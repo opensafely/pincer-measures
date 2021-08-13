@@ -3,10 +3,23 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib
+import seaborn as sns
 
 BASE_DIR = Path(__file__).parents[1]
 OUTPUT_DIR = BASE_DIR / "output"
 
+BEST = 0
+UPPER_RIGHT = 1
+UPPER_LEFT = 2
+LOWER_LEFT = 3
+LOWER_RIGHT = 4
+RIGHT = 5
+CENTER_LEFT = 6
+CENTER_RIGHT = 7
+LOWER_CENTER = 8
+UPPER_CENTER = 9
+CENTER = 10
 
 def match_input_files(file: str) -> bool:
     """Checks if file name has format outputted by cohort extractor"""
@@ -266,9 +279,7 @@ def compute_deciles(
     return percentiles
 
 
-def deciles_chart(
-    df, period_column=None, column=None, title="", ylabel="", interactive=True
-):
+def deciles_chart(df, filename, period_column=None, column=None, title="", ylabel=""):
     """period_column must be dates / datetimes"""
 
     df = compute_deciles(df, period_column, column, False)
@@ -276,7 +287,12 @@ def deciles_chart(
     deciles_chart_ebm(
         df,
         period_column="date",
-        column="num_per_thousand",
+        column="rate",
         ylabel="rate per 1000",
         show_outer_percentiles=False,
     )
+
+    plt.tight_layout()
+    plt.savefig(f"output/{filename}.jpeg")
+    plt.clf()
+    

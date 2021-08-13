@@ -130,7 +130,7 @@ def create_co_prescribing_variables(codelist_a, codelist_b,name_a, name_b):
     ))
     }
 
-    print(vars)
+    
     return vars
 
 

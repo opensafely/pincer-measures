@@ -399,6 +399,8 @@ study = StudyDefinition(
     # OTHER PRESCRIBING INDICATORS
     # I - Heart failure and NSAID audit (HF_P3I)
     ###
+
+    #oral_nsaid from A
     
     heart_failure=patients.with_these_clinical_events(
         codelist=heart_failure_codelist,

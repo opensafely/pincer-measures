@@ -437,7 +437,7 @@ study = StudyDefinition(
         returning="numeric_value",
         include_date_of_match=True,
         date_format="YYYY-MM-DD",
-        between=["index_date - 3 months", "index_date"],
+        on_or_before="index_date - 3 months",
         return_expectations={
             "float": {"distribution": "normal", "mean": 45.0, "stddev": 20},
             "incidence": 0.5,

@@ -13,7 +13,7 @@ def create_co_prescribing_variables(codelist_a, codelist_b,name_a, name_b):
     )),
 
     f"{name_b}": (patients.with_these_medications(
-        codelist = codelist_a, 
+        codelist = codelist_b, 
         find_last_match_in_period=True,
         returning="binary_flag",
         include_date_of_match=True,

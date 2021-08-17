@@ -10,6 +10,13 @@ actions:
     outputs:
       highly_sensitive:
         cohort: output/input_*.csv
+
+  check_EGFR:
+    run: python:latest analysis/check_EGFR.py
+    needs: [generate_study_population]
+    outputs:
+      moderately_sensitive:
+        counts: output/BOXPLOT_EGFRvalue-by-EGFR45flag.png
   
   generate_study_population_ethnicity:
     run: cohortextractor:latest generate_cohort --study-definition study_definition_ethnicity

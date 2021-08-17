@@ -8,6 +8,7 @@ import seaborn as sns
 
 BASE_DIR = Path(__file__).parents[1]
 OUTPUT_DIR = BASE_DIR / "output"
+ANALYSIS_DIR = BASE_DIR / "analysis"
 
 BEST = 0
 UPPER_RIGHT = 1
@@ -40,7 +41,7 @@ def validate_directory(dirpath):
     if not dirpath.is_dir():
         raise ValueError(f"Not a directory")
 
-def join_ethnicity(directory: str) -> None:
+def join_ethnicity_region(directory: str) -> None:
     """Finds 'input_ethnicity.csv' in directory and combines with each input file."""
 
     dirpath = Path(directory)
@@ -48,16 +49,28 @@ def join_ethnicity(directory: str) -> None:
     filelist = dirpath.iterdir()
 
     #get ethnicity input file
-
     ethnicity_df = pd.read_csv(dirpath / 'input_ethnicity.csv')
     
+    ## ONS MSOA to region map from here:
+    ## https://geoportal.statistics.gov.uk/datasets/fe6c55f0924b4734adf1cf7104a0173e_0/data
+    msoa_to_region = pd.read_csv(
+        ANALYSIS_DIR / "ONS_MSOA_to_region_map.csv",
+        usecols=["MSOA11CD", "RGN11NM"],
+        dtype={"MSOA11CD": "category", "RGN11NM": "category"},
+    )
+
     for file in filelist:
         if match_input_files(file.name):
             df = pd.read_csv(dirpath / file.name)
-            merged_df = df.merge(ethnicity_df, how='left', on='patient_id')
+            merged_df = df.merge(
+                ethnicity_df, how='left', on='patient_id'
+                ).merge(
+                msoa_to_region, how="left", left_on="msoa", right_on="MSOA11CD", copy=False)
+
+            # rename region column
+            merged_df = merged_df.rename({"RGN11NM":"region"}, axis=1)
             
             merged_df.to_csv(dirpath / file.name, index=False)
-
 
 def calculate_rate(df, value_col: str, population_col: str, rate_per: int): 
     """Calculates the rate of events for given number of the population.

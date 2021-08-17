@@ -17,8 +17,8 @@ actions:
       highly_sensitive:
         cohort: output/input_ethnicity.csv
       
-  join_ethnicity:
-    run: python:latest python analysis/join_ethnicity.py
+  join_ethnicity_region:
+    run: python:latest python analysis/join_ethnicity_region.py
     needs: [generate_study_population, generate_study_population_ethnicity]
     outputs:
       highly_sensitive:
@@ -26,7 +26,7 @@ actions:
 
   calculate_numerators:
     run: python:latest analysis/calculate_numerators.py
-    needs: [join_ethnicity]
+    needs: [join_ethnicity_region]
     outputs:
       highly_sensitive:
         cohort: output/inpu*.csv

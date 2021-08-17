@@ -335,8 +335,7 @@ study = StudyDefinition(
     # F – Aspirin, antiplatelet and no GI protection audit (GI_P3F)
     ###
 
-    #aspirin from C
-    #antiplatelet_excluding_aspirin from C
+    #aspirin from co-prescribing vars
     #ppi from A
 
 

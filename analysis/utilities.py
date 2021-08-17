@@ -67,6 +67,9 @@ def join_ethnicity_region(directory: str) -> None:
                 ).merge(
                 msoa_to_region, how="left", left_on="msoa", right_on="MSOA11CD", copy=False)
 
+            # rename region column
+            merged_df = merged_df.rename({"RGN11NM":"region"}, axis=1)
+            
             merged_df.to_csv(dirpath / file.name, index=False)
 
 def calculate_rate(df, value_col: str, population_col: str, rate_per: int): 

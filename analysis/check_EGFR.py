@@ -13,9 +13,13 @@ for file in OUTPUT_DIR.iterdir():
     if match_input_files(file.name):
         df = pd.read_csv(OUTPUT_DIR / file.name)
         df['source'] = file.stem
+        print(f"Reading EGFR data from {file.stem} ({len(df)})")
         all_egfr_data.append(df[['egfr', 'egfr_less_than_45', 'source']])
 
+print(f"Output directory is: {OUTPUT_DIR}")
+
 df = pd.concat(all_egfr_data)
+print(f"Final data frame size: {df.shape}")
 
 # Plot all EGFR data in one boxplot
 plt.figure(figsize=(8,8))

@@ -228,6 +228,8 @@ study = StudyDefinition(
     # B - Peptic ulcer/GI bleed, no PPI protect, NSAID audit (GI_P3B)
     ###
 
+    #ppi from A
+
     peptic_ulcer = patients.with_these_clinical_events(
         codelist=peptic_ulcer_codelist,
         find_last_match_in_period=True,

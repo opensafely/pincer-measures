@@ -297,6 +297,7 @@ study = StudyDefinition(
     ###
 
     #anticoagulant from co-prescribing variables
+    #oral_nsaid from A
 
     indicator_d_denominator=patients.satisfying(
         """

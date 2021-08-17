@@ -1,3 +1,3 @@
-from utilities import OUTPUT_DIR, join_ethnicity
+from utilities import join_ethnicity_region
 
-join_ethnicity('output')
+join_ethnicity_region('output')

@@ -326,6 +326,12 @@ def get_composite_indicator_counts(df, numerators, denominator: str, date: str):
     return count_df
 
 def co_prescription(df, medications_x: str, medications_y: str) -> None:
+    """
+    Takes in an input.csv file containing necessary co-prescribing vars
+    and generates a new column indicating co-prescribing of medications_x
+    and medications_y.
+    """
+
     columns = [ f"earliest_{medications_x}_month_3",
                 f"earliest_{medications_x}_month_2",
                 f"earliest_{medications_x}_month_1",
@@ -339,10 +345,10 @@ def co_prescription(df, medications_x: str, medications_y: str) -> None:
                 f"latest_{medications_y}_month_2",
                 f"latest_{medications_y}_month_1"
                 ]
-    
+
     for column in columns:
         df[column] = pd.to_datetime(df[column])
-    
+        
     df[f"co_prescribed_{medications_x}_{medications_y}"] = (
     (df[f"{medications_x}"] & df[f"{medications_y}"]) &
     (

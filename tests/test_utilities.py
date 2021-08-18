@@ -6,8 +6,19 @@ import pytest
 from pandas import testing
 from pandas.api.types import is_datetime64_dtype, is_numeric_dtype
 
-#from notebooks import utilities
+import analysis.utilities as utilities
 
+@pytest.fixture
+def good_file_format():
+    return("input_2020-01-01.csv")
+
+@pytest.fixture
+def bad_file_format():
+    return("input_01-01-2020.csv")
+
+def test_file_format_check(good_file_format, bad_file_format):
+    assert utilities.match_input_files(good_file_format)==True
+    assert utilities.match_input_files(bad_file_format)==False
 
 # @pytest.fixture
 # def measure_table_from_csv():

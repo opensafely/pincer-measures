@@ -64,31 +64,31 @@ def test_validate_directory():
         assert True, f"Newly deleted temporary directory {str(temp_dir.name)} does throw an exception {exc}"
 
 
-# @pytest.fixture
-# def measure_table_from_csv():
-#     """Returns a measure table that could have been read from a CSV file.
+@pytest.fixture
+def measure_table_from_csv():
+    """Returns a measure table that could have been read from a CSV file.
 
-#     Practice ID #1 is irrelevant; that is, it has zero events during
-#     the study period.
-#     """
-#     return pandas.DataFrame(
-#         {
-#             "practice": pandas.Series([1, 2, 3, 1, 2]),
-#             "systolic_bp_event_code": pandas.Series([1, 1, 2, 1, 1]),
-#             "systolic_bp": pandas.Series([0, 1, 1, 0, 1]),
-#             "population": pandas.Series([1, 1, 1, 1, 1]),
-#             "value": pandas.Series([0, 1, 1, 0, 1]),
-#             "date": pandas.Series(
-#                 [
-#                     "2019-01-01",
-#                     "2019-01-01",
-#                     "2019-01-01",
-#                     "2019-02-01",
-#                     "2019-02-01",
-#                 ]
-#             ),
-#         }
-#     )
+    Practice ID #1 is irrelevant; that is, it has zero events during
+    the study period.
+    """
+    return pandas.DataFrame(
+        {
+            "practice": pandas.Series([1, 2, 3, 1, 2]),
+            "systolic_bp_event_code": pandas.Series([1, 1, 2, 1, 1]),
+            "systolic_bp": pandas.Series([0, 1, 1, 0, 1]),
+            "population": pandas.Series([1, 1, 1, 1, 1]),
+            "value": pandas.Series([0, 1, 1, 0, 1]),
+            "date": pandas.Series(
+                [
+                    "2019-01-01",
+                    "2019-01-01",
+                    "2019-01-01",
+                    "2019-02-01",
+                    "2019-02-01",
+                ]
+            ),
+        }
+    )
 
 
 # @pytest.fixture
@@ -169,16 +169,16 @@ def test_validate_directory():
 #     )
 
 
-# class TestDropIrrelevantPractices:
-#     def test_irrelevant_practices_dropped(self, measure_table_from_csv):
-#         obs = utilities.drop_irrelevant_practices(measure_table_from_csv)
-#         # Practice ID #1, which is irrelevant, has been dropped from
-#         # the measure table.
-#         assert all(obs.practice.values == [2, 3, 2])
+class TestDropIrrelevantPractices:
+    def test_irrelevant_practices_dropped(self, measure_table_from_csv):
+        obs = utilities.drop_irrelevant_practices(measure_table_from_csv)
+        # Practice ID #1, which is irrelevant, has been dropped from
+        # the measure table.
+        assert all(obs.practice.values == [2, 3, 2])
 
-#     def test_return_copy(self, measure_table_from_csv):
-#         obs = utilities.drop_irrelevant_practices(measure_table_from_csv)
-#         assert id(obs) != id(measure_table_from_csv)
+    def test_return_copy(self, measure_table_from_csv):
+        obs = utilities.drop_irrelevant_practices(measure_table_from_csv)
+        assert id(obs) != id(measure_table_from_csv)
 
 
 # def test_create_child_table(measure_table, codelist_table_from_csv):

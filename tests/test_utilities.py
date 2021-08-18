@@ -23,9 +23,20 @@ def test_file_format_check(good_file_format, bad_file_format):
     assert utilities.match_input_files(good_file_format)==True
     assert utilities.match_input_files(bad_file_format)==False
 
+def test_get_date_input_file(good_file_format, bad_file_format):
+    # [1] Check that the correct date is extracted from a file name
+    assert utilities.get_date_input_file(good_file_format) == "2020-01-01"
+
+    # [2] Check that an exception is raised if the file is not in the
+    #     correct format
+    try:
+        utilities.get_date_input_file(bad_file_format)
+    except Exception as exc:
+        assert True, f"Badly formatted file {bad_file_format} does throw an exception {exc}"
+
 def test_validate_directory():
     """
-    Test to check that the validate_directory() function correctly throws an exception.
+    Test to check that the validate_directory() function correctly throws an exception
     Useful resources:
     - https://miguendes.me/how-to-check-if-an-exception-is-raised-or-not-with-pytest
     - https://financial-engineering.medium.com/onepoint-python-pathlib-shutil-tempfile-df9d1e59016

@@ -332,7 +332,9 @@ def co_prescription(df, medications_x: str, medications_y: str) -> None:
     and medications_y.
     """
 
-    columns = [ f"earliest_{medications_x}_month_3",
+    columns = [ medications_x,
+                medications_y,
+                f"earliest_{medications_x}_month_3",
                 f"earliest_{medications_x}_month_2",
                 f"earliest_{medications_x}_month_1",
                 f"earliest_{medications_y}_month_3",
@@ -349,10 +351,12 @@ def co_prescription(df, medications_x: str, medications_y: str) -> None:
     # check df contains all necessary co-prescribing vars and convert to datetime
     for column in columns:
         assert column in df.columns
-        df[column] = pd.to_datetime(df[column])
+
+        if column not in [medications_x, medications_y]:
+            df[column] = pd.to_datetime(df[column])
     
     df[f"co_prescribed_{medications_x}_{medications_y}"] = (
-    (df[f"{medications_x}"] & df[f"{medications_y}"]) &
+    (df[f"{medications_x}"]==1 & df[f"{medications_y}"]==1) &
     (
         (
             (df[f"earliest_{medications_x}_month_3"] < (df[f"earliest_{medications_y}_month_3"] + td(days=28))) & 

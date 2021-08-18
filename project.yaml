@@ -54,7 +54,8 @@ actions:
   
   generate_plots:
     run: python:latest analysis/plot_measures.py
-    needs: [generate_measures, generate_measures_demographics]
+    needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
       moderately_sensitive:
         counts: output/plot_*.jpeg
+

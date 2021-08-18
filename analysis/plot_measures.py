@@ -33,5 +33,12 @@ for i in indicators_list:
         df = pd.read_csv(OUTPUT_DIR / f"indicator_measure_{i}_{d}.csv")
         plot_measures(df = df, filename=f"plot_{i}_{d}", title=f"Indicator {i} by {d}",  column_to_plot = "rate", y_label = 'Rate per 1000', as_bar=False, category = d)
 
+# plot composite measures
 
+composite_indicators = ["gi_bleed", "monitoring", "other_prescribing", "all"]
+
+for i in composite_indicators:
+    df = pd.read_csv(OUTPUT_DIR / f"{i}_composite_measure.csv", parse_dates=["date"])
+    df["rate"] = (df["count"] / df["denominator"])*1000
+    plot_measures(df = df, filename=f"plot_{i}_composite", title=f"{i} composite indicator",  column_to_plot = "rate", y_label = 'Rate per 1000', as_bar=False, category = "num_indicators")
 

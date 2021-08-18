@@ -1,6 +1,5 @@
 import pandas as pd
-from utilities import OUTPUT_DIR, match_input_files, get_date_input_file
-from collections import Counter
+from utilities import OUTPUT_DIR, match_input_files, get_date_input_file, get_composite_indicator_counts
 
 gi_bleed_numerators = [
     "indicator_a_numerator",
@@ -27,19 +26,7 @@ monitoring_numerators = [
 
 all_numerators = gi_bleed_numerators + other_prescribing_numerators + monitoring_numerators
 
-def get_composite_indicator_counts(df, numerators, denominator: str, date: str):
-    """
-    Takes a df and list of numerators that form a composite indicator and returns a
-    dataframe with the counts of individuals who have varying numbers of the indicators
-    within each composite.
-    """
-    indicator_num = df.loc[:, numerators].sum(axis=1)
-    count_dict = Counter(indicator_num)
-    count_df = pd.DataFrame.from_dict(count_dict, orient='index').reset_index()
-    count_df = count_df.rename(columns={'index':'num_indicators', 0:'count'})
-    count_df["date"] = date
-    count_df["denominator"] =  df[denominator].sum()
-    return count_df
+
 
 
 gi_bleed_counts = []

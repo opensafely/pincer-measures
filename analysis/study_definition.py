@@ -228,6 +228,8 @@ study = StudyDefinition(
     # B - Peptic ulcer/GI bleed, no PPI protect, NSAID audit (GI_P3B)
     ###
 
+    #ppi from A
+
     peptic_ulcer = patients.with_these_clinical_events(
         codelist=peptic_ulcer_codelist,
         find_last_match_in_period=True,
@@ -295,6 +297,7 @@ study = StudyDefinition(
     ###
 
     #anticoagulant from co-prescribing variables
+    #oral_nsaid from A
 
     indicator_d_denominator=patients.satisfying(
         """
@@ -332,8 +335,7 @@ study = StudyDefinition(
     # F – Aspirin, antiplatelet and no GI protection audit (GI_P3F)
     ###
 
-    #aspirin from C
-    #antiplatelet_excluding_aspirin from C
+    #aspirin from co-prescribing vars
     #ppi from A
 
 
@@ -379,15 +381,15 @@ study = StudyDefinition(
 
     indicator_g_denominator = patients.satisfying(
         """
-        (asthma AND (NOT asthma_resolved)) OR
-        (asthma_resolved_date <= asthma_date)
+        asthma AND
+        (asthma_resolved_date < asthma_date)
         """,
     ),
 
     indicator_g_numerator = patients.satisfying(
         """
-        asthma AND 
-        (NOT asthma_resolved) AND
+        asthma AND
+        (asthma_resolved_date < asthma_date) AND
         non_selective_bb
         """,
     ),
@@ -397,6 +399,8 @@ study = StudyDefinition(
     # OTHER PRESCRIBING INDICATORS
     # I - Heart failure and NSAID audit (HF_P3I)
     ###
+
+    #oral_nsaid from A
     
     heart_failure=patients.with_these_clinical_events(
         codelist=heart_failure_codelist,
@@ -433,7 +437,7 @@ study = StudyDefinition(
         returning="numeric_value",
         include_date_of_match=True,
         date_format="YYYY-MM-DD",
-        between=["index_date - 3 months", "index_date"],
+        on_or_before="index_date - 3 months",
         return_expectations={
             "float": {"distribution": "normal", "mean": 45.0, "stddev": 20},
             "incidence": 0.5,

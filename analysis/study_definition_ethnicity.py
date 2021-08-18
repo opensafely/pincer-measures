@@ -47,7 +47,7 @@ study = StudyDefinition(
             eth2001,
             returning="category",
             find_last_match_in_period=True,
-            on_or_before="index_date",
+            on_or_before="last_day_of_month(index_date)",
             return_expectations={
                 "category": {"ratios": {"1": 0.8, "5": 0.1, "3": 0.1}},
                 "incidence": 0.75,
@@ -59,7 +59,7 @@ study = StudyDefinition(
             non_eth2001,
             returning="date",
             find_last_match_in_period=True,
-            on_or_before="index_date",
+            on_or_before="last_day_of_month(index_date)",
             date_format="YYYY-MM-DD",
         ),
         # Ethnicity not given - patient refused
@@ -67,7 +67,7 @@ study = StudyDefinition(
             eth_notgiptref,
             returning="date",
             find_last_match_in_period=True,
-            on_or_before="index_date",
+            on_or_before="last_day_of_month(index_date)",
             date_format="YYYY-MM-DD",
         ),
         # Ethnicity not stated
@@ -75,7 +75,7 @@ study = StudyDefinition(
             eth_notstated,
             returning="date",
             find_last_match_in_period=True,
-            on_or_before="index_date",
+            on_or_before="last_day_of_month(index_date)",
             date_format="YYYY-MM-DD",
         ),
         # Ethnicity no record
@@ -83,7 +83,7 @@ study = StudyDefinition(
             eth_norecord,
             returning="date",
             find_last_match_in_period=True,
-            on_or_before="index_date",
+            on_or_before="last_day_of_month(index_date)",
             date_format="YYYY-MM-DD",
         ),
     ),

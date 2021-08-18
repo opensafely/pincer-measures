@@ -5,6 +5,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
 import seaborn as sns
+from collections import Counter
+from datetime import timedelta as td
 
 BASE_DIR = Path(__file__).parents[1]
 OUTPUT_DIR = BASE_DIR / "output"
@@ -308,4 +310,122 @@ def deciles_chart(df, filename, period_column=None, column=None, title="", ylabe
     plt.tight_layout()
     plt.savefig(f"output/{filename}.jpeg")
     plt.clf()
+
+def get_composite_indicator_counts(df, numerators, denominator: str, date: str):
+    """
+    Takes a df and list of numerators that form a composite indicator and returns a
+    dataframe with the counts of individuals who have varying numbers of the indicators
+    within each composite.
+    """
+    indicator_num = df.loc[:, numerators].sum(axis=1)
+    count_dict = Counter(indicator_num)
+    count_df = pd.DataFrame.from_dict(count_dict, orient='index').reset_index()
+    count_df = count_df.rename(columns={'index':'num_indicators', 0:'count'})
+    count_df["date"] = date
+    count_df["denominator"] =  df[denominator].sum()
+    return count_df
+
+def co_prescription(df, medications_x: str, medications_y: str) -> None:
+    """
+    Takes in an input.csv file containing necessary co-prescribing vars
+    and generates a new column indicating co-prescribing of medications_x
+    and medications_y.
+    """
+
+    columns = [ medications_x,
+                medications_y,
+                f"earliest_{medications_x}_month_3",
+                f"earliest_{medications_x}_month_2",
+                f"earliest_{medications_x}_month_1",
+                f"earliest_{medications_y}_month_3",
+                f"earliest_{medications_y}_month_2",
+                f"earliest_{medications_y}_month_1",
+                f"latest_{medications_x}_month_3",
+                f"latest_{medications_x}_month_2",
+                f"latest_{medications_x}_month_1",
+                f"latest_{medications_y}_month_3",
+                f"latest_{medications_y}_month_2",
+                f"latest_{medications_y}_month_1"
+                ]
+    
+    # check df contains all necessary co-prescribing vars and convert to datetime
+    for column in columns:
+        assert column in df.columns
+
+        if column not in [medications_x, medications_y]:
+            df[column] = pd.to_datetime(df[column])
+    
+    df[f"co_prescribed_{medications_x}_{medications_y}"] = (
+    ((df[f"{medications_x}"]==1) & (df[f"{medications_y}"]==1)) &
+    (
+        (
+            (df[f"earliest_{medications_x}_month_3"] < (df[f"earliest_{medications_y}_month_3"] + td(days=28))) & 
+            (df[f"earliest_{medications_x}_month_3"] > (df[f"earliest_{medications_y}_month_3"] - td(days=28)))
+        ) |
+        
+        (
+            (df[f"earliest_{medications_x}_month_3"] < (df[f"latest_{medications_y}_month_3"] + td(days=28))) & 
+            (df[f"earliest_{medications_x}_month_3"] > (df[f"latest_{medications_y}_month_3"] - td(days=28)))
+        ) |
+        
+        (
+            (df[f"latest_{medications_x}_month_3"] < (df[f"earliest_{medications_y}_month_3"] + td(days=28))) & 
+            (df[f"latest_{medications_x}_month_3"] > (df[f"earliest_{medications_y}_month_3"] - td(days=28)))
+        ) |
+        
+        (
+            (df[f"latest_{medications_x}_month_3"] < (df[f"latest_{medications_y}_month_3"] + td(days=28))) & 
+            (df[f"latest_{medications_x}_month_3"] > (df[f"latest_{medications_y}_month_3"] - td(days=28)))
+        ) |
+        
+        (df[f"latest_{medications_x}_month_3"] > (df[f"earliest_{medications_y}_month_2"] - td(days=28))) |
+        
+        (df[f"earliest_{medications_x}_month_2"] < (df[f"latest_{medications_y}_month_3"] + td(days=28))) |
+        
+        (
+            (df[f"earliest_{medications_x}_month_2"] < (df[f"earliest_{medications_y}_month_2"] + td(days=28))) & 
+            (df[f"earliest_{medications_x}_month_2"] > (df[f"earliest_{medications_y}_month_2"] - td(days=28)))
+        ) |
+        
+        (
+            (df[f"earliest_{medications_x}_month_2"] < (df[f"latest_{medications_y}_month_2"] + td(days=28))) & 
+            (df[f"earliest_{medications_x}_month_2"] > (df[f"latest_{medications_y}_month_2"] - td(days=28)))
+        ) |
+        
+        (
+            (df[f"latest_{medications_x}_month_2"] < (df[f"earliest_{medications_y}_month_2"] + td(days=28))) & 
+            (df[f"latest_{medications_x}_month_2"] > (df[f"earliest_{medications_y}_month_2"] - td(days=28)))
+        ) |
+        
+        (
+            (df[f"latest_{medications_x}_month_2"] < (df[f"latest_{medications_y}_month_2"] + td(days=28))) & 
+            (df[f"latest_{medications_x}_month_2"] > (df[f"latest_{medications_y}_month_2"] - td(days=28)))
+        ) |
+        
+        (df[f"latest_{medications_x}_month_2"] > (df[f"earliest_{medications_y}_month_1"] - td(days=28))) |
+        
+        (df[f"earliest_{medications_x}_month_1"] < (df[f"latest_{medications_y}_month_2"] + td(days=28))) |
+        
+        (
+            (df[f"earliest_{medications_x}_month_1"] < (df[f"earliest_{medications_y}_month_1"] + td(days=28))) & 
+            (df[f"earliest_{medications_x}_month_1"] > (df[f"earliest_{medications_y}_month_1"] - td(days=28)))
+        ) |
+        
+        (
+            (df[f"earliest_{medications_x}_month_1"] < (df[f"latest_{medications_y}_month_1"] + td(days=28))) & 
+            (df[f"earliest_{medications_x}_month_1"] > (df[f"latest_{medications_y}_month_1"] - td(days=28)))
+        ) |
+        
+        (
+            (df[f"latest_{medications_x}_month_1"] < (df[f"earliest_{medications_y}_month_1"] + td(days=28))) & 
+            (df[f"latest_{medications_x}_month_1"] > (df[f"earliest_{medications_y}_month_1"] - td(days=28)))
+        ) |
+        
+        (
+            (df[f"latest_{medications_x}_month_1"] < (df[f"latest_{medications_y}_month_1"] + td(days=28))) & 
+            (df[f"latest_{medications_x}_month_1"] > (df[f"latest_{medications_y}_month_1"] - td(days=28)))
+        ) 
+    )
+    
+    )
     

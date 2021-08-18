@@ -107,6 +107,30 @@ def measure_table():
     mt["date"] = pandas.to_datetime(mt["date"])
     return mt
 
+@pytest.fixture
+def count_table():
+    counts = pandas.DataFrame(
+        {
+            "practice": pandas.Series( [1, 2, 3, 4, 5] ),
+            "count": pandas.Series( [10, 5, 100, 35, 20] ),
+            "population": pandas.Series( [20, 10, 1000, 40, 100] )
+        }
+    )
+    counts["rate"] = utilities.calculate_rate(counts,"count","population",1000)
+    return counts
+
+
+@pytest.mark.parametrize( "redact_threshold", [ 0, 10, 100 ] )
+
+def test_redact_small_numbers( count_table, redact_threshold ):
+    #print( count_table.head() )
+    count_table_redacted = utilities.redact_small_numbers(count_table, redact_threshold, "count", "population", "rate")
+    #print(count_table_redacted.head())
+    minimum_value = count_table_redacted[[
+        "count", "population", "rate"]].min(axis=1).min(axis=0)
+    #print(minimum_value)
+    assert (minimum_value > redact_threshold) == True
+
 
 # @pytest.fixture
 # def codelist_table_from_csv():

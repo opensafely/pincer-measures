@@ -138,9 +138,10 @@ def plot_measures(df, filename: str, title: str, column_to_plot: str, y_label: s
     """
     plt.figure(figsize=(15,8))
     if category:
-        for unique_category in df[category].unique():
-
-            df_subset = df[df[category] == unique_category]
+        for unique_category in sorted(df[category].unique()):
+            
+            #subset on category column and sort by date
+            df_subset = df[df[category] == unique_category].sort_values("date")
 
             plt.plot(df_subset['date'], df_subset[column_to_plot])
     else:
@@ -156,7 +157,7 @@ def plot_measures(df, filename: str, title: str, column_to_plot: str, y_label: s
     plt.ylim(bottom=0, top=df[column_to_plot].max() + df[column_to_plot].max()* 0.1)
 
     if category:
-        plt.legend(df[category].unique(), bbox_to_anchor=(
+        plt.legend(sorted(df[category].unique()), bbox_to_anchor=(
             1.04, 1), loc="upper left")
     
     plt.tight_layout()

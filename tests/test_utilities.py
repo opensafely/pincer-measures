@@ -91,21 +91,21 @@ def measure_table_from_csv():
     )
 
 
-# @pytest.fixture
-# def measure_table():
-#     """Returns a measure table that could have been read by calling `load_and_drop`."""
-#     mt = pandas.DataFrame(
-#         {
-#             "practice": pandas.Series([2, 3, 2]),
-#             "systolic_bp_event_code": pandas.Series([1, 2, 1]),
-#             "systolic_bp": pandas.Series([1, 1, 1]),
-#             "population": pandas.Series([1, 1, 1]),
-#             "value": pandas.Series([1, 1, 1]),
-#             "date": pandas.Series(["2019-01-01", "2019-01-01", "2019-02-01"]),
-#         }
-#     )
-#     mt["date"] = pandas.to_datetime(mt["date"])
-#     return mt
+@pytest.fixture
+def measure_table():
+    """Returns a measure table that could have been read by calling `load_and_drop`."""
+    mt = pandas.DataFrame(
+        {
+            "practice": pandas.Series([2, 3, 2]),
+            "systolic_bp_event_code": pandas.Series([1, 2, 1]),
+            "systolic_bp": pandas.Series([1, 1, 1]),
+            "population": pandas.Series([1, 1, 1]),
+            "value": pandas.Series([1, 1, 1]),
+            "date": pandas.Series(["2019-01-01", "2019-01-01", "2019-02-01"]),
+        }
+    )
+    mt["date"] = pandas.to_datetime(mt["date"])
+    return mt
 
 
 # @pytest.fixture
@@ -240,30 +240,31 @@ class TestDropIrrelevantPractices:
 #         assert obs == 3
 
 
-# @pytest.mark.parametrize(
-#     "has_outer_percentiles,num_rows",
-#     [
-#         (True, 54),  # Fifteen percentiles for two dates
-#         (False, 18),  # Nine deciles for two dates
-#     ],
-# )
-# def test_compute_deciles(measure_table, has_outer_percentiles, num_rows):
-#     obs = utilities.compute_deciles(
-#         measure_table,
-#         "date",
-#         "value",
-#         has_outer_percentiles=has_outer_percentiles,
-#     )
-#     # We expect Pandas to check that it computes deciles correctly,
-#     # leaving us to check the shape and the type of the data.
-#     testing.assert_index_equal(
-#         obs.columns,
-#         pandas.Index(["date", "percentile", "value"]),
-#     )
-#     assert len(obs) == num_rows
-#     assert is_datetime64_dtype(obs.date)
-#     assert is_numeric_dtype(obs.percentile)
-#     assert is_numeric_dtype(obs.value)
+@pytest.mark.parametrize(
+    "has_outer_percentiles,num_rows",
+    [
+        (True, 54),  # Fifteen percentiles for two dates
+        (False, 18),  # Nine deciles for two dates
+    ],
+)
+
+def test_compute_deciles(measure_table, has_outer_percentiles, num_rows):
+    obs = utilities.compute_deciles(
+        measure_table,
+        "date",
+        "value",
+        has_outer_percentiles=has_outer_percentiles,
+    )
+    # We expect Pandas to check that it computes deciles correctly,
+    # leaving us to check the shape and the type of the data.
+    testing.assert_index_equal(
+        obs.columns,
+        pandas.Index(["date", "percentile", "value"]),
+    )
+    assert len(obs) == num_rows
+    assert is_datetime64_dtype(obs.date)
+    assert is_numeric_dtype(obs.percentile)
+    assert is_numeric_dtype(obs.value)
 
 
 # class TestGenerateSentinelMeasure:

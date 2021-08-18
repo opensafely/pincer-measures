@@ -345,10 +345,12 @@ def co_prescription(df, medications_x: str, medications_y: str) -> None:
                 f"latest_{medications_y}_month_2",
                 f"latest_{medications_y}_month_1"
                 ]
-
+    
+    # check df contains all necessary co-prescribing vars and convert to datetime
     for column in columns:
+        assert column in df.columns
         df[column] = pd.to_datetime(df[column])
-        
+    
     df[f"co_prescribed_{medications_x}_{medications_y}"] = (
     (df[f"{medications_x}"] & df[f"{medications_y}"]) &
     (

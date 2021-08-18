@@ -145,28 +145,31 @@ def measure_table():
 #             assert all(obs.practice.values == [2, 3, 2])
 
 
-# def test_calculate_rate():
-#     mt = pandas.DataFrame(
-#         {
-#             "systolic_bp": pandas.Series([1, 2]),
-#             "population": pandas.Series([1_000, 2_000]),
-#         }
-#     )
-#     testing.assert_index_equal(
-#         mt.columns,
-#         pandas.Index(["systolic_bp", "population"]),
-#     )
+def test_calculate_rate():
+    mt = pandas.DataFrame(
+        {
+            "systolic_bp": pandas.Series([1, 2]),
+            "population": pandas.Series([1_000, 2_000]),
+        }
+    )
 
-#     utilities.calculate_rate(mt, "systolic_bp", "population")
+    testing.assert_index_equal(
+        mt.columns,
+        pandas.Index(["systolic_bp", "population"]),
+    )
 
-#     testing.assert_index_equal(
-#         mt.columns,
-#         pandas.Index(["systolic_bp", "population", "num_per_thousand"]),
-#     )
-#     testing.assert_series_equal(
-#         mt.num_per_thousand,
-#         pandas.Series([1.0, 1.0], name="num_per_thousand"),
-#     )
+    # Original test didn't add this calculated rate back into the dataframe
+    # and did not provide the rate_per variable
+    mt['num_per_thousand'] = utilities.calculate_rate(mt, "systolic_bp", "population", 1000)
+
+    testing.assert_index_equal(
+        mt.columns,
+        pandas.Index(["systolic_bp", "population", "num_per_thousand"]),
+    )
+    testing.assert_series_equal(
+        mt.num_per_thousand,
+        pandas.Series([1.0, 1.0], name="num_per_thousand"),
+    )
 
 
 class TestDropIrrelevantPractices:

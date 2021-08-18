@@ -1,5 +1,8 @@
 import json
+import tempfile
+import shutil
 from unittest.mock import patch
+from pathlib import Path
 
 import pandas
 import pytest
@@ -19,6 +22,36 @@ def bad_file_format():
 def test_file_format_check(good_file_format, bad_file_format):
     assert utilities.match_input_files(good_file_format)==True
     assert utilities.match_input_files(bad_file_format)==False
+
+def test_validate_directory():
+    """
+    Test to check that the validate_directory() function correctly throws an exception.
+    Useful resources:
+    - https://miguendes.me/how-to-check-if-an-exception-is-raised-or-not-with-pytest
+    - https://financial-engineering.medium.com/onepoint-python-pathlib-shutil-tempfile-df9d1e59016
+    """
+    # [1] Create a temporary directory
+    temp_dir = Path(tempfile.mkdtemp())
+
+    # [2] Check that this newly generated temporary directory is
+    #     assessed correctly by validate_directory() - we are expecting
+    #     that NO exception is raised
+    try:
+        utilities.validate_directory(Path(temp_dir))
+    except ValueError as exc:
+        assert False, f"Newly created temporary directory {str(temp_dir.name)} does not throw an exception {exc}"
+    
+    # [3] Remove this temporary directory
+    shutil.rmtree(temp_dir, ignore_errors=True)
+
+    # [4] Check that this newly generated temporary directory is
+    #     assessed correctly by validate_directory() - we are expecting
+    #     that an exception is raised
+    try:
+        utilities.validate_directory(Path(temp_dir))
+    except ValueError as exc:
+        assert True, f"Newly deleted temporary directory {str(temp_dir.name)} does throw an exception {exc}"
+
 
 # @pytest.fixture
 # def measure_table_from_csv():

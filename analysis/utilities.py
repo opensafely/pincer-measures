@@ -380,7 +380,7 @@ def co_prescription(df, medications_x: str, medications_y: str) -> None:
         
         (df[f"latest_{medications_x}_month_3"] > (df[f"earliest_{medications_y}_month_2"] - td(days=28))) |
         
-        (df[f"earliest_{medications_x}_month_2"] > (df[f"latest_{medications_y}_month_3"] + td(days=28))) |
+        (df[f"earliest_{medications_x}_month_2"] < (df[f"latest_{medications_y}_month_3"] + td(days=28))) |
         
         (
             (df[f"earliest_{medications_x}_month_2"] < (df[f"earliest_{medications_y}_month_2"] + td(days=28))) & 
@@ -404,7 +404,7 @@ def co_prescription(df, medications_x: str, medications_y: str) -> None:
         
         (df[f"latest_{medications_x}_month_2"] > (df[f"earliest_{medications_y}_month_1"] - td(days=28))) |
         
-        (df[f"earliest_{medications_x}_month_1"] > (df[f"latest_{medications_y}_month_2"] + td(days=28))) |
+        (df[f"earliest_{medications_x}_month_1"] < (df[f"latest_{medications_y}_month_2"] + td(days=28))) |
         
         (
             (df[f"earliest_{medications_x}_month_1"] < (df[f"earliest_{medications_y}_month_1"] + td(days=28))) & 

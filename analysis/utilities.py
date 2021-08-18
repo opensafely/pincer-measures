@@ -356,7 +356,7 @@ def co_prescription(df, medications_x: str, medications_y: str) -> None:
             df[column] = pd.to_datetime(df[column])
     
     df[f"co_prescribed_{medications_x}_{medications_y}"] = (
-    (df[f"{medications_x}"]==1 & df[f"{medications_y}"]==1) &
+    ((df[f"{medications_x}"]==1) & (df[f"{medications_y}"]==1)) &
     (
         (
             (df[f"earliest_{medications_x}_month_3"] < (df[f"earliest_{medications_y}_month_3"] + td(days=28))) & 

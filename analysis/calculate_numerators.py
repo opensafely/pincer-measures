@@ -8,11 +8,11 @@ for file in OUTPUT_DIR.iterdir():
 
         # for indicator E
         co_prescription(df, "anticoagulant", "antiplatelet_including_aspirin")
-        df['indicator_e_numerator'] = df["anticoagulant"].notnull() & df["ppi"].isnull() & df["co_prescribed_anticoagulant_antiplatelet_including_aspirin"].notnull()
+        df['indicator_e_numerator'] = (df["anticoagulant"] == 1) & (df["ppi"] == 0) & (df["co_prescribed_anticoagulant_antiplatelet_including_aspirin"] == 1)
 
         # for indicator F
         co_prescription(df, "aspirin", "antiplatelet_excluding_aspirin")
-        df['indicator_f_numerator'] = df["aspirin"].notnull() & df["ppi"].isnull() & df["co_prescribed_aspirin_antiplatelet_excluding_aspirin"].notnull()
+        df['indicator_f_numerator'] = (df["aspirin"] == 1) & (df["ppi"] == 0) & (df["co_prescribed_aspirin_antiplatelet_excluding_aspirin"] == 1)
         
         df.replace({False: 0, True: 1}, inplace=True)
         

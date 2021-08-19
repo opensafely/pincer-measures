@@ -120,7 +120,7 @@ def count_table():
     return counts
 
 
-@pytest.mark.parametrize( "redact_threshold", [ 0, 10, 100 ] )
+@pytest.mark.parametrize( "redact_threshold", [ -1, 0, 10, 100 ] )
 
 def test_redact_small_numbers( count_table, redact_threshold ):
     #print( count_table.head() )

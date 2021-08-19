@@ -379,12 +379,12 @@ study = StudyDefinition(
         between=["index_date - 3 months", "index_date"],
     ),
 
-    indicator_g_denominator = patients.satisfying(
-        """
-        asthma AND
-        (asthma_resolved_date < asthma_date)
-        """,
-    ),
+    # indicator_g_denominator = patients.satisfying(
+    #     """
+    #     asthma AND
+    #     (asthma_resolved_date < asthma_date)
+    #     """,
+    # ),
 
     indicator_g_denominator_alternative = patients.satisfying(
         """
@@ -393,13 +393,13 @@ study = StudyDefinition(
         """
     ),
 
-    indicator_g_numerator = patients.satisfying(
-        """
-        asthma AND
-        (asthma_resolved_date < asthma_date) AND
-        non_selective_bb
-        """,
-    ),
+    # indicator_g_numerator = patients.satisfying(
+    #     """
+    #     asthma AND
+    #     (asthma_resolved_date < asthma_date) AND
+    #     non_selective_bb
+    #     """,
+    # ),
 
 
     ###

@@ -39,6 +39,22 @@ composite_indicators = ["gi_bleed", "monitoring", "other_prescribing", "all"]
 
 for i in composite_indicators:
     df = pd.read_csv(OUTPUT_DIR / f"{i}_composite_measure.csv", parse_dates=["date"])
+
+    # group those with 7+ indicators if all-composite
+    if i == "all":
+        df_7_plus = df.loc[df["num_indicators"]>6,:].groupby(["date"])[["count", "denominator"]].sum().reset_index()
+        df_7_plus["num_indicators"] = '7+'
+        #rearrange columns
+        df_7_plus.loc[:, ["num_indicators", "count", "date", "denominator"]]
+
+        #drop combined columns from original df
+        df = df.loc[df["num_indicators"]<6,:]
+        
+        #concatenate
+        df = pd.concat([df, df_7_plus])
+
+        df["num_indicators"] = df["num_indicators"].astype('str')
+
     df["rate"] = (df["count"] / df["denominator"])*1000
     plot_measures(df = df, filename=f"plot_{i}_composite", title=f"{i} composite indicator",  column_to_plot = "rate", y_label = 'Rate per 1000', as_bar=False, category = "num_indicators")
 

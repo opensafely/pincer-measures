@@ -8,7 +8,7 @@ from codelists import *
 from co_prescribing_variables import create_co_prescribing_variables
 
 start_date = "2019-01-01"
-end_date = "2021-07-01"
+end_date = "2019-06-01"
 
 
 study = StudyDefinition(

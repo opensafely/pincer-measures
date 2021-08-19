@@ -16,4 +16,4 @@ for file in OUTPUT_DIR.iterdir():
         
         df.replace({False: 0, True: 1}, inplace=True)
         
-        df.to_csv(OUTPUT_DIR / file.name)
+        df.to_csv(OUTPUT_DIR / file.name, index=False)

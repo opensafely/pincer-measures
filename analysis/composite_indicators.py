@@ -54,7 +54,7 @@ for file in OUTPUT_DIR.iterdir():
         all_counts.append(all_count)
 
 
-gi_bleed_composite_measure = pd.concat(gi_bleed_counts, axis=0).to_csv(OUTPUT_DIR / "gi_bleed_composite_measure.csv")
-other_prescribing_composite_measure = pd.concat(other_prescribing_counts, axis=0).to_csv(OUTPUT_DIR / "other_prescribing_composite_measure.csv")
-monitoring_composite_measure = pd.concat(monitoring_counts, axis=0).to_csv(OUTPUT_DIR / "monitoring_composite_measure.csv")
-all_composite_measure = pd.concat(all_counts, axis=0).to_csv(OUTPUT_DIR / "all_composite_measure.csv")
+gi_bleed_composite_measure = pd.concat(gi_bleed_counts, axis=0).to_csv(OUTPUT_DIR / "gi_bleed_composite_measure.csv", index=False)
+other_prescribing_composite_measure = pd.concat(other_prescribing_counts, axis=0).to_csv(OUTPUT_DIR / "other_prescribing_composite_measure.csv", index=False)
+monitoring_composite_measure = pd.concat(monitoring_counts, axis=0).to_csv(OUTPUT_DIR / "monitoring_composite_measure.csv", index=False)
+all_composite_measure = pd.concat(all_counts, axis=0).to_csv(OUTPUT_DIR / "all_composite_measure.csv", index=False)

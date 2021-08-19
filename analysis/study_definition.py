@@ -152,7 +152,7 @@ study = StudyDefinition(
     ),
 
     care_home_type=patients.care_home_status_as_of(
-        "2020-12-07",
+        "index_date",
         categorised_as={
             "PC": """
               IsPotentialCareHome

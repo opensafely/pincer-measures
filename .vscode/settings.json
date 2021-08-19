@@ -10,5 +10,11 @@
     "files.autoSaveDelay": 1000,
     "window.autoDetectColorScheme": true,
     "extensions.ignoreRecommendations": true,
-    "data.preview.theme": "light"  
+    "data.preview.theme": "light",
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.pytestEnabled": true
 }

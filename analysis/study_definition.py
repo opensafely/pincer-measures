@@ -386,6 +386,13 @@ study = StudyDefinition(
         """,
     ),
 
+    indicator_g_denominator_alternative = patients.satisfying(
+        """
+        (asthma AND (NOT asthma_resolved)) OR 
+        (asthma_resolved_date <= asthma_date)
+        """
+    ),
+
     indicator_g_numerator = patients.satisfying(
         """
         asthma AND

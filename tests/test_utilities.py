@@ -207,3 +207,38 @@ def test_compute_deciles(measure_table, has_outer_percentiles, num_rows):
     assert is_datetime64_dtype(obs.date)
     assert is_numeric_dtype(obs.percentile)
     assert is_numeric_dtype(obs.value)
+
+@pytest.fixture
+def multiple_indicator_table():
+    """
+    Returns a dummy multiple indicator dataset.
+    Note that the composite denominator has to exist already.
+    """
+    return pandas.DataFrame(
+        {
+            "practice": pandas.Series([1, 2, 3, 1, 2]),
+            "variable_a": pandas.Series([1, 1, 1, 1, 1]),
+            "variable_b": pandas.Series([0, 0, 1, 0, 1]),
+            "variable_c": pandas.Series([0, 1, 1, 1, 0]),
+            "variable_d": pandas.Series([0, 1, 1, 0, 1]),
+            "denominator": pandas.Series([1, 1, 1, 1, 1])
+        }
+    )
+
+@pytest.fixture
+def multiple_indicator_list():
+    # Answers should be 1, 2, 3, 1, 3
+    return( [
+        "variable_a",
+        "variable_b",
+        "variable_d"
+    ] )
+
+def test_get_composite_indicator_counts(multiple_indicator_table, multiple_indicator_list):
+    composite_results = utilities.get_composite_indicator_counts(
+        multiple_indicator_table, multiple_indicator_list, "denominator", "2020-10-10")
+
+    testing.assert_series_equal(
+        composite_results['count'],
+        pandas.Series([2, 1, 2], name="count"),
+    )

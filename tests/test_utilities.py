@@ -5,6 +5,7 @@ from unittest.mock import patch
 from pathlib import Path
 
 import pandas
+import numpy as np
 import pytest
 from pandas import testing
 from pandas.api.types import is_datetime64_dtype, is_numeric_dtype
@@ -26,7 +27,21 @@ def input_file():
         {
         'patient_id': pandas.Series([1, 2, 3, 4, 5]),
         'disease': pandas.Series([1, 1, 1, 0, 0]),
-        'msoa': pandas.Series(['E02003251', 'E02003251', 'E02003251', 'E02002586', 'E02002586'])
+        'medications_x': pandas.Series([1, 1, 0, 1, 1]),
+        'medications_y': pandas.Series([1, 1, 0, 1, 0]),
+        'earliest_medications_x_month_3': pandas.to_datetime(pandas.Series(['2019-10-01', np.nan, np.nan, '2019-10-10', np.nan])),
+        'earliest_medications_x_month_2': pandas.to_datetime(pandas.Series([np.nan, np.nan, np.nan, np.nan, '2019-11-10'])),
+        'earliest_medications_x_month_1': pandas.to_datetime(pandas.Series(['2019-12-20', '2019-12-25', np.nan, np.nan, np.nan])),
+        'latest_medications_x_month_3': pandas.to_datetime(pandas.Series(['2019-10-01', np.nan, np.nan, '2019-10-10', np.nan])),
+        'latest_medications_x_month_2': pandas.to_datetime(pandas.Series([np.nan, np.nan, np.nan, np.nan, '2019-11-10'])),
+        'latest_medications_x_month_1': pandas.to_datetime(pandas.Series(['2019-12-20', '2019-12-25', np.nan, np.nan, np.nan])),
+        'earliest_medications_y_month_3': pandas.to_datetime(pandas.Series([np.nan, '2019-10-01', np.nan, '2019-10-10', np.nan])),
+        'earliest_medications_y_month_2': pandas.to_datetime(pandas.Series(['2019-11-25', np.nan, np.nan, np.nan, np.nan])),
+        'earliest_medications_y_month_1': pandas.to_datetime(pandas.Series([np.nan, np.nan, np.nan, np.nan, np.nan])),
+        'latest_medications_y_month_3': pandas.to_datetime(pandas.Series([np.nan, '2019-10-01', np.nan, '2019-10-10', np.nan])),
+        'latest_medications_y_month_2': pandas.to_datetime(pandas.Series(['2019-11-25', np.nan, np.nan, np.nan, np.nan])),
+        'latest_medications_y_month_1': pandas.to_datetime(pandas.Series([np.nan, np.nan, np.nan, np.nan, np.nan])),
+        'msoa': pandas.Series(['E02003251', 'E02003251', 'E02003251', 'E02002586', 'E02002586']),
         }
     )       
 
@@ -285,3 +300,22 @@ def test_get_composite_indicator_counts(multiple_indicator_table, multiple_indic
         composite_results['count'],
         pandas.Series([2, 1, 2], name="count"),
     )
+
+def test_co_prescription(input_file):
+    """
+    Patient 1 is prescribed x in month 1 and 3 and y in month 2. y overlaps with x in month 1.
+    Patient 2 is prescribed x in month 1 and y in month 3. No overlap
+    Patient 3 is not prescribed x or y
+    Patient 4 is prescribed x and y on the same day in months 3 and 2.
+    Patient 5 is prescribed x in month 2 but not prescibed y.
+    """
+
+    utilities.co_prescription(input_file, 'medications_x', 'medications_y')
+    
+    testing.assert_series_equal(
+        input_file['co_prescribed_medications_x_medications_y'],
+        pandas.Series([True, False, False, True, False], name='co_prescribed_medications_x_medications_y'),
+    )
+    
+    
+

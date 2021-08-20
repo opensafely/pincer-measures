@@ -212,19 +212,6 @@ def test_redact_small_numbers( count_table, redact_threshold ):
     #print(minimum_value)
     assert (minimum_value > redact_threshold) == True
 
-
-# @pytest.fixture
-# def codelist_table_from_csv():
-#     """Returns a codelist table the could have been read from a CSV file."""
-#     return pandas.DataFrame(
-#         {
-#             "code": pandas.Series([1, 2]),
-#             "term": pandas.Series(["Code 1", "Code 2"]),
-#         }
-#     )
-
-
-
 def test_calculate_rate():
     mt = pd.DataFrame(
         {

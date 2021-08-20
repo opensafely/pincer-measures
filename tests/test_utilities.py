@@ -22,10 +22,11 @@ def bad_file_format():
 @pytest.fixture()
 def input_file():
     """Returns a input file as produced by cohortextractor."""
-    return pd.DataFrame(
+    return pandas.DataFrame(
         {
-        'patient_id': pd.Series([1, 2, 3, 4, 5]),
-        'disease': pd.Series([1, 1, 1, 0, 0])
+        'patient_id': pandas.Series([1, 2, 3, 4, 5]),
+        'disease': pandas.Series([1, 1, 1, 0, 0]),
+        'msoa': pandas.Series(['E02003251', 'E02003251', 'E02003251', 'E02002586', 'E02002586'])
         }
     )
             
@@ -33,10 +34,10 @@ def input_file():
 @pytest.fixture()
 def input_file_ethnicity():
     """Returns a input file as produced by cohortextractor with 'ethnicity' column."""
-    return pd.DataFrame(
+    return pandas.DataFrame(
         {
-            'patient_id': pd.Series([1, 2, 3, 4, 5, 6, 7, 8]),
-            'ethnicity': pd.Series([1, 2, 2, 1, 3, 2, 1, 3])
+            'patient_id': pandas.Series([1, 2, 3, 4, 5, 6, 7, 8]),
+            'ethnicity': pandas.Series([1, 2, 2, 1, 3, 2, 1, 3])
         }
     )
 
@@ -84,6 +85,29 @@ def test_validate_directory():
     except ValueError as exc:
         assert True, f"Newly deleted temporary directory {str(temp_dir.name)} does throw an exception {exc}"
 
+def test_join_ethnicity_region(tmp_path, input_file, input_file_ethnicity):
+    """
+    Creates a regular input file and ethnicity input file and saves to a temporary directory. 
+    These files can then be loaded by join_ethnicity region.
+    
+    """
+
+    with patch.object(utilities, "OUTPUT_DIR", tmp_path):
+        
+        input_file.to_csv(utilities.OUTPUT_DIR / 'input_2020-01-01.csv', index=False)
+        
+        
+        input_file_ethnicity.to_csv(utilities.OUTPUT_DIR / 'input_ethnicity.csv', index=False)
+       
+        utilities.join_ethnicity_region(utilities.OUTPUT_DIR)
+        merged_csv = pandas.read_csv(utilities.OUTPUT_DIR / 'input_2020-01-01.csv')
+      
+        #test that ethnicity vars match corresponding patient_ids
+        testing.assert_series_equal(merged_csv['ethnicity'], pandas.Series([1, 2, 2, 1, 3], name='ethnicity'))
+        
+        #test that region column is as expected
+        testing.assert_series_equal(merged_csv['region'], pandas.Series(['East of England', 'East of England', 'East of England', 'North West', 'North West'], name='region'))
+        
 
 @pytest.fixture
 def measure_table_from_csv():

@@ -28,8 +28,7 @@ def input_file():
         'disease': pandas.Series([1, 1, 1, 0, 0]),
         'msoa': pandas.Series(['E02003251', 'E02003251', 'E02003251', 'E02002586', 'E02002586'])
         }
-    )
-            
+    )       
 
 @pytest.fixture()
 def input_file_ethnicity():
@@ -40,6 +39,87 @@ def input_file_ethnicity():
             'ethnicity': pandas.Series([1, 2, 2, 1, 3, 2, 1, 3])
         }
     )
+
+@pytest.fixture
+def measure_table_from_csv():
+    """Returns a measure table that could have been read from a CSV file.
+
+    Practice ID #1 is irrelevant; that is, it has zero events during
+    the study period.
+    """
+    return pandas.DataFrame(
+        {
+            "practice": pandas.Series([1, 2, 3, 1, 2]),
+            "systolic_bp_event_code": pandas.Series([1, 1, 2, 1, 1]),
+            "systolic_bp": pandas.Series([0, 1, 1, 0, 1]),
+            "population": pandas.Series([1, 1, 1, 1, 1]),
+            "value": pandas.Series([0, 1, 1, 0, 1]),
+            "date": pandas.Series(
+                [
+                    "2019-01-01",
+                    "2019-01-01",
+                    "2019-01-01",
+                    "2019-02-01",
+                    "2019-02-01",
+                ]
+            ),
+        }
+    )
+
+
+@pytest.fixture
+def measure_table():
+    """Returns a measure table that could have been read by calling `load_and_drop`."""
+    mt = pandas.DataFrame(
+        {
+            "practice": pandas.Series([2, 3, 2]),
+            "systolic_bp_event_code": pandas.Series([1, 2, 1]),
+            "systolic_bp": pandas.Series([1, 1, 1]),
+            "population": pandas.Series([1, 1, 1]),
+            "value": pandas.Series([1, 1, 1]),
+            "date": pandas.Series(["2019-01-01", "2019-01-01", "2019-02-01"]),
+        }
+    )
+    mt["date"] = pandas.to_datetime(mt["date"])
+    return mt
+
+@pytest.fixture
+def count_table():
+    counts = pandas.DataFrame(
+        {
+            "practice": pandas.Series( [1, 2, 3, 4, 5] ),
+            "count": pandas.Series( [10, 5, 100, 35, 20] ),
+            "population": pandas.Series( [20, 10, 1000, 40, 100] )
+        }
+    )
+    counts["rate"] = utilities.calculate_rate(counts,"count","population",1000)
+    return counts
+
+@pytest.fixture
+def multiple_indicator_table():
+    """
+    Returns a dummy multiple indicator dataset.
+    Note that the composite denominator has to exist already.
+    """
+    return pandas.DataFrame(
+        {
+            "practice": pandas.Series([1, 2, 3, 1, 2]),
+            "variable_a": pandas.Series([1, 1, 1, 1, 1]),
+            "variable_b": pandas.Series([0, 0, 1, 0, 1]),
+            "variable_c": pandas.Series([0, 1, 1, 1, 0]),
+            "variable_d": pandas.Series([0, 1, 1, 0, 1]),
+            "denominator": pandas.Series([1, 1, 1, 1, 1])
+        }
+    )
+
+@pytest.fixture
+def multiple_indicator_list():
+    # Answers should be 1, 2, 3, 1, 3
+    return( [
+        "variable_a",
+        "variable_b",
+        "variable_d"
+    ] )
 
 def test_file_format_check(good_file_format, bad_file_format):
     assert utilities.match_input_files(good_file_format)==True
@@ -108,62 +188,6 @@ def test_join_ethnicity_region(tmp_path, input_file, input_file_ethnicity):
         #test that region column is as expected
         testing.assert_series_equal(merged_csv['region'], pandas.Series(['East of England', 'East of England', 'East of England', 'North West', 'North West'], name='region'))
         
-
-@pytest.fixture
-def measure_table_from_csv():
-    """Returns a measure table that could have been read from a CSV file.
-
-    Practice ID #1 is irrelevant; that is, it has zero events during
-    the study period.
-    """
-    return pandas.DataFrame(
-        {
-            "practice": pandas.Series([1, 2, 3, 1, 2]),
-            "systolic_bp_event_code": pandas.Series([1, 1, 2, 1, 1]),
-            "systolic_bp": pandas.Series([0, 1, 1, 0, 1]),
-            "population": pandas.Series([1, 1, 1, 1, 1]),
-            "value": pandas.Series([0, 1, 1, 0, 1]),
-            "date": pandas.Series(
-                [
-                    "2019-01-01",
-                    "2019-01-01",
-                    "2019-01-01",
-                    "2019-02-01",
-                    "2019-02-01",
-                ]
-            ),
-        }
-    )
-
-
-@pytest.fixture
-def measure_table():
-    """Returns a measure table that could have been read by calling `load_and_drop`."""
-    mt = pandas.DataFrame(
-        {
-            "practice": pandas.Series([2, 3, 2]),
-            "systolic_bp_event_code": pandas.Series([1, 2, 1]),
-            "systolic_bp": pandas.Series([1, 1, 1]),
-            "population": pandas.Series([1, 1, 1]),
-            "value": pandas.Series([1, 1, 1]),
-            "date": pandas.Series(["2019-01-01", "2019-01-01", "2019-02-01"]),
-        }
-    )
-    mt["date"] = pandas.to_datetime(mt["date"])
-    return mt
-
-@pytest.fixture
-def count_table():
-    counts = pandas.DataFrame(
-        {
-            "practice": pandas.Series( [1, 2, 3, 4, 5] ),
-            "count": pandas.Series( [10, 5, 100, 35, 20] ),
-            "population": pandas.Series( [20, 10, 1000, 40, 100] )
-        }
-    )
-    counts["rate"] = utilities.calculate_rate(counts,"count","population",1000)
-    return counts
-
 
 @pytest.mark.parametrize( "redact_threshold", [ -1, 0, 10, 100 ] )
 
@@ -252,32 +276,6 @@ def test_compute_deciles(measure_table, has_outer_percentiles, num_rows):
     assert is_datetime64_dtype(obs.date)
     assert is_numeric_dtype(obs.percentile)
     assert is_numeric_dtype(obs.value)
-
-@pytest.fixture
-def multiple_indicator_table():
-    """
-    Returns a dummy multiple indicator dataset.
-    Note that the composite denominator has to exist already.
-    """
-    return pandas.DataFrame(
-        {
-            "practice": pandas.Series([1, 2, 3, 1, 2]),
-            "variable_a": pandas.Series([1, 1, 1, 1, 1]),
-            "variable_b": pandas.Series([0, 0, 1, 0, 1]),
-            "variable_c": pandas.Series([0, 1, 1, 1, 0]),
-            "variable_d": pandas.Series([0, 1, 1, 0, 1]),
-            "denominator": pandas.Series([1, 1, 1, 1, 1])
-        }
-    )
-
-@pytest.fixture
-def multiple_indicator_list():
-    # Answers should be 1, 2, 3, 1, 3
-    return( [
-        "variable_a",
-        "variable_b",
-        "variable_d"
-    ] )
 
 def test_get_composite_indicator_counts(multiple_indicator_table, multiple_indicator_list):
     composite_results = utilities.get_composite_indicator_counts(

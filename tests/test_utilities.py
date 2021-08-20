@@ -1,16 +1,13 @@
-import json
 import tempfile
 import shutil
-from unittest.mock import patch
-from pathlib import Path
-
 import pandas
 import numpy as np
 import pytest
+import analysis.utilities as utilities
+from unittest.mock import patch
+from pathlib import Path
 from pandas import testing
 from pandas.api.types import is_datetime64_dtype, is_numeric_dtype
-
-import analysis.utilities as utilities
 
 @pytest.fixture
 def good_file_format():

@@ -23,6 +23,11 @@ def input_file():
         {
         'patient_id': pd.Series([1, 2, 3, 4, 5]),
         'disease': pd.Series([1, 1, 1, 0, 0]),
+        'variable_a': pd.Series([1, 1, 1, 1, 1]),
+        'variable_b': pd.Series([0, 0, 1, 0, 1]),
+        'variable_c': pd.Series([0, 1, 1, 1, 0]),
+        'variable_d': pd.Series([0, 1, 1, 0, 1]),
+        'composite_denominator': pd.Series([1, 1, 1, 1, 1]),
         'medications_x': pd.Series([1, 1, 0, 1, 1]),
         'medications_y': pd.Series([1, 1, 0, 1, 0]),
         'earliest_medications_x_month_3': pd.to_datetime(pd.Series(['2019-10-01', np.nan, np.nan, '2019-10-10', np.nan])),
@@ -105,23 +110,6 @@ def count_table():
     )
     counts["rate"] = utilities.calculate_rate(counts,"count","population",1000)
     return counts
-
-@pytest.fixture
-def multiple_indicator_table():
-    """
-    Returns a dummy multiple indicator dataset.
-    Note that the composite denominator has to exist already.
-    """
-    return pd.DataFrame(
-        {
-            "practice": pd.Series([1, 2, 3, 1, 2]),
-            "variable_a": pd.Series([1, 1, 1, 1, 1]),
-            "variable_b": pd.Series([0, 0, 1, 0, 1]),
-            "variable_c": pd.Series([0, 1, 1, 1, 0]),
-            "variable_d": pd.Series([0, 1, 1, 0, 1]),
-            "denominator": pd.Series([1, 1, 1, 1, 1])
-        }
-    )
 
 @pytest.fixture
 def multiple_indicator_list():
@@ -280,13 +268,18 @@ def test_compute_deciles(measure_table, has_outer_percentiles, num_rows):
     assert is_numeric_dtype(obs.percentile)
     assert is_numeric_dtype(obs.value)
 
-def test_get_composite_indicator_counts(multiple_indicator_table, multiple_indicator_list):
+def test_get_composite_indicator_counts(input_file, multiple_indicator_list):
     composite_results = utilities.get_composite_indicator_counts(
-        multiple_indicator_table, multiple_indicator_list, "denominator", "2020-10-10")
+        input_file, multiple_indicator_list, "composite_denominator", "2020-10-10")
 
-    testing.assert_series_equal(
-        composite_results['count'],
-        pd.Series([2, 1, 2], name="count"),
+    testing.assert_frame_equal(
+        composite_results,
+        pd.DataFrame(
+            {"num_indicators": pd.Series([1, 2, 3]), 
+            "count": pd.Series([2, 1, 2]),
+            "date": pd.Series(["2020-10-10", "2020-10-10", "2020-10-10"]),
+            "denominator": pd.Series([5, 5, 5])}
+        )
     )
 
 def test_co_prescription(input_file):

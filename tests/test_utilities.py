@@ -129,12 +129,15 @@ class TestMatchInputFiles:
         bad_file_format = filename(name='input_01-01-2020.csv') #incorrect filename format
         assert utilities.match_input_files(bad_file_format)==False
 
-def test_get_date_input_file(good_file_format, bad_file_format):
+def test_get_date_input_file(filename):
     # [1] Check that the correct date is extracted from a file name
+    good_file_format = filename() #has correct filename format
     assert utilities.get_date_input_file(good_file_format) == "2020-01-01"
 
     # [2] Check that an exception is raised if the file is not in the
     #     correct format
+    
+    bad_file_format = filename(name='input_01-01-2020.csv')
     try:
         utilities.get_date_input_file(bad_file_format)
     except Exception as exc:

@@ -1,6 +1,6 @@
 import tempfile
 import shutil
-import pandas
+import pandas as pd
 import numpy as np
 import pytest
 import analysis.utilities as utilities
@@ -20,35 +20,35 @@ def bad_file_format():
 @pytest.fixture()
 def input_file():
     """Returns a input file as produced by cohortextractor."""
-    return pandas.DataFrame(
+    return pd.DataFrame(
         {
-        'patient_id': pandas.Series([1, 2, 3, 4, 5]),
-        'disease': pandas.Series([1, 1, 1, 0, 0]),
-        'medications_x': pandas.Series([1, 1, 0, 1, 1]),
-        'medications_y': pandas.Series([1, 1, 0, 1, 0]),
-        'earliest_medications_x_month_3': pandas.to_datetime(pandas.Series(['2019-10-01', np.nan, np.nan, '2019-10-10', np.nan])),
-        'earliest_medications_x_month_2': pandas.to_datetime(pandas.Series([np.nan, np.nan, np.nan, np.nan, '2019-11-10'])),
-        'earliest_medications_x_month_1': pandas.to_datetime(pandas.Series(['2019-12-20', '2019-12-25', np.nan, np.nan, np.nan])),
-        'latest_medications_x_month_3': pandas.to_datetime(pandas.Series(['2019-10-01', np.nan, np.nan, '2019-10-10', np.nan])),
-        'latest_medications_x_month_2': pandas.to_datetime(pandas.Series([np.nan, np.nan, np.nan, np.nan, '2019-11-10'])),
-        'latest_medications_x_month_1': pandas.to_datetime(pandas.Series(['2019-12-20', '2019-12-25', np.nan, np.nan, np.nan])),
-        'earliest_medications_y_month_3': pandas.to_datetime(pandas.Series([np.nan, '2019-10-01', np.nan, '2019-10-10', np.nan])),
-        'earliest_medications_y_month_2': pandas.to_datetime(pandas.Series(['2019-11-25', np.nan, np.nan, np.nan, np.nan])),
-        'earliest_medications_y_month_1': pandas.to_datetime(pandas.Series([np.nan, np.nan, np.nan, np.nan, np.nan])),
-        'latest_medications_y_month_3': pandas.to_datetime(pandas.Series([np.nan, '2019-10-01', np.nan, '2019-10-10', np.nan])),
-        'latest_medications_y_month_2': pandas.to_datetime(pandas.Series(['2019-11-25', np.nan, np.nan, np.nan, np.nan])),
-        'latest_medications_y_month_1': pandas.to_datetime(pandas.Series([np.nan, np.nan, np.nan, np.nan, np.nan])),
-        'msoa': pandas.Series(['E02003251', 'E02003251', 'E02003251', 'E02002586', 'E02002586']),
+        'patient_id': pd.Series([1, 2, 3, 4, 5]),
+        'disease': pd.Series([1, 1, 1, 0, 0]),
+        'medications_x': pd.Series([1, 1, 0, 1, 1]),
+        'medications_y': pd.Series([1, 1, 0, 1, 0]),
+        'earliest_medications_x_month_3': pd.to_datetime(pd.Series(['2019-10-01', np.nan, np.nan, '2019-10-10', np.nan])),
+        'earliest_medications_x_month_2': pd.to_datetime(pd.Series([np.nan, np.nan, np.nan, np.nan, '2019-11-10'])),
+        'earliest_medications_x_month_1': pd.to_datetime(pd.Series(['2019-12-20', '2019-12-25', np.nan, np.nan, np.nan])),
+        'latest_medications_x_month_3': pd.to_datetime(pd.Series(['2019-10-01', np.nan, np.nan, '2019-10-10', np.nan])),
+        'latest_medications_x_month_2': pd.to_datetime(pd.Series([np.nan, np.nan, np.nan, np.nan, '2019-11-10'])),
+        'latest_medications_x_month_1': pd.to_datetime(pd.Series(['2019-12-20', '2019-12-25', np.nan, np.nan, np.nan])),
+        'earliest_medications_y_month_3': pd.to_datetime(pd.Series([np.nan, '2019-10-01', np.nan, '2019-10-10', np.nan])),
+        'earliest_medications_y_month_2': pd.to_datetime(pd.Series(['2019-11-25', np.nan, np.nan, np.nan, np.nan])),
+        'earliest_medications_y_month_1': pd.to_datetime(pd.Series([np.nan, np.nan, np.nan, np.nan, np.nan])),
+        'latest_medications_y_month_3': pd.to_datetime(pd.Series([np.nan, '2019-10-01', np.nan, '2019-10-10', np.nan])),
+        'latest_medications_y_month_2': pd.to_datetime(pd.Series(['2019-11-25', np.nan, np.nan, np.nan, np.nan])),
+        'latest_medications_y_month_1': pd.to_datetime(pd.Series([np.nan, np.nan, np.nan, np.nan, np.nan])),
+        'msoa': pd.Series(['E02003251', 'E02003251', 'E02003251', 'E02002586', 'E02002586']),
         }
     )       
 
 @pytest.fixture()
 def input_file_ethnicity():
     """Returns a input file as produced by cohortextractor with 'ethnicity' column."""
-    return pandas.DataFrame(
+    return pd.DataFrame(
         {
-            'patient_id': pandas.Series([1, 2, 3, 4, 5, 6, 7, 8]),
-            'ethnicity': pandas.Series([1, 2, 2, 1, 3, 2, 1, 3])
+            'patient_id': pd.Series([1, 2, 3, 4, 5, 6, 7, 8]),
+            'ethnicity': pd.Series([1, 2, 2, 1, 3, 2, 1, 3])
         }
     )
 
@@ -59,14 +59,14 @@ def measure_table_from_csv():
     Practice ID #1 is irrelevant; that is, it has zero events during
     the study period.
     """
-    return pandas.DataFrame(
+    return pd.DataFrame(
         {
-            "practice": pandas.Series([1, 2, 3, 1, 2]),
-            "systolic_bp_event_code": pandas.Series([1, 1, 2, 1, 1]),
-            "systolic_bp": pandas.Series([0, 1, 1, 0, 1]),
-            "population": pandas.Series([1, 1, 1, 1, 1]),
-            "value": pandas.Series([0, 1, 1, 0, 1]),
-            "date": pandas.Series(
+            "practice": pd.Series([1, 2, 3, 1, 2]),
+            "systolic_bp_event_code": pd.Series([1, 1, 2, 1, 1]),
+            "systolic_bp": pd.Series([0, 1, 1, 0, 1]),
+            "population": pd.Series([1, 1, 1, 1, 1]),
+            "value": pd.Series([0, 1, 1, 0, 1]),
+            "date": pd.Series(
                 [
                     "2019-01-01",
                     "2019-01-01",
@@ -82,26 +82,26 @@ def measure_table_from_csv():
 @pytest.fixture
 def measure_table():
     """Returns a measure table that could have been read by calling `load_and_drop`."""
-    mt = pandas.DataFrame(
+    mt = pd.DataFrame(
         {
-            "practice": pandas.Series([2, 3, 2]),
-            "systolic_bp_event_code": pandas.Series([1, 2, 1]),
-            "systolic_bp": pandas.Series([1, 1, 1]),
-            "population": pandas.Series([1, 1, 1]),
-            "value": pandas.Series([1, 1, 1]),
-            "date": pandas.Series(["2019-01-01", "2019-01-01", "2019-02-01"]),
+            "practice": pd.Series([2, 3, 2]),
+            "systolic_bp_event_code": pd.Series([1, 2, 1]),
+            "systolic_bp": pd.Series([1, 1, 1]),
+            "population": pd.Series([1, 1, 1]),
+            "value": pd.Series([1, 1, 1]),
+            "date": pd.Series(["2019-01-01", "2019-01-01", "2019-02-01"]),
         }
     )
-    mt["date"] = pandas.to_datetime(mt["date"])
+    mt["date"] = pd.to_datetime(mt["date"])
     return mt
 
 @pytest.fixture
 def count_table():
-    counts = pandas.DataFrame(
+    counts = pd.DataFrame(
         {
-            "practice": pandas.Series( [1, 2, 3, 4, 5] ),
-            "count": pandas.Series( [10, 5, 100, 35, 20] ),
-            "population": pandas.Series( [20, 10, 1000, 40, 100] )
+            "practice": pd.Series( [1, 2, 3, 4, 5] ),
+            "count": pd.Series( [10, 5, 100, 35, 20] ),
+            "population": pd.Series( [20, 10, 1000, 40, 100] )
         }
     )
     counts["rate"] = utilities.calculate_rate(counts,"count","population",1000)
@@ -113,14 +113,14 @@ def multiple_indicator_table():
     Returns a dummy multiple indicator dataset.
     Note that the composite denominator has to exist already.
     """
-    return pandas.DataFrame(
+    return pd.DataFrame(
         {
-            "practice": pandas.Series([1, 2, 3, 1, 2]),
-            "variable_a": pandas.Series([1, 1, 1, 1, 1]),
-            "variable_b": pandas.Series([0, 0, 1, 0, 1]),
-            "variable_c": pandas.Series([0, 1, 1, 1, 0]),
-            "variable_d": pandas.Series([0, 1, 1, 0, 1]),
-            "denominator": pandas.Series([1, 1, 1, 1, 1])
+            "practice": pd.Series([1, 2, 3, 1, 2]),
+            "variable_a": pd.Series([1, 1, 1, 1, 1]),
+            "variable_b": pd.Series([0, 0, 1, 0, 1]),
+            "variable_c": pd.Series([0, 1, 1, 1, 0]),
+            "variable_d": pd.Series([0, 1, 1, 0, 1]),
+            "denominator": pd.Series([1, 1, 1, 1, 1])
         }
     )
 
@@ -192,13 +192,13 @@ def test_join_ethnicity_region(tmp_path, input_file, input_file_ethnicity):
         input_file_ethnicity.to_csv(utilities.OUTPUT_DIR / 'input_ethnicity.csv', index=False)
        
         utilities.join_ethnicity_region(utilities.OUTPUT_DIR)
-        merged_csv = pandas.read_csv(utilities.OUTPUT_DIR / 'input_2020-01-01.csv')
+        merged_csv = pd.read_csv(utilities.OUTPUT_DIR / 'input_2020-01-01.csv')
       
         #test that ethnicity vars match corresponding patient_ids
-        testing.assert_series_equal(merged_csv['ethnicity'], pandas.Series([1, 2, 2, 1, 3], name='ethnicity'))
+        testing.assert_series_equal(merged_csv['ethnicity'], pd.Series([1, 2, 2, 1, 3], name='ethnicity'))
         
         #test that region column is as expected
-        testing.assert_series_equal(merged_csv['region'], pandas.Series(['East of England', 'East of England', 'East of England', 'North West', 'North West'], name='region'))
+        testing.assert_series_equal(merged_csv['region'], pd.Series(['East of England', 'East of England', 'East of England', 'North West', 'North West'], name='region'))
         
 
 @pytest.mark.parametrize( "redact_threshold", [ -1, 0, 10, 100 ] )
@@ -226,16 +226,16 @@ def test_redact_small_numbers( count_table, redact_threshold ):
 
 
 def test_calculate_rate():
-    mt = pandas.DataFrame(
+    mt = pd.DataFrame(
         {
-            "systolic_bp": pandas.Series([1, 2]),
-            "population": pandas.Series([1_000, 2_000]),
+            "systolic_bp": pd.Series([1, 2]),
+            "population": pd.Series([1_000, 2_000]),
         }
     )
 
     testing.assert_index_equal(
         mt.columns,
-        pandas.Index(["systolic_bp", "population"]),
+        pd.Index(["systolic_bp", "population"]),
     )
 
     # Original test didn't add this calculated rate back into the dataframe
@@ -244,11 +244,11 @@ def test_calculate_rate():
 
     testing.assert_index_equal(
         mt.columns,
-        pandas.Index(["systolic_bp", "population", "num_per_thousand"]),
+        pd.Index(["systolic_bp", "population", "num_per_thousand"]),
     )
     testing.assert_series_equal(
         mt.num_per_thousand,
-        pandas.Series([1.0, 1.0], name="num_per_thousand"),
+        pd.Series([1.0, 1.0], name="num_per_thousand"),
     )
 
 
@@ -282,7 +282,7 @@ def test_compute_deciles(measure_table, has_outer_percentiles, num_rows):
     # leaving us to check the shape and the type of the data.
     testing.assert_index_equal(
         obs.columns,
-        pandas.Index(["date", "percentile", "value"]),
+        pd.Index(["date", "percentile", "value"]),
     )
     assert len(obs) == num_rows
     assert is_datetime64_dtype(obs.date)
@@ -295,7 +295,7 @@ def test_get_composite_indicator_counts(multiple_indicator_table, multiple_indic
 
     testing.assert_series_equal(
         composite_results['count'],
-        pandas.Series([2, 1, 2], name="count"),
+        pd.Series([2, 1, 2], name="count"),
     )
 
 def test_co_prescription(input_file):
@@ -311,7 +311,7 @@ def test_co_prescription(input_file):
     
     testing.assert_series_equal(
         input_file['co_prescribed_medications_x_medications_y'],
-        pandas.Series([True, False, False, True, False], name='co_prescribed_medications_x_medications_y'),
+        pd.Series([True, False, False, True, False], name='co_prescribed_medications_x_medications_y'),
     )
     
     

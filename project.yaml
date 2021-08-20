@@ -6,7 +6,7 @@ expectations:
 actions:
 
   generate_study_population:
-    run: cohortextractor:latest generate_cohort --study-definition study_definition --index-date-range "2019-09-01 to 2019-10-01 by month"
+    run: cohortextractor:latest generate_cohort --study-definition study_definition --index-date-range "2019-09-01 to 2021-07-01 by month --skip-existing"
     outputs:
       highly_sensitive:
         cohort: output/input_*.csv

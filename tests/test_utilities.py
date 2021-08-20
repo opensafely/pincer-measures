@@ -19,6 +19,27 @@ def good_file_format():
 def bad_file_format():
     return("input_01-01-2020.csv")
 
+@pytest.fixture()
+def input_file():
+    """Returns a input file as produced by cohortextractor."""
+    return pd.DataFrame(
+        {
+        'patient_id': pd.Series([1, 2, 3, 4, 5]),
+        'disease': pd.Series([1, 1, 1, 0, 0])
+        }
+    )
+            
+
+@pytest.fixture()
+def input_file_ethnicity():
+    """Returns a input file as produced by cohortextractor with 'ethnicity' column."""
+    return pd.DataFrame(
+        {
+            'patient_id': pd.Series([1, 2, 3, 4, 5, 6, 7, 8]),
+            'ethnicity': pd.Series([1, 2, 2, 1, 3, 2, 1, 3])
+        }
+    )
+
 def test_file_format_check(good_file_format, bad_file_format):
     assert utilities.match_input_files(good_file_format)==True
     assert utilities.match_input_files(bad_file_format)==False

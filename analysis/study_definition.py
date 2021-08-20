@@ -379,12 +379,12 @@ study = StudyDefinition(
         between=["index_date - 3 months", "index_date"],
     ),
 
-    # indicator_g_denominator = patients.satisfying(
-    #     """
-    #     asthma AND
-    #     (asthma_resolved_date < asthma_date)
-    #     """,
-    # ),
+    indicator_g_denominator = patients.satisfying(
+        """
+        asthma AND
+        (asthma_resolved_date < asthma_date)
+        """,
+    ),
 
     indicator_g_denominator_alternative = patients.satisfying(
         """
@@ -393,13 +393,13 @@ study = StudyDefinition(
         """
     ),
 
-    # indicator_g_numerator = patients.satisfying(
-    #     """
-    #     asthma AND
-    #     (asthma_resolved_date < asthma_date) AND
-    #     non_selective_bb
-    #     """,
-    # ),
+    indicator_g_numerator = patients.satisfying(
+        """
+        asthma AND
+        (asthma_resolved_date < asthma_date) AND
+        non_selective_bb
+        """,
+    ),
 
 
     ###
@@ -454,7 +454,7 @@ study = StudyDefinition(
     egfr_less_than_45 = patients.categorised_as(
         {
             "0": "DEFAULT",
-            "1": """ 0 <= egfr < 45"""
+            "1": """ (egfr>=0) AND (egfr < 45)"""
         },
         return_expectations = {
             "rate": "universal",

@@ -9,13 +9,12 @@ from pathlib import Path
 from pandas import testing
 from pandas.api.types import is_datetime64_dtype, is_numeric_dtype
 
-@pytest.fixture
-def good_file_format():
-    return("input_2020-01-01.csv")
-
-@pytest.fixture
-def bad_file_format():
-    return("input_01-01-2020.csv")
+@pytest.fixture()
+def filename():
+    """Returns a input file as produced by cohortextractor."""
+    def create(name='input_2020-01-01.csv'):
+        return (name)
+    return create
 
 @pytest.fixture()
 def input_file():
@@ -133,9 +132,14 @@ def multiple_indicator_list():
         "variable_d"
     ] )
 
-def test_file_format_check(good_file_format, bad_file_format):
-    assert utilities.match_input_files(good_file_format)==True
-    assert utilities.match_input_files(bad_file_format)==False
+class TestMatchInputFiles:
+    def test_good_file_format(self, filename):
+        good_file_format = filename() #has correct filename format
+        assert utilities.match_input_files(good_file_format)==True
+
+    def test_bad_file_format(self, filename):
+        bad_file_format = filename(name='input_01-01-2020.csv') #incorrect filename format
+        assert utilities.match_input_files(bad_file_format)==False
 
 def test_get_date_input_file(good_file_format, bad_file_format):
     # [1] Check that the correct date is extracted from a file name

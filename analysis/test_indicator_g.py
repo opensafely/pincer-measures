@@ -1,6 +1,9 @@
 import pandas as pd
+from pathlib import Path
 from utilities import OUTPUT_DIR, match_input_files, get_date_input_file
 
+BASE_DIR = Path(__file__).parents[1]
+OUTPUT_DIR = BASE_DIR / "output"
 
 matching_dict = {}
 

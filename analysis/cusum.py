@@ -214,7 +214,9 @@ def plot_median(array, results, filename):
         plt.tight_layout()
         plt.savefig(OUTPUT_DIR / filename)
         plt.clf()
-        
+
+demographics = ["age_band", "sex", "region", "imd", "care_home_type"]
+
 for i in indicators_list:
     df = pd.read_csv(OUTPUT_DIR / f'measure_indicator_{i}_rate.csv')
     df = df.replace(np.inf, np.nan) 
@@ -234,3 +236,19 @@ for i in indicators_list:
     
     plot_cusum(results, f'cusum_indicator_{i}.jpeg') 
     plot_median(percentile_array, results, f'alerts_indicator_{i}.jpeg')
+
+    for d in demographics:
+        df = pd.read_csv(OUTPUT_DIR / f'indicator_measure_{i}_{d}.csv')
+
+        df_deciles = compute_deciles(df,'rate', has_all_percentiles=True)
+    
+        df_50 = df_deciles[df_deciles['percentile']==50.0]
+
+        percentile = df_50['rate']
+        percentile_array = np.array(percentile)
+
+        cs = CUSUM(data= percentile_array, window_size=12)
+        results = cs.work()
+        
+        plot_cusum(results, f'cusum_indicator_{i}_{d}.jpeg') 
+        plot_median(percentile_array, results, f'alerts_indicator_{i}_{d}.jpeg')

@@ -13,7 +13,7 @@ actions:
   
   
   test_indicator_g:
-    run: python:latest analysis/test_indicator_g.py
+    run: jupyter:latest jupyter nbconvert /workspace/analysis/test_indicator_g.ipynb --execute --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400
     needs: [generate_study_population]
     outputs:
       moderately_sensitive:
@@ -21,7 +21,7 @@ actions:
         
 
   check_EGFR:
-    run: python:latest analysis/check_EGFR.py
+    run: jupyter:latest jupyter nbconvert /workspace/analysis/check_EGFR.ipynb --execute --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400
     needs: [generate_study_population]
     outputs:
       moderately_sensitive:

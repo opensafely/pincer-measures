@@ -787,6 +787,24 @@ for indicator in indicators_list:
         denominator=f"indicator_me_denominator",
         group_by=["practice"]
     )
+
+    elif indicator == 'g':
+        m = Measure(
+            id=f"indicator_{indicator}_rate",
+            numerator=f"indicator_{indicator}_numerator",
+            denominator=f"indicator_{indicator}_denominator",
+            group_by=["practice"]
+        )
+
+        m_2 = Measure(
+            id=f"indicator_{indicator}_alternative_rate",
+            numerator=f"indicator_{indicator}_numerator",
+            denominator=f"indicator_{indicator}_denominator_alternative",
+            group_by=["practice"]
+        )
+        measures.append(m_2)
+
+
     else:
         m = Measure(
             id=f"indicator_{indicator}_rate",

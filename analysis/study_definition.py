@@ -151,27 +151,27 @@ study = StudyDefinition(
         },
     ),
 
-    care_home_type=patients.care_home_status_as_of(
-        "index_date",
-        categorised_as={
-            "PC": """
-              IsPotentialCareHome
-              AND LocationDoesNotRequireNursing='Y'
-              AND LocationRequiresNursing='N'
-            """,
-            "PN": """
-              IsPotentialCareHome
-              AND LocationDoesNotRequireNursing='N'
-              AND LocationRequiresNursing='Y'
-            """,
-            "PS": "IsPotentialCareHome",
-            "U": "DEFAULT",
-        },
-        return_expectations={
-            "rate": "universal",
-            "category": {"ratios": {"PC": 0.05, "PN": 0.05, "PS": 0.05, "U": 0.85,},},
-        },
-    ),
+    # care_home_type=patients.care_home_status_as_of(
+    #     "index_date",
+    #     categorised_as={
+    #         "PC": """
+    #           IsPotentialCareHome
+    #           AND LocationDoesNotRequireNursing='Y'
+    #           AND LocationRequiresNursing='N'
+    #         """,
+    #         "PN": """
+    #           IsPotentialCareHome
+    #           AND LocationDoesNotRequireNursing='N'
+    #           AND LocationRequiresNursing='Y'
+    #         """,
+    #         "PS": "IsPotentialCareHome",
+    #         "U": "DEFAULT",
+    #     },
+    #     return_expectations={
+    #         "rate": "universal",
+    #         "category": {"ratios": {"PC": 0.05, "PN": 0.05, "PS": 0.05, "U": 0.85,},},
+    #     },
+    # ),
 
     ###
     # CO-PRESCRIBING-VARS

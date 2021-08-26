@@ -31,6 +31,25 @@ plt.tight_layout()
 plt.savefig(f"{OUTPUT_DIR}/BOXPLOT_EGFRvalue.png", format="png")
 plt.clf()
 
+# Plot all EGFR data in one histogram
+plt.figure(figsize=(8, 8))
+df['egfr'].plot(kind='hist')
+plt.title("EGFR values (all months)", weight='bold')
+plt.ylabel('EGFR value', weight='bold')
+plt.tight_layout()
+plt.savefig(f"{OUTPUT_DIR}/HISTOGRAM_EGFRvalue.png", format="png")
+plt.clf()
+
+# Plot all EGFR data in one histogram, using a log scale
+plt.figure(figsize=(8, 8))
+df['egfr'].plot(kind='hist')
+plt.xscale('log')
+plt.title("EGFR values (all months), logscale", weight='bold')
+plt.ylabel('EGFR value', weight='bold')
+plt.tight_layout()
+plt.savefig(f"{OUTPUT_DIR}/HISTOGRAM_EGFRvalue-log.png", format="png")
+plt.clf()
+
 # Plot EGFR data separated by the less than 45 flag
 plt.figure(figsize=(8, 8))
 df.boxplot(column='egfr', by=['egfr_less_than_45'])

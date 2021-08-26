@@ -44,7 +44,7 @@ plt.figure(figsize=(8, 8))
 df['egfr'].plot(kind='hist')
 plt.xscale('log')
 plt.title("EGFR values (all months), logscale", weight='bold')
-plt.ylabel('EGFR value', weight='bold')
+plt.xlabel('EGFR value (log)', weight='bold')
 plt.tight_layout()
 plt.savefig(f"{OUTPUT_DIR}/HISTOGRAM_EGFRvalue-log.png", format="png")
 plt.clf()
@@ -76,7 +76,7 @@ plt.tight_layout()
 plt.savefig(f"{OUTPUT_DIR}/BOXPLOT_EGFRvalue-by-month.png", format="png")
 plt.clf()
 
-# Plot EGFR data separated using groupby() to group by egfr_code
+# Plot EGFR data separated using groupby() to group by egfr_code - boxplot
 plt.figure(figsize=(16, 8))
 df.boxplot(column='egfr', by='egfr_code')
 plt.xticks(rotation='vertical')
@@ -86,6 +86,20 @@ plt.title("EGFR values (separated by EGFR code)", weight='bold')
 plt.suptitle('')
 plt.tight_layout()
 plt.savefig(f"{OUTPUT_DIR}/BOXPLOT_EGFRvalue-by-EGFRcode.png", format="png")
+plt.clf()
+
+# Plot EGFR data separated using groupby() to group by egfr_code - histogram
+plt.figure(figsize=(16, 8))
+egfr_hist = df.hist(column='egfr', by='egfr_code')
+
+for ax in egfr_hist.flatten():
+    ax.set_xlabel('EFGR value', weight='bold')
+    ax.set_ylabel("Frequency", weight='bold')
+
+plt.xticks(rotation='vertical')
+plt.suptitle("EGFR values (separated by EGFR code)", weight='bold')
+plt.tight_layout()
+plt.savefig(f"{OUTPUT_DIR}/HISTOGRAM_EGFRvalue-by-EGFRcode.png", format="png")
 plt.clf()
 
 # Generating crosstabulations: source by less_than_45 flag

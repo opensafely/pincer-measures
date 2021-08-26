@@ -16,7 +16,7 @@ for file in OUTPUT_DIR.iterdir():
         df = pd.read_csv(OUTPUT_DIR / file.name)
         df['source'] = file.stem
         #print(f"Reading EGFR data from {file.stem} ({len(df)})")
-        all_egfr_data.append(df[['egfr', 'egfr_less_than_45', 'source']])
+        all_egfr_data.append(df[['region', 'egfr', 'egfr_less_than_45', 'source']])
 
 
 df = pd.concat(all_egfr_data)
@@ -75,6 +75,18 @@ plt.title("EGFR values (separated by month)", weight='bold')
 plt.suptitle('')
 plt.tight_layout()
 plt.savefig(f"{OUTPUT_DIR}/BOXPLOT_EGFRvalue-by-month.png", format="png")
+plt.clf()
+
+# Plot EGFR data separated using groupby() to group by egfr_code
+plt.figure(figsize=(16, 8))
+df.boxplot(column='egfr', by='region')
+plt.xticks(rotation='vertical')
+plt.xlabel('EFGR code', weight='bold')
+plt.ylabel('EGFR value', weight='bold')
+plt.title("EGFR values (separated by EGFR code)", weight='bold')
+plt.suptitle('')
+plt.tight_layout()
+plt.savefig(f"{OUTPUT_DIR}/BOXPLOT_EGFRvalue-by-EGFRcode.png", format="png")
 plt.clf()
 
 # Generating crosstabulations: source by less_than_45 flag

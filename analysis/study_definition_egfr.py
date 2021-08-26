@@ -47,6 +47,20 @@ study = StudyDefinition(
         },
     ),
 
+    egfr_code=patients.with_these_clinical_events(
+        codelist=egfr_codelist,
+        find_last_match_in_period=True,
+        returning="code",
+        on_or_before="index_date - 3 months",
+        return_expectations={"category": {
+            "ratios": {
+                1011481000000105: 0.5,
+                1020291000000106: 0.5,
+                }}, 
+                },
+            
+    ),
+
     egfr_less_than_45_including_binary_flag = patients.categorised_as(
         {
             "0": "DEFAULT",
@@ -62,6 +76,24 @@ study = StudyDefinition(
                         },
             },
     ),
+
+    egfr_less_than_45 = patients.categorised_as(
+        {
+            "0": "DEFAULT",
+            "1": """ (egfr>=0) AND (egfr < 45)"""
+        },
+        return_expectations = {
+            "rate": "universal",
+            "category": {
+                        "ratios": {
+                            "0": 0.94,
+                            "1": 0.06,
+                                }
+                        },
+            },
+    ),
+
+
     
 
 )

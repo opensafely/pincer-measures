@@ -2,7 +2,7 @@ import pandas as pd
 import re
 import seaborn as sns
 
-from utilities import OUTPUT_DIR, match_input_files
+from utilities import OUTPUT_DIR, match_egfr_files
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -12,12 +12,11 @@ all_egfr_data = []
 
 # Collecting data for EGFR plots
 for file in OUTPUT_DIR.iterdir():
-    if match_input_files(file.name):
+    if match_egfr_files(file.name):
         df = pd.read_csv(OUTPUT_DIR / file.name)
         df['source'] = file.stem
         #print(f"Reading EGFR data from {file.stem} ({len(df)})")
-        all_egfr_data.append(df[['region', 'egfr', 'egfr_less_than_45', 'source']])
-
+        all_egfr_data.append(df[['egfr_code', 'egfr', 'egfr_less_than_45', 'source']])
 
 df = pd.concat(all_egfr_data)
 #print(f"Final data frame size: {df.shape}")
@@ -79,7 +78,7 @@ plt.clf()
 
 # Plot EGFR data separated using groupby() to group by egfr_code
 plt.figure(figsize=(16, 8))
-df.boxplot(column='egfr', by='region')
+df.boxplot(column='egfr', by='egfr_code')
 plt.xticks(rotation='vertical')
 plt.xlabel('EFGR code', weight='bold')
 plt.ylabel('EGFR value', weight='bold')

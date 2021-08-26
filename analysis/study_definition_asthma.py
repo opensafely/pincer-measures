@@ -44,6 +44,8 @@ study = StudyDefinition(
         return_expectations={"int" : {"distribution": "normal", "mean": 25, "stddev": 5}, "incidence" : 0.5}
     ),
 
+    
+
     asthma_resolved=patients.with_these_clinical_events(
         codelist=asthma_resolved_codelist,
         find_last_match_in_period=True,
@@ -51,12 +53,6 @@ study = StudyDefinition(
         include_date_of_match=True,
         date_format="YYYY-MM-DD",
         on_or_before="index_date",
-    ),
-
-    no_asthma_resolved = patients.satisfying(
-        """
-        NOT asthma_resolved
-        """,
     ),
 
     asthma=patients.with_these_clinical_events(
@@ -67,6 +63,15 @@ study = StudyDefinition(
         date_format="YYYY-MM-DD",
         on_or_before="index_date - 3 months",
     ),
+
+    no_asthma_resolved = patients.satisfying(
+        """
+        asthma AND
+        (NOT asthma_resolved)
+        """,
+    ),
+
+
     
 
     

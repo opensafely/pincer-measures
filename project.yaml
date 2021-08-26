@@ -15,7 +15,7 @@ actions:
     run: cohortextractor:latest generate_cohort --study-definition study_definition_egfr --index-date-range "2019-09-01 to 2021-07-01 by month" --skip-existing
     outputs:
       highly_sensitive:
-        cohort: output/input_egfr.csv
+        cohort: output/input_egfr_*.csv
   
   test_indicator_g:
     run: python:latest python analysis/test_indicator_g.py

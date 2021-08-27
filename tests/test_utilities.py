@@ -12,7 +12,7 @@ from pandas.api.types import is_datetime64_dtype, is_numeric_dtype
 @pytest.fixture()
 def filename():
     """Returns a input file as produced by cohortextractor."""
-    def create(name='input_2020-01-01.csv'):
+    def create(name='input_2020-01-01.feather'):
         return (name)
     return create
 
@@ -126,7 +126,7 @@ class TestMatchInputFiles:
         assert utilities.match_input_files(good_file_format)==True
 
     def test_bad_file_format(self, filename):
-        bad_file_format = filename(name='input_01-01-2020.csv') #incorrect filename format
+        bad_file_format = filename(name='input_01-01-2020.feather') #incorrect filename format
         assert utilities.match_input_files(bad_file_format)==False
 
 def test_get_date_input_file(filename):
@@ -137,7 +137,7 @@ def test_get_date_input_file(filename):
     # [2] Check that an exception is raised if the file is not in the
     #     correct format
     
-    bad_file_format = filename(name='input_01-01-2020.csv')
+    bad_file_format = filename(name='input_01-01-2020.feather')
     try:
         utilities.get_date_input_file(bad_file_format)
     except Exception as exc:
@@ -181,19 +181,19 @@ def test_join_ethnicity_region(tmp_path, input_file, input_file_ethnicity):
 
     with patch.object(utilities, "OUTPUT_DIR", tmp_path):
         
-        input_file.to_csv(utilities.OUTPUT_DIR / 'input_2020-01-01.csv', index=False)
+        input_file.to_feather(utilities.OUTPUT_DIR / 'input_2020-01-01.feather')
         
         
-        input_file_ethnicity.to_csv(utilities.OUTPUT_DIR / 'input_ethnicity.csv', index=False)
+        input_file_ethnicity.to_feather(utilities.OUTPUT_DIR / 'input_ethnicity.feather')
        
         utilities.join_ethnicity_region(utilities.OUTPUT_DIR)
-        merged_csv = pd.read_csv(utilities.OUTPUT_DIR / 'input_2020-01-01.csv')
+        merged_df = pd.read_feather(utilities.OUTPUT_DIR / 'input_2020-01-01.feather')
       
         #test that ethnicity vars match corresponding patient_ids
-        testing.assert_series_equal(merged_csv['ethnicity'], pd.Series([1, 2, 2, 1, 3], name='ethnicity'))
+        testing.assert_series_equal(merged_df['ethnicity'], pd.Series([1, 2, 2, 1, 3], name='ethnicity'))
         
         #test that region column is as expected
-        testing.assert_series_equal(merged_csv['region'], pd.Series(['East of England', 'East of England', 'East of England', 'North West', 'North West'], name='region'))
+        testing.assert_series_equal(merged_df['region'], pd.Series(['East of England', 'East of England', 'East of England', 'North West', 'North West'], name='region'))
         
 
 @pytest.mark.parametrize( "redact_threshold", [ -1, 0, 10, 100 ] )

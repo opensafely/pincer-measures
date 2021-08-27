@@ -148,5 +148,5 @@ df['negative_egfr'] = df['egfr']<0
 df['egfr_over_200'] = df['egfr']>200
 
 
-pd.crosstab(index=df['egfr_code'], columns=[df['egfr_binary_flag'], df['egfr_less_than_45'], df['egfr_less_than_45_including_binary_flag'], df['negative_egfr'], df['egfr_over_200']]).to_csv(f"{OUTPUT_DIR}/CROSSTAB_combined.csv")
+df.groupby(by=['egfr_code','egfr_binary_flag','egfr_less_than_45','egfr_less_than_45_including_binary_flag', 'negative_egfr'])[['egfr_code','egfr_binary_flag','egfr_less_than_45','egfr_less_than_45_including_binary_flag', 'negative_egfr']].count().to_csv(f"{OUTPUT_DIR}/CROSSTAB_combined.csv")
 

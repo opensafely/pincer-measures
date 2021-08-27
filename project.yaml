@@ -10,6 +10,12 @@ actions:
     outputs:
       highly_sensitive:
         cohort: output/input_*.csv
+
+  generate_study_egfr:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_egfr --index-date-range "2019-09-01 to 2021-07-01 by month" --skip-existing
+    outputs:
+      highly_sensitive:
+        cohort: output/input_egfr_*.csv
   
   test_indicator_g:
     run: python:latest python analysis/test_indicator_g.py
@@ -18,15 +24,15 @@ actions:
       moderately_sensitive:
         csv: output/indicator_g_matching.csv
         
-
   check_EGFR:
     run: python:latest python analysis/check_EGFR.py
-    needs: [generate_study_population]
+    needs: [generate_study_egfr]
     outputs:
       moderately_sensitive:
-        plots: output/BOXPLOT_*.png
+        boxplots: output/BOXPLOT_*.png
+        histograms: output/HISTOGRAM_*.png
         counts: output/CROSSTAB_*.csv
-        
+
   generate_study_population_ethnicity:
     run: cohortextractor:latest generate_cohort --study-definition study_definition_ethnicity
     outputs:

@@ -9,7 +9,7 @@ matching_dict = {}
 
 for file in OUTPUT_DIR.iterdir():
     if match_input_files(file.name):
-        df = pd.read_csv(OUTPUT_DIR / file.name)
+        df = pd.read_feather(OUTPUT_DIR / file.name)
         date = get_date_input_file(file.name)
 
         if df['indicator_g_denominator'].equals(df['indicator_g_denominator_alternative']):

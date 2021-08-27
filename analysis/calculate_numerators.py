@@ -6,7 +6,7 @@ for file in OUTPUT_DIR.iterdir():
     if match_input_files(file.name):
     
         chunks=[]
-        for df in pd.read_csv(OUTPUT_DIR / file.name, chunksize=50_000):
+        for df in pd.read_feather(OUTPUT_DIR / file.name, chunksize=50_000):
         
             # for indicator E
             co_prescription(df, "anticoagulant", "antiplatelet_including_aspirin")
@@ -21,6 +21,6 @@ for file in OUTPUT_DIR.iterdir():
             chunks.append(df)
 
         df = pd.concat(chunks)
-        df.to_csv(OUTPUT_DIR / file.name, index=False)
+        df.to_feather(OUTPUT_DIR / file.name, index=False)
 
 

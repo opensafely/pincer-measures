@@ -6,16 +6,16 @@ expectations:
 actions:
 
   generate_study_population:
-    run: cohortextractor:latest generate_cohort --study-definition study_definition --index-date-range "2019-09-01 to 2021-07-01 by month" --skip-existing
+    run: cohortextractor:latest generate_cohort --study-definition study_definition --index-date-range "2019-09-01 to 2021-07-01 by month" --output-format feather
     outputs:
       highly_sensitive:
-        cohort: output/input_*.csv
+        cohort: output/input_*.feather
 
   generate_study_egfr:
-    run: cohortextractor:latest generate_cohort --study-definition study_definition_egfr --index-date-range "2019-09-01 to 2021-07-01 by month" --skip-existing
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_egfr --index-date-range "2019-09-01 to 2021-07-01 by month" --output-format feather
     outputs:
       highly_sensitive:
-        cohort: output/input_egfr_*.csv
+        cohort: output/input_egfr_*.feather
   
   test_indicator_g:
     run: python:latest python analysis/test_indicator_g.py
@@ -34,24 +34,24 @@ actions:
         counts: output/CROSSTAB_*.csv
 
   generate_study_population_ethnicity:
-    run: cohortextractor:latest generate_cohort --study-definition study_definition_ethnicity
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_ethnicity --output-format feather
     outputs:
       highly_sensitive:
-        cohort: output/input_ethnicity.csv
+        cohort: output/input_ethnicity.feather
       
   join_ethnicity_region:
     run: python:latest python analysis/join_ethnicity_region.py
     needs: [generate_study_population, generate_study_population_ethnicity]
     outputs:
       highly_sensitive:
-        cohort: output/input*.csv
+        cohort: output/input*.feather
 
   calculate_numerators:
     run: python:latest python analysis/calculate_numerators.py
     needs: [join_ethnicity_region]
     outputs:
       highly_sensitive:
-        cohort: output/inpu*.csv
+        cohort: output/inpu*.feather
 
   calculate_composite_indicators:
     run: python:latest python analysis/composite_indicators.py
@@ -68,10 +68,10 @@ actions:
           measure_csv: output/measure_*_rate.csv
 
   generate_study_asthma:
-    run: cohortextractor:latest generate_cohort --study-definition study_definition_asthma --index-date-range "2019-09-01 to 2021-07-01 by month" --skip-existing
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_asthma --index-date-range "2019-09-01 to 2021-07-01 by month" --output-format feather
     outputs:
       highly_sensitive:
-        cohort: output/input_asthma_*.csv
+        cohort: output/input_asthma_*.feather
   
   generate_measures_asthma:
     run: cohortextractor:latest generate_measures --study-definition study_definition_asthma --output-dir=output

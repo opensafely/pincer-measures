@@ -377,6 +377,14 @@ study = StudyDefinition(
         on_or_before="index_date",
     ),
 
+    no_asthma_resolved = patients.satisfying(
+        """
+        asthma AND
+        (NOT asthma_resolved)
+        """,
+    ),
+
+
     non_selective_bb = patients.with_these_medications(
         codelist = non_selective_bb_codelist, 
         find_last_match_in_period=True,
@@ -821,3 +829,12 @@ for indicator in indicators_list:
         )
 
     measures.append(m)
+
+measures.append(
+    Measure(
+        id=f"no_asthma_resolved_rate",
+        numerator=f"no_asthma_resolved",
+        denominator=f"population",
+        group_by=["practice"]
+    )
+)

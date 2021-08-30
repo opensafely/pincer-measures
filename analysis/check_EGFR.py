@@ -143,3 +143,10 @@ EGFRcode_by_EGFRbinary_crosstabs.to_csv(f"{OUTPUT_DIR}/CROSSTAB_EGFRcode-by-EGFR
 # Q: to what extent do egfr_less_than_45 and egfr_less_than_45_including_binary_flag agree?
 EGFRcode_by_EGFRbinary_crosstabs = pd.crosstab(index=df['egfr_less_than_45'], columns=df['egfr_less_than_45_including_binary_flag'])
 EGFRcode_by_EGFRbinary_crosstabs.to_csv(f"{OUTPUT_DIR}/CROSSTAB_EGFR45flag-by-EGFR45flagbinary.csv")
+
+df['negative_egfr'] = df['egfr']<0
+df['egfr_over_200'] = df['egfr']>200
+df['egfr_0'] = df['egfr']==0
+
+
+df.groupby(by=['egfr_code','egfr_binary_flag','egfr_less_than_45','egfr_less_than_45_including_binary_flag', 'negative_egfr', 'egfr_over_200', 'egfr_0'])[['egfr_code']].count().to_csv(f"{OUTPUT_DIR}/CROSSTAB_combined.csv")

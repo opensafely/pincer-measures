@@ -63,11 +63,13 @@ def join_ethnicity_region(directory: str) -> None:
         dtype={"MSOA11CD": "category", "RGN11NM": "category"},
     )
 
+    ethnicity_dict = dict(zip(ethnicity_df['patient_id'], ethnicity_df['ethnicity']))
+    msoa_dict =  dict(zip(msoa_to_region['MSOA11CD'], msoa_to_region['RGN11NM']))    
+
     for file in filelist:
         if match_input_files(file.name):
             df = pd.read_feather(dirpath / file.name)
-            ethnicity_dict = dict(zip(ethnicity_df['patient_id'], ethnicity_df['ethnicity']))
-            msoa_dict =  dict(zip(msoa_to_region['MSOA11CD'], msoa_to_region['RGN11NM']))    
+        
             df['ethnicity'] = df['patient_id'].map(ethnicity_dict)
             df['region'] = df['msoa'].map(msoa_dict)
             df.to_feather(dirpath / file.name)

@@ -22,6 +22,7 @@ study = StudyDefinition(
     population=patients.satisfying(
        """
        registered AND
+       NOT died AND
        (age >=18 AND age <=120) AND
        (
            (age >=65 AND ppi) OR
@@ -41,6 +42,12 @@ study = StudyDefinition(
     ),
 
     registered = patients.registered_as_of("index_date"),
+
+    died = patients.died_from_any_cause(
+        on_or_before="index_date",
+        returning="binary_flag",
+        return_expectations={"incidence": 0.1}
+        ),
 
     practice=patients.registered_practice_as_of(
         "index_date",

@@ -2,7 +2,7 @@ import pandas as pd
 import re
 import seaborn as sns
 
-from utilities import OUTPUT_DIR, match_egfr_files
+from utilities import OUTPUT_DIR, match_input_files
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -12,8 +12,8 @@ all_egfr_data = []
 
 # Collecting data for EGFR plots
 for file in OUTPUT_DIR.iterdir():
-    if match_egfr_files(file.name):
-        df = pd.read_csv(OUTPUT_DIR / file.name)
+    if match_input_files(file.name):
+        df = pd.read_feather(OUTPUT_DIR / file.name)
         df['source'] = file.stem
         #print(f"Reading EGFR data from {file.stem} ({len(df)})")
         all_egfr_data.append(df[['egfr_code', 'egfr', 'egfr_binary_flag',

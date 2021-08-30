@@ -26,13 +26,10 @@ CENTER = 10
 
 def match_input_files(file: str) -> bool:
     """Checks if file name has format outputted by cohort extractor"""
-    pattern = r'^input_20\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\.csv' 
+    pattern = r'^input_20\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\.feather' 
     return True if re.match(pattern, file) else False
 
-def match_egfr_files( file: str ) -> bool:
-    """Checks if file name has format outputted by cohort extractor (EGFR values)"""
-    pattern = r'^input_egfr_2021-07-01.csv'
-    return True if re.match(pattern, file) else False
+
 
 def get_date_input_file(file: str) -> str:
     """Gets the date in format YYYY-MM-DD from input file name string"""
@@ -41,7 +38,7 @@ def get_date_input_file(file: str) -> str:
         raise Exception('Not valid input file format')
     
     else:
-        date = result = re.search(r'input_(.*)\.csv', file)
+        date = result = re.search(r'input_(.*)\.feather', file)
         return date.group(1)
 
 def validate_directory(dirpath):
@@ -49,14 +46,14 @@ def validate_directory(dirpath):
         raise ValueError(f"Not a directory")
 
 def join_ethnicity_region(directory: str) -> None:
-    """Finds 'input_ethnicity.csv' in directory and combines with each input file."""
-
+    """Finds 'input_ethnicity.feather' in directory and combines with each input file."""
+    
     dirpath = Path(directory)
     validate_directory(dirpath)
     filelist = dirpath.iterdir()
 
     #get ethnicity input file
-    ethnicity_df = pd.read_csv(dirpath / 'input_ethnicity.csv')
+    ethnicity_df = pd.read_feather(dirpath / 'input_ethnicity.feather')
     
     ## ONS MSOA to region map from here:
     ## https://geoportal.statistics.gov.uk/datasets/fe6c55f0924b4734adf1cf7104a0173e_0/data
@@ -68,16 +65,16 @@ def join_ethnicity_region(directory: str) -> None:
 
     for file in filelist:
         if match_input_files(file.name):
-            df = pd.read_csv(dirpath / file.name)
-            merged_df = df.merge(
-                ethnicity_df, how='left', on='patient_id'
-                ).merge(
-                msoa_to_region, how="left", left_on="msoa", right_on="MSOA11CD", copy=False)
+            df = pd.read_feather(dirpath / file.name)
+            ethnicity_dict = dict(zip(ethnicity_df['patient_id'], ethnicity_df['ethnicity']))
+            msoa_dict =  dict(zip(msoa_to_region['MSOA11CD'], msoa_to_region['RGN11NM']))    
+            df['ethnicity'] = df['patient_id'].map(ethnicity_dict)
+            df['region'] = df['msoa'].map(msoa_dict)
+            df.to_feather(dirpath / file.name)
 
-            # rename region column
-            merged_df = merged_df.rename({"RGN11NM":"region"}, axis=1)
             
-            merged_df.to_csv(dirpath / file.name, index=False)
+
+
 
 def calculate_rate(df, value_col: str, population_col: str, rate_per: int): 
     """Calculates the rate of events for given number of the population.

@@ -8,7 +8,7 @@ from utilities import OUTPUT_DIR
 #from study_definition import indicators_list
 
 ### Importing the local change_detection functions
-sys.path.append('../bin')
+# sys.path.append('bin')
 from change_detection import functions as chg
 
 indicators_list = ["a", "b", "c", "d", "e", "f", "g",

@@ -223,11 +223,15 @@ class ChangeDetection(object):
         ### Checking input formatting                             ###
         #############################################################
         
-        ### If the user nas specified other column
+        ### If the user has specified other column
         ### names via the [code/date/numerator/denominator}_variable
         ### arguments, then these are replaced with the expected
-        ### column names in amend_column_names.
-        input_df = self.amend_column_names(input_df)
+        ### column names in amend_column_names. If the columns
+        ### provided don't exist, throw an exception.
+        try:
+            input_df = self.amend_column_names(input_df)
+        except KeyError as e:
+            raise KeyError( f"[ERROR] Field {e} does not exist in the input file")
 
         ### If expected column names are still missing, an
         ### exception will be thrown.

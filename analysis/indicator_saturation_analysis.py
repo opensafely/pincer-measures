@@ -2,6 +2,7 @@ import logging
 import multiprocessing
 import sys
 import pandas as pd
+import argparse
 
 from utilities import OUTPUT_DIR
 #from study_definition import indicators_list
@@ -15,24 +16,37 @@ indicators_list = ["a", "b", "c", "d", "e", "f", "g",
 
 if __name__ == '__main__':
 
-    indicators_list_arguments = sys.argv[1:]
-    invalid_indicators = [item for item in indicators_list_arguments if item not in indicators_list]
+    argv = sys.argv[1:]
 
-    if len(invalid_indicators) == 0:
-        multiprocessing.log_to_stderr()
-        logger = multiprocessing.get_logger()
-        logger.setLevel(logging.INFO)
+    p = argparse.ArgumentParser(description="Run an indicator saturation analysis",
+    allow_abbrev=True)
+
+    p.add_argument('-indicator', type=str, help='the indicator id',
+                   choices=indicators_list, required=True)
+    p.add_argument('-numerator', type=str, help='the numerator column')
+    p.add_argument('-denominator', type=str, help='the denominator column')
+
+    args = p.parse_args()        
+
+    if args.numerator == None:
+        args.numerator = f"indicator_{args.indicator}_numerator"
+
+    if args.denominator==None:
+        args.denominator = f"indicator_{args.indicator}_denominator"
+
+    multiprocessing.log_to_stderr()
+    logger = multiprocessing.get_logger()
+    logger.setLevel(logging.INFO)
         
-        for i in indicators_list_arguments:
-            measures_file = f"{OUTPUT_DIR}/measure_indicator_{i}_rate.csv"
+    measures_file = f"{OUTPUT_DIR}/measure_indicator_{args.indicator}_rate.csv"
 
-            print( f"Processing measure [{i}]: {measures_file}")
+    print( f"Processing measure [{args.indicator}]: {measures_file}")
 
-            measure_indicator = chg.ChangeDetection(f'indicator_saturation_{i}',
+    measure_indicator = chg.ChangeDetection(f'indicator_saturation_{args.indicator}',
                                     verbose=True,
                                     code_variable="practice",
-                                    numerator_variable=f"indicator_{i}_numerator",
-                                    denominator_variable=f"indicator_{i}_denominator",
+                                    numerator_variable=args.numerator,
+                                    denominator_variable=args.denominator,
                                     date_variable="date",
                                     date_format="%Y-%m-%d",
                                     overwrite=True,
@@ -40,6 +54,4 @@ if __name__ == '__main__':
                                     base_dir=OUTPUT_DIR,
                                     data_subdir='indicator_saturation',
                                     csv_name=measures_file)
-            measure_indicator.run()
-    else:
-        raise NameError(f"Invalid indicators provided: {','.join(invalid_indicators)}")
+    measure_indicator.run()

@@ -298,7 +298,7 @@ def test_co_prescription(input_file):
     
     testing.assert_series_equal(
         input_file['co_prescribed_medications_x_medications_y'],
-        pd.Series([True, False, False, True, False], name='co_prescribed_medications_x_medications_y'),
+        pd.Series([1, 0, 0, 1, 0], name='co_prescribed_medications_x_medications_y'),
     )
     
     

@@ -437,4 +437,6 @@ def co_prescription(df, medications_x: str, medications_y: str) -> None:
     )
     
     )
+
+    df[f"co_prescribed_{medications_x}_{medications_y}"] = df[f"co_prescribed_{medications_x}_{medications_y}"].map({False: 0, True: 1})
     

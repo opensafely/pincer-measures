@@ -324,7 +324,7 @@ def get_composite_indicator_counts(df, numerators, denominator: str, date: str):
     """
     indicator_num = df.loc[:, numerators].sum(axis=1)
     count_df = indicator_num.value_counts().reset_index()
-    count_df = count_df.rename(columns={'index':'num_indicators', 0:'count'})
+    count_df = count_df.rename(columns={'index':'num_indicators', 0:'count'}).sort_values(by='num_indicators')
 
     # drop count of individuals with no indicators within composite
     count_df = count_df[count_df['num_indicators']!= 0]

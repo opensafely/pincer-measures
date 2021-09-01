@@ -274,7 +274,8 @@ def test_compute_deciles(measure_table, has_outer_percentiles, num_rows):
 def test_get_composite_indicator_counts(input_file, multiple_indicator_list):
     composite_results = utilities.get_composite_indicator_counts(
         input_file, multiple_indicator_list, "composite_denominator", "2020-10-10")
-
+    composite_results.index = [0, 1, 2]
+    
     testing.assert_frame_equal(
         composite_results,
         pd.DataFrame(

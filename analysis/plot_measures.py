@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 for i in indicators_list:
     # indicator plots
     df = pd.read_csv(OUTPUT_DIR / f"measure_indicator_{i}_rate.csv", parse_dates=["date"])
-
+    df = drop_irrelevant_practices(df)
     if i in ["me_no_fbc", "me_no_lft"]:
         denominator = "indicator_me_denominator"
                     

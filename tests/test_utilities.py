@@ -57,43 +57,16 @@ def input_file_ethnicity():
     )
 
 @pytest.fixture
-def measure_table_from_csv():
-    """Returns a measure table that could have been read from a CSV file.
-
-    Practice ID #1 is irrelevant; that is, it has zero events during
-    the study period.
-    """
-    return pd.DataFrame(
-        {
-            "practice": pd.Series([1, 2, 3, 1, 2]),
-            "systolic_bp_event_code": pd.Series([1, 1, 2, 1, 1]),
-            "systolic_bp": pd.Series([0, 1, 1, 0, 1]),
-            "population": pd.Series([1, 1, 1, 1, 1]),
-            "value": pd.Series([0, 1, 1, 0, 1]),
-            "date": pd.Series(
-                [
-                    "2019-01-01",
-                    "2019-01-01",
-                    "2019-01-01",
-                    "2019-02-01",
-                    "2019-02-01",
-                ]
-            ),
-        }
-    )
-
-
-@pytest.fixture
 def measure_table():
     """Returns a measure table that could have been read by calling `load_and_drop`."""
     mt = pd.DataFrame(
         {
-            "practice": pd.Series([2, 3, 2]),
-            "systolic_bp_event_code": pd.Series([1, 2, 1]),
-            "systolic_bp": pd.Series([1, 1, 1]),
-            "population": pd.Series([1, 1, 1]),
-            "value": pd.Series([1, 1, 1]),
-            "date": pd.Series(["2019-01-01", "2019-01-01", "2019-02-01"]),
+            "practice": pd.Series([1, 2, 3, 1, 2]),
+            "systolic_bp_event_code": pd.Series([np.nan,1, 2, np.nan, 1]),
+            "systolic_bp": pd.Series([0, 1, 1, 0, 1]),
+            "population": pd.Series([1,1, 1, 1, 1]),
+            "value": pd.Series([0,1, 1, 0, 1]),
+            "date": pd.Series(["2019-01-01", "2019-01-01", "2019-01-01", "2019-02-01","2019-02-01"]),
         }
     )
     mt["date"] = pd.to_datetime(mt["date"])
@@ -235,15 +208,15 @@ def test_calculate_rate():
 
 
 class TestDropIrrelevantPractices:
-    def test_irrelevant_practices_dropped(self, measure_table_from_csv):
-        obs = utilities.drop_irrelevant_practices(measure_table_from_csv)
+    def test_irrelevant_practices_dropped(self, measure_table):
+        obs = utilities.drop_irrelevant_practices(measure_table)
         # Practice ID #1, which is irrelevant, has been dropped from
         # the measure table.
         assert all(obs.practice.values == [2, 3, 2])
 
-    def test_return_copy(self, measure_table_from_csv):
-        obs = utilities.drop_irrelevant_practices(measure_table_from_csv)
-        assert id(obs) != id(measure_table_from_csv)
+    def test_return_copy(self, measure_table):
+        obs = utilities.drop_irrelevant_practices(measure_table)
+        assert id(obs) != id(measure_table)
 
 @pytest.mark.parametrize(
     "has_outer_percentiles,num_rows",
@@ -301,6 +274,5 @@ def test_co_prescription(input_file):
         input_file['co_prescribed_medications_x_medications_y'],
         pd.Series([1, 0, 0, 1, 0], name='co_prescribed_medications_x_medications_y'),
     )
-    
-    
+
 

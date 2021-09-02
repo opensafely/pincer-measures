@@ -1,0 +1,180 @@
+setClass("ChangeDetection",
+         representation(
+             name = 'character',
+             verbose = 'logical',
+             sample='logical',
+             measure='logical',
+             custom_measure='logical',
+             num_cores = 'numeric',
+             code_variable = 'character',
+             numerator_variable = 'character',
+             denominator_variable = 'character',
+             date_variable = 'character',
+             date_format = "character",
+             indir = 'character',
+             outdir = 'character',
+             direction='character',
+             use_cache='logical',
+             csv_name='character',
+             overwrite='logical',
+             draw_figures='logical',
+             bq_folder='character',
+             expected_columns = 'list',
+             working_dir = 'character'
+         ),
+         prototype(name = NA_character_,
+                   verbose = FALSE,
+                   sample = FALSE,
+                   measure = FALSE,
+                   custom_measure=FALSE,
+                   num_cores = detectCores() - 1,
+                   code_variable = 'code',
+                   numerator_variable = NA_character_,
+                   denominator_variable = NA_character_,
+                   date_variable = 'month',
+                   date_format = "%Y-%m-%d",
+                   indir = getwd(),
+                   outdir = 'output',
+                   direction='both',
+                   use_cache=TRUE,
+                   csv_name='bq_cache.csv',
+                   overwrite=FALSE,
+                   draw_figures=FALSE,
+                   bq_folder='measures',
+                   expected_columns=list(),
+                   working_dir = NA_character_)
+         )
+
+ChangeDetection <- function(...) {
+    a = new("ChangeDetection", ...)
+
+    a@expected_columns = list(
+        code = a@code_variable,
+        month = a@date_variable,
+        numerator = a@numerator_variable,
+        denominator = a@denominator_variable
+    )
+
+    return( a )
+}
+
+report_info = function(cd, m) {
+    if ( cd@verbose )  cat( sprintf( "[INFO::%s] %s\n", cd@name, m ) )
+}
+
+report_error = function(cd, m) {
+    return( glue( "[ERROR::{cd@name}] {m}\n", ) )
+}
+
+get_working_dir = function(cd) {
+    folder_name = cd@name %>% str_replace( '%', '' )
+    return( glue("{cd@outdir}/{folder_name}") )
+}
+
+create_dirs = function(cd) {
+    dir.create(cd@working_dir, showWarnings = FALSE)
+    dir.create(glue("{cd@working_dir}/figures"), showWarnings = FALSE)
+} 
+
+identify_missing_column_names = function(required_fields,df) {
+    return( setdiff( required_fields, colnames(df) ) %>% unlist )
+}
+
+amend_column_names = function(cd,df) {
+    return( df %>% rename( !!!syms(cd@expected_columns) ) )
+}
+
+check_date_format = function(cd, x) {
+    report_info( cd, glue( "Checking date format {cd@date_format}") )
+    return( any( is.na(as.Date(x, format=cd@date_format)) ) )
+}
+
+reformat_date = function(cd, x) {
+    report_info( cd, glue( "Checking date format {cd@date_format}") )
+    return( as.Date(x, format='%Y-%m-%d') )
+}
+
+shape_dataframe = function(cd) {
+    input_file = glue( "{cd@indir}/{cd@csv_name}" ) 
+    input_data = read_csv( input_file, col_types = cols() )
+
+    ### Check that all the expected columns exist in the data
+    missing_columns = identify_missing_column_names( cd@expected_columns, input_data )
+    if ( length(missing_columns)>0 ) {
+        stop( report_error( cd, glue( "Expected column missing: '{missing_columns}'" ) ) )
+    }
+
+    ### Amend column names as required to produce expected format
+    input_data = amend_column_names( cd, input_data )
+
+    ### Check that the date is in the expected format
+    input_data = input_data %>% mutate( month = as.Date(as.character(month),format=cd@date_format) )
+    if ( any( is.na(input_data %>% pull(month)) ) ) {
+        stop( report_error( cd, c( glue("Field '{cd@date_variable}' is not of the format '{cd@date_format}'"),
+                                   glue("Try using the -Y flag to specify the date format used in the input file") ) )
+        )
+    }
+
+    input_data = input_data %>% mutate( month = as.Date(month, format="%Y-%m-%d"))
+
+    ### Retain only those data that we're expecting
+    input_data = input_data %>% select( !!!syms(cd@expected_columns %>% names) )
+    
+    ### Calculation of new variables
+    input_data = input_data %>% arrange( code, month ) %>% 
+        ### Calculate the ratio
+        mutate( ratio = numerator/denominator ) %>% 
+        ### Modify the 'code' variable as expected
+        mutate( code = glue({"ratio_quantity.{code}"})) %>% 
+        ### Remove the numerator and denominator columns
+        select( -numerator, -denominator ) %>% 
+        ### Replace values of +/-infinity to NA
+        mutate( ratio = ifelse(is.infinite(ratio), NA, ratio ) )
+    
+    
+    ### TO DO: DROP COLUMNS WITH IDENTICAL VALUES? this would only be ratio??
+    ### TO DO: DROP COLUMNS WITH HIGH PROPORTION OF NAs? this would only be ratio??
+    ### TO DO: HAVE INDEX BE NUMBER OF SECONDS FROM 1970-01-01
+    
+    if ( cd@sample ) {
+        input_data = input_data %>% sample_n(df, 100, seed=1234)
+    }
+    
+    return(input_data)
+    
+}
+
+check_input_file_exists = function(cd) {
+
+    if ( file.exists( glue( "{cd@indir}/{cd@csv_name}" ) ) ) {
+        
+        ### Create working directory
+        cd@working_dir = get_working_dir(cd)
+        report_info( cd, glue("working directory set to: {cd@working_dir}") )
+        create_dirs( cd )
+        
+    } else {
+        stop( report_error( cd, glue( "input file does not exist: {cd@indir}/{cd@csv_name}" ) ) )
+    }
+}
+
+detect_change = function(cd) {
+
+    #####################################################################
+    ### Launch R scripts ################################################
+    #####################################################################
+    
+    #[Rscript /Users/lisahopcroft/Work/Projects/PINCER/pincer-measures/analysis/change_detection/change_detection.R /Users/lisahopcroft/Work/Projects/PINCER/pincer-measures/output/indicator_saturation/indicator_saturation_f r_input_0.csv r_intermediate_0.RData]
+    #[Rscript /Users/lisahopcroft/Work/Projects/PINCER/pincer-measures/analysis/change_detection/results_extract.R /Users/lisahopcroft/Work/Projects/PINCER/pincer-measures/output/indicator_saturation/indicator_saturation_f r_intermediate_0.RData r_output_0.csv /Users/lisahopcroft/Work/Projects/PINCER/pincer-measures/analysis/change_detection both yes]
+    
+}
+
+run = function(cd) {
+    report_info( cd, "running new change detection..." )
+    
+    check_input_file_exists( cd )
+    df = shape_dataframe( cd )
+    
+    report_info( cd, "change detection analysis complete")
+
+}

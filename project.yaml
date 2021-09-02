@@ -74,7 +74,7 @@ actions:
         counts: output/plot_*.jpeg
 
   cusum:
-    run: python:latest analysis/cusum.py
+    run: python:latest python analysis/cusum.py
     needs: [generate_measures, generate_measures_demographics]
     outputs:
       highly_sensitive:

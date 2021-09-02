@@ -31,5 +31,16 @@ for i in indicators_list:
     # demographic plots
     for d in demographics:
         df = pd.read_csv(OUTPUT_DIR / f"indicator_measure_{i}_{d}.csv")
+
+        if d == 'sex':
+            df = df[df['sex'].isin(['M', 'F'])]
+        
+        elif d == 'imd':
+            df = df[df['imd'] != 0]
+        
+        elif d == 'age_band':
+            df = df[df['age_band'] !='missing']
+
+
         plot_measures(df = df, filename=f"plot_{i}_{d}", title=f"Indicator {i} by {d}",  column_to_plot = "rate", y_label = 'Rate per 1000', as_bar=False, category = d)
 

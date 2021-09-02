@@ -45,23 +45,9 @@ actions:
       highly_sensitive:
         cohort: output/inp*.feather
 
-  calculate_numerators:
-    run: python:latest python analysis/calculate_numerators.py
-    needs: [join_ethnicity_region]
-    outputs:
-      highly_sensitive:
-        cohort: output/in*.feather
-
-  calculate_composite_indicators:
-    run: python:latest python analysis/composite_indicators.py
-    needs: [calculate_numerators]
-    outputs:
-      moderately_sensitive:
-        counts: output/*_composite_measure.csv
-
   generate_measures:
     run: cohortextractor:latest generate_measures --study-definition study_definition --output-dir=output
-    needs: [calculate_numerators]
+    needs: [join_ethnicity_region]
     outputs:
         moderately_sensitive:
           measure_csv: output/measure_*_rate.csv
@@ -75,14 +61,14 @@ actions:
   
   generate_measures_demographics:
     run: python:latest python analysis/calculate_measures.py
-    needs: [calculate_numerators]
+    needs: [join_ethnicity_region]
     outputs:
       moderately_sensitive:
         counts: output/indicator_measure_*.csv
   
   generate_plots:
     run: python:latest python analysis/plot_measures.py
-    needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
+    needs: [generate_measures, generate_measures_demographics]
     outputs:
       moderately_sensitive:
         counts: output/plot_*.jpeg

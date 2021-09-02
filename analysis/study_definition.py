@@ -830,7 +830,7 @@ measures = [
     )
 ]
 
-indicators_list = ["a", "b", "c", "d", "e", "f", "g", "i", "k", "ac", "me_no_fbc", "me_no_lft", "li", "am"]
+indicators_list = ["a", "b", "c", "d", "g", "i", "k", "ac", "me_no_fbc", "me_no_lft", "li", "am"]
 
 for indicator in indicators_list:
 

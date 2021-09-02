@@ -84,7 +84,7 @@ actions:
 
   cusum:
     run: python:latest analysis/cusum.py
-    needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
+    needs: [generate_measures, generate_measures_demographics]
     outputs:
       highly_sensitive:
         cusum: output/cusum*.jpeg

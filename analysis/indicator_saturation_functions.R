@@ -25,7 +25,9 @@ setClass("ChangeDetection",
              min_NA_proportion = 'numeric',
              r_command = 'character',
              change_detection_location = 'character',
-             change_detection_script = 'character'
+             change_detection_script = 'character',
+             results_extract_location = 'character',
+             results_extract_script = 'character'
          ),
          prototype(name = NA_character_,
                    verbose = FALSE,
@@ -51,8 +53,10 @@ setClass("ChangeDetection",
                    code_tag = 'ratio_quantity.',
                    min_NA_proportion = 0.5,
                    r_command = 'Rscript',
-                   change_detection_location = 'change_detection',
-                   change_detection_script = 'change_detection.R' )
+                   change_detection_location = glue("{getwd()}/change_detection"),
+                   change_detection_script = 'change_detection.R',
+                   results_extract_location = glue("{getwd()}/change_detection"),
+                   results_extract_script = 'results_extract.R' )
          )
 
 ChangeDetection <- function(...) {
@@ -283,14 +287,21 @@ divide_data_frame = function( cd, df ) {
     return( split_list )
 }
 
-run_r_script = function(cd, i, script_name, input_name, output_name ) {
+run_r_script = function(cd, i, script_name, input_name, output_name, module_folder, ... ) {
     ## Define R command
-    cmd = glue("{cd@r_command} {script_name} {cd@working_dir} {input_name} {output_name}")
+    args = ""
+    if ( length(list(...)) > 0 ) {
+        args = paste( list(...), collapse=" " )
+    }
+    
+    cmd = glue("{cd@r_command} {module_folder}/{script_name} {cd@working_dir} {input_name} {output_name} {module_folder} {args}")
+
     report_info( cd, glue( "Executing: [{cmd}]" ))
-    system(cmd)
+
+    system( cmd )
 }
 
-
+### THIS RUNS THE change_detection.R SCRIPT
 r_detect = function( cd ) {
     
     df = shape_dataframe( cd )
@@ -311,16 +322,39 @@ r_detect = function( cd ) {
         
         write_csv( this_df, glue("{cd@outdir}/{input_file_name}") )
         
-        run_r_script( cd,
-                      i,
-                      glue("{cd@change_detection_location}/{cd@change_detection_script}"),
-                      glue("{cd@outdir}/{input_file_name}"),
-                      glue("{cd@outdir}/{output_file_name}") 
+        run_r_script( cd=cd,
+                      i=i,
+                      script_name=cd@change_detection_script,
+                      input_name =glue("{cd@outdir}/{input_file_name}"),
+                      output_name=glue("{cd@outdir}/{output_file_name}"),
+                      module_folder=cd@change_detection_location
                       )
+    }
+}
+
+### THIS RUNS THE results_extract.R SCRIPT
+r_extract = function( cd ) {
+    
+    ### Launch an R process for each of the sets of data (defined
+    ### by the number of cores)
+    for ( i in 1:cd@numcores) {
+        input_file_name = glue("r_intermediate_{i-1}.csv")
+        output_file_name = glue("r_output_{i-1}.csv")
+        
+        run_r_script( cd=cd,
+                      i =i,
+                      script_name=cd@results_extract_script,
+                      input_name =glue("{cd@outdir}/{input_file_name}"),
+                      output_name=glue("{cd@outdir}/{output_file_name}"),
+                      module_folder=cd@results_extract_location,
+                      cd@direction,
+                      ifelse( cd@draw_figures, "yes", "no" )
+        )
     }
     
     
 }
+
 
 
 run = function(cd) {
@@ -331,6 +365,7 @@ run = function(cd) {
     report_info( cd, glue("working directory set to: {cd@working_dir}") )
     
     r_detect( cd )
+    r_extract( cd )
 
     report_info( cd, "change detection analysis complete")
 

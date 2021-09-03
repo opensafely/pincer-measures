@@ -219,8 +219,11 @@ demographics = ["age_band", "sex", "region", "imd", "care_home_type"]
 
 for i in indicators_list:
     df = pd.read_csv(OUTPUT_DIR / f'measure_indicator_{i}_rate.csv')
-    df = df.replace(np.inf, np.nan) 
+    df = df.replace(np.inf, np.nan)
     df = df[df['value'].notnull()]
+
+    df = drop_irrelevant_practices(df)
+    
     df['value'] = df['value']*1000
 
     df_deciles = compute_deciles(df,'value', has_all_percentiles=True)

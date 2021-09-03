@@ -12,7 +12,7 @@ def plot_cusum(results, filename):
         plt.plot([a-b for a, b in zip(results['target_mean'], results['alert_threshold'])], color='black', linestyle='--')  
         plt.ylabel('value')
         plt.xlabel('date')
-        plt.xticks(ticks = [i for i in range(len(df['date']))], labels = df['date'].values, rotation=90)
+        plt.xticks(ticks = [i for i in range(len(data['date']))], labels = data['date'].values, rotation=90)
         plt.tight_layout()
         plt.savefig(OUTPUT_DIR / filename)
         plt.clf()
@@ -24,7 +24,7 @@ def plot_median(array, results, filename):
         plt.plot(results['target_mean'], color='red')
         plt.ylabel('value')
         plt.xlabel('date')
-        plt.xticks(ticks = [i for i in range(len(df['date']))], labels = df['date'].values, rotation=90)
+        plt.xticks(ticks = [i for i in range(len(data['date']))], labels = data['date'].values, rotation=90)
             
         for i in results['alert']:
             plt.scatter(x=i, y=array[i], color='green', s=50)

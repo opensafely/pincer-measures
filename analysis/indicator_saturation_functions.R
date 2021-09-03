@@ -298,7 +298,7 @@ run_r_script = function(cd, i, script_name, input_name, output_name, module_fold
 
     report_info( cd, glue( "Executing: [{cmd}]" ))
 
-    system( cmd )
+    system( cmd, wait=TRUE )
 }
 
 ### THIS RUNS THE change_detection.R SCRIPT
@@ -364,7 +364,7 @@ run = function(cd) {
     
     report_info( cd, glue("working directory set to: {cd@working_dir}") )
     
-    #r_detect( cd )
+    r_detect( cd )
     r_extract( cd )
 
     report_info( cd, "change detection analysis complete")

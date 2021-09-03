@@ -14,7 +14,7 @@ for file in OUTPUT_DIR.iterdir():
         # for indicator F
         co_prescription(df, "aspirin", "antiplatelet_excluding_aspirin")
         df['indicator_f_numerator'] = (df["aspirin"] == 1) & (df["ppi"] == 0) & (df["co_prescribed_aspirin_antiplatelet_excluding_aspirin"] == 1)
-
+    
         
         df.to_feather(OUTPUT_DIR / file.name)
 

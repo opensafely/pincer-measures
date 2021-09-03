@@ -206,7 +206,7 @@ for i in indicators_list:
     
     
     cusum_results[i] = {}
-    for practice in df['practice'].unique()[0:1]:
+    for practice in df['practice'].unique():
         data = df[df['practice'] == practice]
 
     

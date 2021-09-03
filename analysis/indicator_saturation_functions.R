@@ -63,7 +63,8 @@ report_info = function(cd, m) {
 }
 
 report_error = function(cd, m) {
-    return( glue( "[ERROR::{cd@name}] {m}\n", ) )
+    tag = ifelse( is.na(cd@name), "", sprintf("::%s",cd@name) )
+    return( glue( "[ERROR{tag}] {m}\n" ) )
 }
 
 get_working_dir = function(cd) {
@@ -114,7 +115,6 @@ shape_dataframe = function(cd) {
                                    glue("Try using the -Y flag to specify the date format used in the input file") ) )
         )
     }
-
     input_data = input_data %>% mutate( month = as.Date(month, format="%Y-%m-%d"))
 
     ### Retain only those data that we're expecting
@@ -174,6 +174,8 @@ run = function(cd) {
     
     check_input_file_exists( cd )
     df = shape_dataframe( cd )
+    
+    
     
     report_info( cd, "change detection analysis complete")
 

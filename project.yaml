@@ -75,12 +75,19 @@ actions:
 
   cusum:
     run: python:latest python analysis/cusum.py
-    needs: [generate_measures, generate_measures_demographics]
+    needs: [generate_measures]
     outputs:
       moderately_sensitive:
-        cusum: output/cusum*.jpeg
-        alerts: output/alerts_indicator_*.jpeg
-
+        cusum: output/cusum_results.json
+  
+  plot_cusum:
+    run: python:latest python analysis/plot_cusum.py
+    needs: [generate_measures, cusum]
+    outputs:
+      moderately_sensitive:
+        cusum: output/cusum_indicator_*.jpeg
+        alert: output/alerts_indicator_*.jpeg
+  
   generate_notebook:
     run: jupyter:latest jupyter nbconvert /workspace/analysis/report.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
     needs: [generate_plots]

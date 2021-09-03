@@ -35,7 +35,8 @@ saveplots_analysis <- FALSE ###save plots of output of analysis
 if (arguments[6] == 'yes'){
   saveplots_analysis <- TRUE
 }
-fig_path_tis_analysis <- paste(arguments[1], "/figures/", sep = "") ###set path to store analysis figures
+# fig_path_tis_analysis <- paste(arguments[1], "/figures/", sep = "") ###set path to store analysis figures
+fig_path_tis_analysis <- "figures/" ###set path to store analysis figures
 #fig_path_tis_analysis <- "C:\\Users\\ajwalker\\Documents\\GitHub\\prescribing_change_metrics\\data\\testing\\figures\\" ###set path to store analysis figures
 
 ###### Timing Measures

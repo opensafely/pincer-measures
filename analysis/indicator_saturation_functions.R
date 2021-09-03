@@ -81,7 +81,7 @@ create_test_cd = function() {
         denominator_variable = "indicator_a_denominator",
         date_variable = "date",
         date_format = unlist("%Y-%m-%d"),
-        indir = "/Users/lisahopcroft/Work/Projects/PINCER/pincer-measures/output",
+        indir = "../output",
         outdir = "../output/indicator_saturation/test",
         direction = "both",
         overwrite = TRUE,
@@ -112,6 +112,7 @@ get_working_dir = function(cd) {
 create_dirs = function(cd, wd) {
     dir.create(wd, showWarnings = FALSE)
     dir.create(glue("{wd}/figures"), showWarnings = FALSE)
+    report_info( cd, glue("creating working directory [{wd}]") )
 } 
 
 identify_missing_column_names = function(required_fields,df) {
@@ -181,9 +182,9 @@ shape_dataframe = function(cd) {
     
     ### Python script removes the bottom 5 rows - is this necessary?
     ### I'll do this here so that I can check that the results are the same
-    input_data = input_data %>%
-        ungroup() %>% # removing grouping to allow slice
-        slice(  1:(n()-5) ) 
+    # input_data = input_data %>%
+    #     ungroup() %>% # removing grouping to allow slice
+    #     slice(  1:(n()-5) ) 
     
     ### Drop columns with identical values
     ratio_variability = input_data %>% ungroup() %>% select( -month, -code ) %>%
@@ -242,7 +243,6 @@ check_input_file_exists = function(cd) {
         working_dir = get_working_dir(cd)
         create_dirs( cd, working_dir )
         return( working_dir )
-        
 
     } else {
         stop( report_error( cd, glue( "input file does not exist: {cd@indir}/{cd@csv_name}" ) ) )
@@ -318,15 +318,15 @@ r_detect = function( cd ) {
         
         # Using i-1 so as to match the existing Python methodology
         input_file_name = glue("r_input_{i-1}.csv")
-        output_file_name = glue("r_intermediate_{i-1}.csv")
+        output_file_name = glue("r_intermediate_{i-1}.RData")
         
-        write_csv( this_df, glue("{cd@outdir}/{input_file_name}") )
+        write_csv( this_df, glue("{cd@working_dir}/{input_file_name}") )
         
         run_r_script( cd=cd,
                       i=i,
-                      script_name=cd@change_detection_script,
-                      input_name =glue("{cd@outdir}/{input_file_name}"),
-                      output_name=glue("{cd@outdir}/{output_file_name}"),
+                      script_name  =cd@change_detection_script,
+                      input_name   =input_file_name,
+                      output_name  =output_file_name,
                       module_folder=cd@change_detection_location
                       )
     }
@@ -338,14 +338,14 @@ r_extract = function( cd ) {
     ### Launch an R process for each of the sets of data (defined
     ### by the number of cores)
     for ( i in 1:cd@numcores) {
-        input_file_name = glue("r_intermediate_{i-1}.csv")
+        input_file_name = glue("r_intermediate_{i-1}.RData")
         output_file_name = glue("r_output_{i-1}.csv")
         
         run_r_script( cd=cd,
                       i =i,
                       script_name=cd@results_extract_script,
-                      input_name =glue("{cd@outdir}/{input_file_name}"),
-                      output_name=glue("{cd@outdir}/{output_file_name}"),
+                      input_name =input_file_name,
+                      output_name=output_file_name,
                       module_folder=cd@results_extract_location,
                       cd@direction,
                       ifelse( cd@draw_figures, "yes", "no" )
@@ -364,7 +364,7 @@ run = function(cd) {
     
     report_info( cd, glue("working directory set to: {cd@working_dir}") )
     
-    r_detect( cd )
+    #r_detect( cd )
     r_extract( cd )
 
     report_info( cd, "change detection analysis complete")

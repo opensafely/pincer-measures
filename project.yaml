@@ -71,22 +71,22 @@ actions:
     needs: [generate_measures, generate_measures_demographics]
     outputs:
       moderately_sensitive:
-        counts: output/plots/plot_*.jpeg
+        counts: output/plot_*.jpeg
 
   cusum:
     run: python:latest python analysis/cusum.py
     needs: [generate_measures, generate_measures_demographics]
     outputs:
       moderately_sensitive:
-        cusum: output/cusum/cusum*.jpeg
-        alerts: output/cusum/alerts_indicator_*.jpeg
+        cusum: output/cusum*.jpeg
+        alerts: output/alerts_indicator_*.jpeg
 
   generate_notebook:
     run: jupyter:latest jupyter nbconvert /workspace/analysis/report.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
     needs: [generate_plots]
     outputs:
       moderately_sensitive:
-        notebook: output/notebook/report.html
+        notebook: output/report.html
   
   run_tests:
     run: python:latest python -m pytest --junit-xml=output/pytest.xml --verbose

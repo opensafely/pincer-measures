@@ -8,6 +8,7 @@ from utilities import *
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 for i in indicators_list:
     # indicator plots
     df = pd.read_csv(OUTPUT_DIR / f"measure_indicator_{i}_rate.csv", parse_dates=["date"])

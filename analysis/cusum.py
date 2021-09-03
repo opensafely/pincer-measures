@@ -197,7 +197,7 @@ def plot_cusum(results, filename):
         plt.xlabel('date')
         plt.xticks(ticks = [i for i in range(len(df_50['date']))], labels = df_50['date'].values, rotation=90)
         plt.tight_layout()
-        plt.savefig(OUTPUT_DIR / 'cusum' / filename)
+        plt.savefig(OUTPUT_DIR / filename)
         plt.clf()
 
 def plot_median(array, results, filename):
@@ -212,7 +212,7 @@ def plot_median(array, results, filename):
         for i in results['alert']:
             plt.scatter(x=i, y=array[i], color='green', s=50)
         plt.tight_layout()
-        plt.savefig(OUTPUT_DIR / 'cusum' / filename)
+        plt.savefig(OUTPUT_DIR / filename)
         plt.clf()
 
 demographics = ["age_band", "sex", "region", "imd", "care_home_type"]

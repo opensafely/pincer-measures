@@ -165,7 +165,7 @@ def plot_measures(df, filename: str, title: str, column_to_plot: str, y_label: s
             1.04, 1), loc="upper left")
     
     plt.tight_layout()
-    plt.savefig(f'output/plots/{filename}.jpeg')
+    plt.savefig(f'output/{filename}.jpeg')
     plt.clf()
 
 def drop_irrelevant_practices(df):

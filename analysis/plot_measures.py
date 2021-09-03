@@ -13,6 +13,8 @@ for i in indicators_list:
     # indicator plots
     df = pd.read_csv(OUTPUT_DIR / f"measure_indicator_{i}_rate.csv", parse_dates=["date"])
     df = drop_irrelevant_practices(df)
+
+    
     if i in ["me_no_fbc", "me_no_lft"]:
         denominator = "indicator_me_denominator"
                     
@@ -49,6 +51,8 @@ for i in indicators_list:
             elif i == 'ac':
                 #remove bands < 75
                 df = df[df['age_band'].isin(['70-79', '80+'])]
+        
+        df = redact_small_numbers(df, 10, f"indicator_{i}_numerator", denominator, "rate")  
 
         plot_measures(df = df, filename=f"plot_{i}_{d}", title=f"Indicator {i} by {d}",  column_to_plot = "rate", y_label = 'Rate per 1000', as_bar=False, category = d)
 

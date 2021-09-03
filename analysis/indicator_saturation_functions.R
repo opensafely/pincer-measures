@@ -22,7 +22,10 @@ setClass("ChangeDetection",
              expected_columns = 'list',
              working_dir = 'character',
              code_tag = 'character',
-             min_NA_proportion = 'numeric'
+             min_NA_proportion = 'numeric',
+             r_command = 'character',
+             change_detection_location = 'character',
+             change_detection_script = 'character'
          ),
          prototype(name = NA_character_,
                    verbose = FALSE,
@@ -46,7 +49,10 @@ setClass("ChangeDetection",
                    expected_columns=list(),
                    working_dir = NA_character_,
                    code_tag = 'ratio_quantity.',
-                   min_NA_proportion = 0.5)
+                   min_NA_proportion = 0.5,
+                   r_command = 'Rscript',
+                   change_detection_location = 'change_detection',
+                   change_detection_script = 'change_detection.R' )
          )
 
 ChangeDetection <- function(...) {
@@ -72,7 +78,7 @@ create_test_cd = function() {
         date_variable = "date",
         date_format = unlist("%Y-%m-%d"),
         indir = "/Users/lisahopcroft/Work/Projects/PINCER/pincer-measures/output",
-        outdir = "output",
+        outdir = "../output/indicator_saturation/test",
         direction = "both",
         overwrite = TRUE,
         draw_figures = TRUE,
@@ -99,9 +105,9 @@ get_working_dir = function(cd) {
     return( glue("{cd@outdir}/{folder_name}") )
 }
 
-create_dirs = function(cd) {
-    dir.create(cd@working_dir, showWarnings = FALSE)
-    dir.create(glue("{cd@working_dir}/figures"), showWarnings = FALSE)
+create_dirs = function(cd, wd) {
+    dir.create(wd, showWarnings = FALSE)
+    dir.create(glue("{wd}/figures"), showWarnings = FALSE)
 } 
 
 identify_missing_column_names = function(required_fields,df) {
@@ -229,10 +235,11 @@ check_input_file_exists = function(cd) {
     if ( file.exists( glue( "{cd@indir}/{cd@csv_name}" ) ) ) {
         
         ### Create working directory
-        cd@working_dir = get_working_dir(cd)
-        report_info( cd, glue("working directory set to: {cd@working_dir}") )
-        create_dirs( cd )
+        working_dir = get_working_dir(cd)
+        create_dirs( cd, working_dir )
+        return( working_dir )
         
+
     } else {
         stop( report_error( cd, glue( "input file does not exist: {cd@indir}/{cd@csv_name}" ) ) )
     }
@@ -276,6 +283,12 @@ divide_data_frame = function( cd, df ) {
     return( split_list )
 }
 
+run_r_script = function(cd, i, script_name, input_name, output_name ) {
+    ## Define R command
+    cmd = glue("{cd@r_command} {script_name} {cd@working_dir} {input_name} {output_name}")
+    report_info( cd, glue( "Executing: [{cmd}]" ))
+    system(cmd)
+}
 
 
 r_detect = function( cd ) {
@@ -283,13 +296,39 @@ r_detect = function( cd ) {
     df = shape_dataframe( cd )
     df_list = divide_data_frame(cd, df)
     
+    ### Launch an R process for each of these split dataframes
+    ## Initiate a seperate R process for each sub-DataFrame
+    for ( i in 1:length(df_list) ) {
+        
+        this_df = df_list[[i]] %>% 
+            ungroup() %>% 
+            select( -month, -code ) %>% 
+            rename( month = index )
+        
+        # Using i-1 so as to match the existing Python methodology
+        input_file_name = glue("r_input_{i-1}.csv")
+        output_file_name = glue("r_intermediate_{i-1}.csv")
+        
+        write_csv( this_df, glue("{cd@outdir}/{input_file_name}") )
+        
+        run_r_script( cd,
+                      i,
+                      glue("{cd@change_detection_location}/{cd@change_detection_script}"),
+                      glue("{cd@outdir}/{input_file_name}"),
+                      glue("{cd@outdir}/{output_file_name}") 
+                      )
+    }
+    
+    
 }
 
 
 run = function(cd) {
     report_info( cd, "running new change detection..." )
     
-    check_input_file_exists( cd )
+    cd@working_dir = check_input_file_exists( cd )
+    
+    report_info( cd, glue("working directory set to: {cd@working_dir}") )
     
     r_detect( cd )
 

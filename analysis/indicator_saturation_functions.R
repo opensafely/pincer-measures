@@ -20,7 +20,9 @@ setClass("ChangeDetection",
              draw_figures='logical',
              bq_folder='character',
              expected_columns = 'list',
-             working_dir = 'character'
+             working_dir = 'character',
+             code_tag = 'character',
+             min_NA_proportion = 'numeric'
          ),
          prototype(name = NA_character_,
                    verbose = FALSE,
@@ -42,7 +44,9 @@ setClass("ChangeDetection",
                    draw_figures=FALSE,
                    bq_folder='measures',
                    expected_columns=list(),
-                   working_dir = NA_character_)
+                   working_dir = NA_character_,
+                   code_tag = 'ratio_quantity.',
+                   min_NA_proportion = 0.5)
          )
 
 ChangeDetection <- function(...) {
@@ -95,6 +99,10 @@ reformat_date = function(cd, x) {
     return( as.Date(x, format='%Y-%m-%d') )
 }
 
+date_to_epoch = function( x=today() ) {
+    return( difftime( x,ymd("1970-01-01"),unit="secs") %>% as.numeric )
+}
+
 shape_dataframe = function(cd) {
     input_file = glue( "{cd@indir}/{cd@csv_name}" ) 
     input_data = read_csv( input_file, col_types = cols() )
@@ -125,16 +133,65 @@ shape_dataframe = function(cd) {
         ### Calculate the ratio
         mutate( ratio = numerator/denominator ) %>% 
         ### Modify the 'code' variable as expected
-        mutate( code = glue({"ratio_quantity.{code}"})) %>% 
+        mutate( code = glue({"{cd@code_tag}{code}"})) %>% 
         ### Remove the numerator and denominator columns
         select( -numerator, -denominator ) %>% 
         ### Replace values of +/-infinity to NA
         mutate( ratio = ifelse(is.infinite(ratio), NA, ratio ) )
     
+    input_data = input_data  %>% 
+        ### Convert to wide format
+        pivot_wider( names_from = "code", values_from = "ratio" ) %>%
+        ### Add a code variable and reorder for ease of reading
+        mutate( code = 1:n() ) %>%
+        select( code, month, everything() ) 
     
-    ### TO DO: DROP COLUMNS WITH IDENTICAL VALUES? this would only be ratio??
-    ### TO DO: DROP COLUMNS WITH HIGH PROPORTION OF NAs? this would only be ratio??
-    ### TO DO: HAVE INDEX BE NUMBER OF SECONDS FROM 1970-01-01
+    ### Python script removes the bottom 5 rows - is this necessary?
+    ### I'll do this here so that I can check that the results are the same
+    input_data = input_data %>%
+        ungroup() %>% # removing grouping to allow slice
+        slice(  1:(n()-5) ) 
+    
+    ### Drop columns with identical values
+    ratio_variability = input_data %>% ungroup() %>% select( -month, -code ) %>%
+        map( ~sd(.,na.rm=T) )
+    
+    columns_to_keep = ratio_variability %>%
+        discard( ~is.na(.) ) %>%
+        discard( . == 0 ) %>% 
+        names
+    
+    columns_to_drop = setdiff( ratio_variability %>% names, columns_to_keep)
+    
+    report_info( cd, glue( "Removing data for item\\
+                           '{columns_to_drop %>% str_remove(cd@code_tag)}'\\
+                           due to lack of variability data" ))
+    
+    input_data = input_data %>%
+        select( code, month, !!!syms(columns_to_keep) )
+    
+    ### Drop columns with high proportion of NAs
+    NA_proportion = input_data %>% ungroup() %>% select( -month, -code ) %>%
+        map(~sum(is.na(.))) 
+    
+    NA_threshold = cd@min_NA_proportion * nrow(input_data)
+    columns_to_keep = NA_proportion %>%
+        discard( . >= NA_threshold ) %>% 
+        names
+    
+    columns_to_drop = setdiff( NA_proportion %>% names, columns_to_keep)
+    
+    report_info( cd, glue( "Removing data for item\\
+                           '{columns_to_drop %>% str_remove(cd@code_tag)}'\\
+                           due to >{cd@min_NA_proportion*100}% NA values" ))
+    
+    input_data = input_data %>%
+        select( code, month, !!!syms(columns_to_keep) )
+    
+    ### Add column (index) to represent number of seconds from 1970-01-01
+    input_data = input_data %>% 
+        mutate( index = date_to_epoch(month) ) %>% 
+        select( month, index, everything())
     
     if ( cd@sample ) {
         input_data = input_data %>% sample_n(df, 100, seed=1234)
@@ -173,10 +230,9 @@ run = function(cd) {
     report_info( cd, "running new change detection..." )
     
     check_input_file_exists( cd )
+    
     df = shape_dataframe( cd )
-    
-    
-    
+
     report_info( cd, "change detection analysis complete")
 
 }

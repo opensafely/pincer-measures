@@ -5,6 +5,10 @@ library(magrittr, quietly=T, warn.conflicts = FALSE)
 library(stringr , quietly=T, warn.conflicts = FALSE)
 library(readr   , quietly=T, warn.conflicts = FALSE)
 library(dplyr   , quietly=T, warn.conflicts = FALSE)
+library(tidyr   , quietly=T, warn.conflicts = FALSE)
+library(tibble  , quietly=T, warn.conflicts = FALSE)
+library(purrr   , quietly=T, warn.conflicts = FALSE)
+
 
 source("indicator_saturation_functions.R")
 

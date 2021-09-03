@@ -62,6 +62,29 @@ ChangeDetection <- function(...) {
     return( a )
 }
 
+
+create_test_cd = function() {
+    cd = ChangeDetection(
+        name = glue('indicator_saturation_a'),
+        code_variable = "practice",
+        numerator_variable = "indicator_a_numerator",
+        denominator_variable = "indicator_a_denominator",
+        date_variable = "date",
+        date_format = unlist("%Y-%m-%d"),
+        indir = "/Users/lisahopcroft/Work/Projects/PINCER/pincer-measures/output",
+        outdir = "output",
+        direction = "both",
+        overwrite = TRUE,
+        draw_figures = TRUE,
+        verbose = TRUE,
+        csv_name = "measure_indicator_a_rate.csv",
+        numcores = 7
+    )
+    
+    return( cd )
+}
+
+
 report_info = function(cd, m) {
     if ( cd@verbose )  cat( sprintf( "[INFO::%s] %s\n", cd@name, m ) )
 }

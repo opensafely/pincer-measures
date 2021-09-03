@@ -231,7 +231,7 @@ for i in indicators_list:
     percentile = df_50['value']
     percentile_array = np.array(percentile)
 
-    cs = CUSUM(data= percentile_array, window_size=12)
+    cs = CUSUM(data= percentile_array, window_size=6)
     results = cs.work()
     
     plot_cusum(results, f'cusum_indicator_{i}.jpeg') 

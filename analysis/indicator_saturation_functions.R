@@ -5,7 +5,7 @@ setClass("ChangeDetection",
              sample='logical',
              measure='logical',
              custom_measure='logical',
-             num_cores = 'numeric',
+             numcores = 'numeric',
              code_variable = 'character',
              numerator_variable = 'character',
              denominator_variable = 'character',
@@ -29,7 +29,7 @@ setClass("ChangeDetection",
                    sample = FALSE,
                    measure = FALSE,
                    custom_measure=FALSE,
-                   num_cores = detectCores() - 1,
+                   numcores = detectCores()-1,
                    code_variable = 'code',
                    numerator_variable = NA_character_,
                    denominator_variable = NA_character_,
@@ -163,8 +163,8 @@ shape_dataframe = function(cd) {
     
     columns_to_drop = setdiff( ratio_variability %>% names, columns_to_keep)
     
-    report_info( cd, glue( "Removing data for item\\
-                           '{columns_to_drop %>% str_remove(cd@code_tag)}'\\
+    report_info( cd, glue( "Removing data for item \\
+                           '{columns_to_drop %>% str_remove(cd@code_tag)}' \\
                            due to lack of variability data" ))
     
     input_data = input_data %>%
@@ -176,13 +176,13 @@ shape_dataframe = function(cd) {
     
     NA_threshold = cd@min_NA_proportion * nrow(input_data)
     columns_to_keep = NA_proportion %>%
-        discard( . >= NA_threshold ) %>% 
+        discard( . > NA_threshold ) %>%
         names
     
     columns_to_drop = setdiff( NA_proportion %>% names, columns_to_keep)
     
-    report_info( cd, glue( "Removing data for item\\
-                           '{columns_to_drop %>% str_remove(cd@code_tag)}'\\
+    report_info( cd, glue( "Removing data for item \\
+                           '{columns_to_drop %>% str_remove(cd@code_tag)}' \\
                            due to >{cd@min_NA_proportion*100}% NA values" ))
     
     input_data = input_data %>%
@@ -226,12 +226,49 @@ detect_change = function(cd) {
     
 }
 
+divide_data_frame = function( cd, df ) {
+    
+    split_groupings = df %>% pivot_longer( starts_with(cd@code_tag ),
+                         names_to = "id",
+                         values_to = "value" ) %>% 
+        mutate( group_tmp = as.numeric( as.factor(id) )-1 )
+    
+    group_size = ( split_groupings %>% pull( group_tmp ) %>% max ) / cd@numcores
+    
+    split_groupings = split_groupings %>% 
+        mutate( group = group_tmp %/% group_size ) %>% 
+        select( -group_tmp ) %>% 
+        group_by( group ) %>% 
+        group_split() 
+
+    split_list = vector("list",length(split_groupings))
+
+    for ( i in 1:length(split_groupings) ) {
+        split_list[[i]] = split_groupings[[i]] %>%
+            select(-group) %>% 
+            pivot_wider( names_from = id,
+                         values_from = value )
+    }
+    
+    return( split_list )
+}
+
+
+
+r_detect = function( cd ) {
+    
+    df = shape_dataframe( cd )
+    df_list = divide_data_frame(cd, df)
+    
+}
+
+
 run = function(cd) {
     report_info( cd, "running new change detection..." )
     
     check_input_file_exists( cd )
     
-    df = shape_dataframe( cd )
+    r_detect( cd )
 
     report_info( cd, "change detection analysis complete")
 

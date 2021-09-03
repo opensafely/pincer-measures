@@ -1,13 +1,14 @@
-library(optparse, quietly=T, warn.conflicts = FALSE)
-library(glue    , quietly=T, warn.conflicts = FALSE)
-library(parallel, quietly=T, warn.conflicts = FALSE)
-library(magrittr, quietly=T, warn.conflicts = FALSE)
-library(stringr , quietly=T, warn.conflicts = FALSE)
-library(readr   , quietly=T, warn.conflicts = FALSE)
-library(dplyr   , quietly=T, warn.conflicts = FALSE)
-library(tidyr   , quietly=T, warn.conflicts = FALSE)
-library(tibble  , quietly=T, warn.conflicts = FALSE)
-library(purrr   , quietly=T, warn.conflicts = FALSE)
+library(optparse , quietly=T, warn.conflicts = FALSE)
+library(glue     , quietly=T, warn.conflicts = FALSE)
+library(parallel , quietly=T, warn.conflicts = FALSE)
+library(magrittr , quietly=T, warn.conflicts = FALSE)
+library(stringr  , quietly=T, warn.conflicts = FALSE)
+library(readr    , quietly=T, warn.conflicts = FALSE)
+library(dplyr    , quietly=T, warn.conflicts = FALSE)
+library(tidyr    , quietly=T, warn.conflicts = FALSE)
+library(tibble   , quietly=T, warn.conflicts = FALSE)
+library(purrr    , quietly=T, warn.conflicts = FALSE)
+library(lubridate, quietly=T, warn.conflicts = FALSE)
 
 
 source("indicator_saturation_functions.R")
@@ -30,6 +31,8 @@ option_list = list(
                 help="date format of input file [default=%default]", metavar="character"),
     make_option(c("-D", "--direction"), type="character", default=empty@direction,
                 help="direction (up/down/both) of change to identify [default=%default]", metavar="character"),
+    make_option(c("-Z", "--numcores"), type="numeric", default=empty@numcores,
+                help="number of cores to use [default=%default]", metavar="numeric"),
     
     ### Parameters that define the input/output/reporting
     make_option(c("-v", "--verbose"), action="store_true", default=empty@verbose,
@@ -91,6 +94,7 @@ measure_indicator = ChangeDetection(
     denominator_variable = opt$options$denominator,
     date_variable = unlist(opt$options$date),
     date_format = opt$options$ymd,
+    numcores = opt$options$numcores,
     indir = opt$options$indir,
     outdir = opt$options$outdir,
     direction = opt$options$direction,

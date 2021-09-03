@@ -50,7 +50,7 @@ actions:
     needs: [join_ethnicity_region]
     outputs:
       highly_sensitive:
-        cohort: output/in*.feather
+        cohort: output/indicator_e_f_*.feather
 
   calculate_composite_indicators:
     run: python:latest python analysis/composite_indicators.py

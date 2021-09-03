@@ -1,7 +1,9 @@
+from utilities import get_practice_deciles
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from utilities import compute_deciles, OUTPUT_DIR
+import json
+from utilities import OUTPUT_DIR, drop_irrelevant_practices
 from study_definition import indicators_list
 
 def compute_deciles(
@@ -187,68 +189,50 @@ class CUSUM(object):
             self.neg_cusums.append(cusum_neg)
         return cusum_pos, cusum_neg
     
-def plot_cusum(results, filename):
-        plt.figure(figsize=(15,8))
-        plt.plot([a+b for a, b in zip(results['target_mean'], results['smin'])], color='red')
-        plt.plot([a+b for a, b in zip(results['target_mean'], results['smax'])], color='turquoise')
-        plt.plot([a+b for a, b in zip(results['target_mean'], results['alert_threshold'])], color='black', linestyle='--')
-        plt.plot([a-b for a, b in zip(results['target_mean'], results['alert_threshold'])], color='black', linestyle='--')  
-        plt.ylabel('value')
-        plt.xlabel('date')
-        plt.xticks(ticks = [i for i in range(len(df_50['date']))], labels = df_50['date'].values, rotation=90)
-        plt.tight_layout()
-        plt.savefig(OUTPUT_DIR / filename)
-        plt.clf()
-
-def plot_median(array, results, filename):
-        
-        plt.figure(figsize=(15,8))
-        plt.plot(array)
-        plt.plot(results['target_mean'], color='red')
-        plt.ylabel('value')
-        plt.xlabel('date')
-        plt.xticks(ticks = [i for i in range(len(df_50['date']))], labels = df_50['date'].values, rotation=90)
-            
-        for i in results['alert']:
-            plt.scatter(x=i, y=array[i], color='green', s=50)
-        plt.tight_layout()
-        plt.savefig(OUTPUT_DIR / filename)
-        plt.clf()
 
 demographics = ["age_band", "sex", "region", "imd", "care_home_type"]
 
+cusum_results = {}
 for i in indicators_list:
     df = pd.read_csv(OUTPUT_DIR / f'measure_indicator_{i}_rate.csv')
-    df = df.replace(np.inf, np.nan) 
+    df = df.replace(np.inf, np.nan)
     df = df[df['value'].notnull()]
+
+    df = drop_irrelevant_practices(df)
+
     df['value'] = df['value']*1000
 
-    df_deciles = compute_deciles(df,'value', has_all_percentiles=True)
+    df = get_practice_deciles(df, 'value')
     
-    df_50 = df_deciles[df_deciles['percentile']==50.0]
     
+    cusum_results[i] = {}
+    for practice in df['practice'].unique()[0:1]:
+        data = df[df['practice'] == practice]
 
-    percentile = df_50['value']
-    percentile_array = np.array(percentile)
-
-    cs = CUSUM(data= percentile_array, window_size=12)
-    results = cs.work()
     
-    plot_cusum(results, f'cusum_indicator_{i}.jpeg') 
-    plot_median(percentile_array, results, f'alerts_indicator_{i}.jpeg')
-
-    for d in demographics:
-        df = pd.read_csv(OUTPUT_DIR / f'indicator_measure_{i}_{d}.csv')
-
-        df_deciles = compute_deciles(df,'rate', has_all_percentiles=True)
-    
-        df_50 = df_deciles[df_deciles['percentile']==50.0]
-
-        percentile = df_50['rate']
+        percentile = data['percentile']
         percentile_array = np.array(percentile)
-
-        cs = CUSUM(data= percentile_array, window_size=12)
-        results = cs.work()
         
-        plot_cusum(results, f'cusum_indicator_{i}_{d}.jpeg') 
-        plot_median(percentile_array, results, f'alerts_indicator_{i}_{d}.jpeg')
+        cs = CUSUM(data= percentile_array, window_size=6)
+        results = cs.work()
+
+    
+        cusum_results[i][str(practice)] = results
+        
+
+
+class NpEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        if isinstance(obj, np.floating):
+            return float(obj)
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return super(NpEncoder, self).default(obj)
+
+
+
+with open(OUTPUT_DIR / 'cusum_results.json', 'w') as f:
+    json.dump(cusum_results, f,  cls=NpEncoder)
+    

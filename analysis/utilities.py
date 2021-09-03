@@ -298,6 +298,11 @@ def compute_deciles(
     percentiles["percentile"] = percentiles["percentile"] * 100
     return percentiles
 
+def get_practice_deciles(measure_table, value_column):
+    measure_table['percentile'] = measure_table.groupby(['date'])[value_column].transform(
+                     lambda x: pd.cut(x, 100, labels=range(1,101)))
+    
+    return measure_table
 
 def deciles_chart(df, filename, period_column=None, column=None, title="", ylabel=""):
     """period_column must be dates / datetimes"""

@@ -881,7 +881,7 @@ measures.extend([
         id=f"lithium_level_rate",
         numerator="lithium_level_3_months",
         denominator="population",
-        group_by=None
+        group_by="population"
     ),
     
 ]

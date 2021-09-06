@@ -256,6 +256,18 @@ divide_data_frame = function( cd, df ) {
                                            names_to = "id",
                                            values_to = "value" )
     
+    num_measurements = df %>% pull( id ) %>% unique %>% length
+
+    if ( cd@numcores > num_measurements ) {
+        report_info( cd, glue("data requested to be split into\\
+                              {cd@numcores} groups but there are only\\
+                              {num_measurements} measurements" ) )
+        report_info( cd, glue("data will be split into\\
+                              {num_measurements} groups instead") )
+        cd@numcores = min( num_measurements, cd@numcores )
+    }
+    
+    
     group_mapping = df %>%
         select( id ) %>% unique %>% 
         mutate( assignment = rep(1:cd@numcores, length.out=n()))

@@ -16,7 +16,7 @@ test_m = ChangeDetection(
     date_variable = "timestamp"
 )
 
-context( "Input data handling")
+context( "Input data handling" )
 
 test_that( "Column names are amended correctly",
     expect_equal( sort( amend_column_names(test_m,test_df) %>% colnames ),

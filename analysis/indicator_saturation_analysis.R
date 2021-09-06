@@ -107,5 +107,4 @@ measure_indicator = ChangeDetection(
 run( measure_indicator )
 
 ### To test:
-### Rscript indicator_saturation_analysis.R -I a -T date -C practice -v -i /Users/lisahopcroft/Work/Projects/PINCER/pincer-measures/output measure_indicator_a_rate.csv
-
+### Rscript indicator_saturation_analysis.R -I a -T date -C practice -v -i ../output -o ../output/indicator_saturation2 measure_indicator_a_rate.csv -f

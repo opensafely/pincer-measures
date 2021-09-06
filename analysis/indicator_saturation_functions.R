@@ -252,29 +252,31 @@ check_input_file_exists = function(cd) {
 }
 
 divide_data_frame = function( cd, df ) {
+    df = df %>% pivot_longer( starts_with(cd@code_tag ),
+                                           names_to = "id",
+                                           values_to = "value" )
     
-    split_groupings = df %>% pivot_longer( starts_with(cd@code_tag ),
-                         names_to = "id",
-                         values_to = "value" ) %>% 
-        mutate( group_tmp = as.numeric( as.factor(id) )-1 )
+    group_mapping = df %>%
+        select( id ) %>% unique %>% 
+        mutate( assignment = rep(1:cd@numcores, length.out=n()))
     
-    group_size = ( split_groupings %>% pull( group_tmp ) %>% max ) / cd@numcores
-    
-    split_groupings = split_groupings %>% 
-        mutate( group = group_tmp %/% group_size ) %>% 
-        select( -group_tmp ) %>% 
-        group_by( group ) %>% 
-        group_split() 
+    split_grouping = df %>% 
+        left_join( group_mapping, by="id" ) %>% 
+        group_by( assignment ) %>% 
+        group_split()
+        
+    split_list = vector("list",
+                        group_mapping %>%
+                            pull( assignment ) %>%
+                            max )
 
-    split_list = vector("list",length(split_groupings))
-
-    for ( i in 1:length(split_groupings) ) {
-        split_list[[i]] = split_groupings[[i]] %>%
-            select(-group) %>% 
+    for ( i in 1:length(split_grouping) ) {
+        split_list[[i]] = split_grouping[[i]] %>%
+            select( -assignment ) %>% 
             pivot_wider( names_from = id,
                          values_from = value )
     }
-    
+
     return( split_list )
 }
 

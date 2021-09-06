@@ -22,4 +22,17 @@ test_that( "Column names are amended correctly",
                   test_m@expected_columns %>% names %>% sort )
 )
 
+test_that( "All missing column names are identified", {
+    expect_equal( sort( identify_missing_column_names(
+        test_m@expected_columns %>% names,
+        test_df) ),
+        test_m@expected_columns %>% names %>% sort
+    )
+})
+
+
+
+
+
+
 

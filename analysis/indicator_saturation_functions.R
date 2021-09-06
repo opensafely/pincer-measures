@@ -135,16 +135,6 @@ amend_column_names = function(cd,df) {
     return( df %>% rename( !!!syms(cd@expected_columns) ) )
 }
 
-check_date_format = function(cd, x) {
-    report_info( cd, glue( "Checking date format {cd@date_format}") )
-    return( any( is.na(as.Date(x, format=cd@date_format)) ) )
-}
-
-reformat_date = function(cd, x) {
-    report_info( cd, glue( "Checking date format {cd@date_format}") )
-    return( as.Date(x, format='%Y-%m-%d') )
-}
-
 date_to_epoch = function( x=today() ) {
     return( difftime( x,ymd("1970-01-01"),unit="secs") %>% as.numeric )
 }
@@ -259,17 +249,6 @@ check_input_file_exists = function(cd) {
     } else {
         stop( report_error( cd, glue( "input file does not exist: {cd@indir}/{cd@csv_name}" ) ) )
     }
-}
-
-detect_change = function(cd) {
-
-    #####################################################################
-    ### Launch R scripts ################################################
-    #####################################################################
-    
-    #[Rscript /Users/lisahopcroft/Work/Projects/PINCER/pincer-measures/analysis/change_detection/change_detection.R /Users/lisahopcroft/Work/Projects/PINCER/pincer-measures/output/indicator_saturation/indicator_saturation_f r_input_0.csv r_intermediate_0.RData]
-    #[Rscript /Users/lisahopcroft/Work/Projects/PINCER/pincer-measures/analysis/change_detection/results_extract.R /Users/lisahopcroft/Work/Projects/PINCER/pincer-measures/output/indicator_saturation/indicator_saturation_f r_intermediate_0.RData r_output_0.csv /Users/lisahopcroft/Work/Projects/PINCER/pincer-measures/analysis/change_detection both yes]
-    
 }
 
 divide_data_frame = function( cd, df ) {

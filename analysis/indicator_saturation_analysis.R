@@ -26,7 +26,7 @@ if (is.null(opt$options$indicator)){
 if ( length(fatal_missing_args) > 0 ) {
     print_help(opt_parser)
     messages = glue("- {fatal_missing_args}")
-    stop(report_error( empty, paste(messages,collapse='\n') ), call.=FALSE)
+    stop(report_error( default_values, paste(messages,collapse='\n') ), call.=FALSE)
 }
 
 ### Assuming numerators/denominators if not supplied ################

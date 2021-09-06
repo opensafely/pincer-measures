@@ -383,36 +383,36 @@ run = function(cd) {
 
 }
 
-empty = new( "ChangeDetection" )
+default_values = new( "ChangeDetection" )
 
 option_list = list(
     ### Parameters that define the analysis
     make_option(c("-I", "--indicator"), type="character", default=NULL,
                 help="indicator name (required)", metavar="character"),
-    make_option(c("-C", "--code"), type="character", default=empty@code_variable,
+    make_option(c("-C", "--code"), type="character", default=default_values@code_variable,
                 help="code column name", metavar="character"),
     make_option(c("-A", "--numerator"), type="character", default=NULL, 
                 help="numerator column name", metavar="character"),
     make_option(c("-B", "--denominator"), type="character", default=NULL, 
                 help="output directory name", metavar="character"),
-    make_option(c("-T", "--date"), type="character", default=empty@date_variable,
+    make_option(c("-T", "--date"), type="character", default=default_values@date_variable,
                 help="date column name [default=%default]", metavar="character"),
-    make_option(c("-Y", "--ymd"), type="character", default=empty@date_format,
+    make_option(c("-Y", "--ymd"), type="character", default=default_values@date_format,
                 help="date format of input file [default=%default]", metavar="character"),
-    make_option(c("-D", "--direction"), type="character", default=empty@direction,
+    make_option(c("-D", "--direction"), type="character", default=default_values@direction,
                 help="direction (up/down/both) of change to identify [default=%default]", metavar="character"),
-    make_option(c("-Z", "--numcores"), type="numeric", default=empty@numcores,
+    make_option(c("-Z", "--numcores"), type="numeric", default=default_values@numcores,
                 help="number of cores to use [default=%default]", metavar="numeric"),
     
     ### Parameters that define the input/output/reporting
-    make_option(c("-v", "--verbose"), action="store_true", default=empty@verbose,
+    make_option(c("-v", "--verbose"), action="store_true", default=default_values@verbose,
                 help="Print extra output [default]"),
-    make_option(c("-i", "--indir"), type="character", default=empty@indir, 
+    make_option(c("-i", "--indir"), type="character", default=default_values@indir, 
                 help="output directory name [default= %default]", metavar="character"),
-    make_option(c("-o", "--outdir"), type="character", default=empty@outdir, 
+    make_option(c("-o", "--outdir"), type="character", default=default_values@outdir, 
                 help="output directory name [default= %default]", metavar="character"),
-    make_option(c("-x", "--overwrite"), action="store_true", default=empty@overwrite,
+    make_option(c("-x", "--overwrite"), action="store_true", default=default_values@overwrite,
                 help="overwrite existing content? [default= %default]", metavar="character"),
-    make_option(c("-f", "--figures"), action="store_true", default=empty@draw_figures,
+    make_option(c("-f", "--figures"), action="store_true", default=default_values@draw_figures,
                 help="generate figures? [default=%default]", metavar="character")
 )

@@ -23,7 +23,7 @@ if (is.null(opt$options$indicator)){
                             "You must supply an indicator name" )
 }
 
-if ( opt$options$numcores <= 1 ) {
+if ( opt$options$numcores < 1 ) {
     fatal_missing_args = c( fatal_missing_args,
                             "You must request at least 2 cores for processing" )
 }

@@ -11,7 +11,7 @@ opt = parse_args( opt_parser, positional_arguments = TRUE )
 
 fatal_missing_args = c()
 
-### Checking for missing required arguments #########################
+### Checking for missing required arguments/problematic inputs ######
 
 if ( length( opt$args) == 0 ) {
     fatal_missing_args = c( fatal_missing_args,
@@ -21,6 +21,11 @@ if ( length( opt$args) == 0 ) {
 if (is.null(opt$options$indicator)){
     fatal_missing_args = c( fatal_missing_args,
                             "You must supply an indicator name" )
+}
+
+if ( opt$options$numcores <= 1 ) {
+    fatal_missing_args = c( fatal_missing_args,
+                            "You must request at least 2 cores for processing" )
 }
 
 if ( length(fatal_missing_args) > 0 ) {
@@ -38,7 +43,6 @@ if (is.null( opt$options$numerator ) ) {
 if (is.null( opt$options$denominator ) ) {
     opt$options$denominator = sprintf( "indicator_%s_denominator", opt$options$indicator )
 }
-
 
 measure_indicator = ChangeDetection(
     name = glue('indicator_saturation_{opt$options$indicator}'),

@@ -55,10 +55,16 @@ test_that( "All data are retained when input data are split", {
 
 test_that( "Data are split into the right number of subsets", {
     tmp_cd = default_values
+    ### Values of i chosen as follows (for 10 measurements):
+    ### i= 1 : where data remain intact
+    ### i= 2 : where data evenly split into 2 chunks
+    ### i= 3 : where data do not evenly split into 2 chunks
+    ### i=11 : where there are less data than chunks
+    ### 
     ### Note that checks following option parsing prevent the
-    ### case where i = 0 so that dies not need to be tested 
+    ### case where i = 0 so that does not need to be tested 
     ### here.
-    for( i in 1:11 ) {
+    for( i in c(1, 2, 3, 11) ) {
         tmp_cd@numcores=i
         split_d = divide_data_frame( tmp_cd, d_wide )
         ### The data will be split into either the requested number

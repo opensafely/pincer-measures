@@ -24,13 +24,21 @@ make_test_df_to_split = function(num_measurements = 10,
 
 context( "Splitting dataframe to process in chunks" )
 
-d_wide = make_test_df_to_split( )
+d_wide = make_test_df_to_split()
 d_long = d_wide %>%
     pivot_longer( starts_with(default_values@code_tag ),
                   names_to = "id",
                   values_to = "value" )
 
 test_that( "All data are retained when input data are split", {
+    ### The test dataframe (d_wide) contains data for:
+    ### (1) 10 measurements for...
+    ### (2) 5 different entities (e.g., practice) over the course of...
+    ### (3) 6 months.
+    ### The divide_data_frame() function will divide the 10 measurements
+    ### into the requested number of chunks (which is captured by
+    ### the @numcores variable in the provided ChangeDetection() object,
+    ### in this case default_values.
     split_d = divide_data_frame( default_values, d_wide )
     
     d_wide = d_wide %>% 
@@ -47,9 +55,16 @@ test_that( "All data are retained when input data are split", {
 
 test_that( "Data are split into the right number of subsets", {
     tmp_cd = default_values
+    ### Note that checks following option parsing prevent the
+    ### case where i = 0 so that dies not need to be tested 
+    ### here.
     for( i in 1:11 ) {
         tmp_cd@numcores=i
         split_d = divide_data_frame( tmp_cd, d_wide )
+        ### The data will be split into either the requested number
+        ### of chunks, or the number of data columns in the data
+        ### frame, whichever is less. This explains the use of 
+        ### min() in the test below.
         expect_equal( length(split_d),
                       min(i,(ncol(d_wide)-2) ))
     }

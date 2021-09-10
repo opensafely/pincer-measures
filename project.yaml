@@ -209,7 +209,7 @@ actions:
         rdat: output/indicator_saturation/indicator_saturation_me_no_lft/*.RData
         csv: output/indicator_saturation/indicator_saturation_me_no_lft/*.csv
 
-  indicator_saturation_me_no_li:
+  indicator_saturation_li:
     run: r:latest analysis/indicator_saturation_analysis.R -I li -T date -C practice -f -v -i output -o output/indicator_saturation measure_indicator_li_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
@@ -227,7 +227,6 @@ actions:
         rdat: output/indicator_saturation/indicator_saturation_am/*.RData
         csv: output/indicator_saturation/indicator_saturation_am/*.csv
 
-  
   # generate_notebook:
   #   run: jupyter:latest jupyter nbconvert /workspace/analysis/report.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
   #   needs: [generate_plots]

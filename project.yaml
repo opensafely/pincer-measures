@@ -100,124 +100,124 @@ actions:
     outputs:
       moderately_sensitive:
         counts: output/plot_*.jpeg
-  
+
   indicator_saturation_a:
-    run: python:latest analysis/indicator_saturation_analysis.py -i a
+    run: r:latest analysis/indicator_saturation_analysis.R -I a -T date -C practice -f -v -i output -o output/indicator_saturation measure_indicator_a_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
       highly_sensitive:
         indicator_saturation: output/indicator_saturation/indicator_saturation_a/*
   
   indicator_saturation_b:
-    run: python:latest analysis/indicator_saturation_analysis.py -i b
+    run: r:latest analysis/indicator_saturation_analysis.R -I b -T date -C practice -f -v -i output -o output/indicator_saturation measure_indicator_b_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
       highly_sensitive:
         indicator_saturation: output/indicator_saturation/indicator_saturation_b/*
   
   indicator_saturation_c:
-    run: python:latest analysis/indicator_saturation_analysis.py -i c
+    run: r:latest analysis/indicator_saturation_analysis.R -I c -T date -C practice -f -v -i output -o output/indicator_saturation measure_indicator_c_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
       highly_sensitive:
         indicator_saturation: output/indicator_saturation/indicator_saturation_c/*
 
   indicator_saturation_d:
-    run: python:latest analysis/indicator_saturation_analysis.py -i d
+    run: r:latest analysis/indicator_saturation_analysis.R -I d -T date -C practice -f -v -i output -o output/indicator_saturation measure_indicator_d_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
       highly_sensitive:
         indicator_saturation: output/indicator_saturation/indicator_saturation_d/*
 
   indicator_saturation_e:
-    run: python:latest analysis/indicator_saturation_analysis.py -i e
+    run: r:latest analysis/indicator_saturation_analysis.R -I e -T date -C practice -f -v -i output -o output/indicator_saturation measure_indicator_e_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
       highly_sensitive:
         indicator_saturation: output/indicator_saturation/indicator_saturation_e/*
 
   indicator_saturation_f:
-    run: python:latest analysis/indicator_saturation_analysis.py -i f
+    run: r:latest analysis/indicator_saturation_analysis.R -I f -T date -C practice -f -v -i output -o output/indicator_saturation measure_indicator_f_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
       highly_sensitive:
         indicator_saturation: output/indicator_saturation/indicator_saturation_f/*
 
   indicator_saturation_g:
-    run: python:latest analysis/indicator_saturation_analysis.py -i g
+    run: r:latest analysis/indicator_saturation_analysis.R -I g -T date -C practice -f -v -i output -o output/indicator_saturation measure_indicator_g_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
       highly_sensitive:
         indicator_saturation: output/indicator_saturation/indicator_saturation_g/*
 
   indicator_saturation_i:
-    run: python:latest analysis/indicator_saturation_analysis.py -i i
+    run: r:latest analysis/indicator_saturation_analysis.R -I i -T date -C practice -f -v -i output -o output/indicator_saturation measure_indicator_i_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
       highly_sensitive:
         indicator_saturation: output/indicator_saturation/indicator_saturation_i/*
 
   indicator_saturation_k:
-    run: python:latest analysis/indicator_saturation_analysis.py -i k
+    run: r:latest analysis/indicator_saturation_analysis.R -I k -T date -C practice -f -v -i output -o output/indicator_saturation measure_indicator_k_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
       highly_sensitive:
         indicator_saturation: output/indicator_saturation/indicator_saturation_k/*
 
   indicator_saturation_ac:
-    run: python:latest analysis/indicator_saturation_analysis.py -i ac
+    run: r:latest analysis/indicator_saturation_analysis.R -I ac -T date -C practice -f -v -i output -o output/indicator_saturation measure_indicator_ac_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
       highly_sensitive:
         indicator_saturation: output/indicator_saturation/indicator_saturation_ac/*
 
   indicator_saturation_me_no_fbc:
-    run: python:latest analysis/indicator_saturation_analysis.py -i me_no_fbc -d indicator_me_denominator
+    run: r:latest analysis/indicator_saturation_analysis.R -I me_no_fbc -T date -C practice -B indicator_me_denominator -f -v -i output -o output/indicator_saturation measure_indicator_me_no_fbc_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
       highly_sensitive:
         indicator_saturation: output/indicator_saturation/indicator_saturation_me_no_fbc/*
 
   indicator_saturation_me_no_lft:
-    run: python:latest analysis/indicator_saturation_analysis.py -i me_no_lft -d indicator_me_denominator
+    run: r:latest analysis/indicator_saturation_analysis.R -I me_no_lft -T date -C practice -B indicator_me_denominator -f -v -i output -o output/indicator_saturation measure_indicator_me_no_lft_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
       highly_sensitive:
         indicator_saturation: output/indicator_saturation/indicator_saturation_me_no_lft/*
 
   indicator_saturation_me_no_li:
-    run: python:latest analysis/indicator_saturation_analysis.py -i li
+    run: r:latest analysis/indicator_saturation_analysis.R -I li -T date -C practice -f -v -i output -o output/indicator_saturation measure_indicator_li_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
       highly_sensitive:
         indicator_saturation: output/indicator_saturation/indicator_saturation_li/*
 
   indicator_saturation_am:
-    run: python:latest analysis/indicator_saturation_analysis.py -i am
+    run: r:latest analysis/indicator_saturation_analysis.R -I am -T date -C practice -f -v -i output -o output/indicator_saturation measure_indicator_am_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
       highly_sensitive:
         indicator_saturation: output/indicator_saturation/indicator_saturation_am/*
 
-  # --------------------------------------------------------------------------------------
-  # Something like this should be included when we have defined an indicator saturation
-  # collection script that combines all the indicator saturation analysis output for 
-  # all the indicators. Not all indicators may need to be combined - any that do not
-  # need to be combined should be removed from the 'run' and 'needs' specifications below.
-  # --------------------------------------------------------------------------------------
-  # combine_indicator_saturation_data:
-  #   run: python: latest analysis/combine_saturation_analyses.py a b c d e f g i k ac me_no_fbc me_no_lft li am
-  #   needs: [indicator_saturation_a indicator_saturation_b indicator_saturation_c indicator_saturation_d indicator_saturation_e indicator_saturation_f indicator_saturation_g indicator_saturation_i indicator_saturation_k indicator_saturation_ac indicator_saturation_me_no_fbc indicator_saturation_me_no_lft indicator_saturation_li indicator_saturation_am]
-  #   outputs:
-  #     highly_sensitive:
-  #       compiled_indicator_saturation: output/compiled_indicator_saturation
+  # # --------------------------------------------------------------------------------------
+  # # Something like this should be included when we have defined an indicator saturation
+  # # collection script that combines all the indicator saturation analysis output for 
+  # # all the indicators. Not all indicators may need to be combined - any that do not
+  # # need to be combined should be removed from the 'run' and 'needs' specifications below.
+  # # --------------------------------------------------------------------------------------
+  # # combine_indicator_saturation_data:
+  # #   run: python: latest analysis/combine_saturation_analyses.py a b c d e f g i k ac me_no_fbc me_no_lft li am
+  # #   needs: [indicator_saturation_a indicator_saturation_b indicator_saturation_c indicator_saturation_d indicator_saturation_e indicator_saturation_f indicator_saturation_g indicator_saturation_i indicator_saturation_k indicator_saturation_ac indicator_saturation_me_no_fbc indicator_saturation_me_no_lft indicator_saturation_li indicator_saturation_am]
+  # #   outputs:
+  # #     highly_sensitive:
+  # #       compiled_indicator_saturation: output/compiled_indicator_saturation
   
-  generate_notebook:
-    run: jupyter:latest jupyter nbconvert /workspace/analysis/report.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
-    needs: [generate_plots]
-    outputs:
-      moderately_sensitive:
-        notebook: output/report.html
+  # generate_notebook:
+  #   run: jupyter:latest jupyter nbconvert /workspace/analysis/report.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
+  #   needs: [generate_plots]
+  #   outputs:
+  #     moderately_sensitive:
+  #       notebook: output/report.html
   
   run_tests:
     run: python:latest python -m pytest --junit-xml=output/pytest.xml --verbose

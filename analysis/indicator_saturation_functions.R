@@ -65,9 +65,9 @@ setClass("ChangeDetection",
                    code_tag = 'ratio_quantity.',
                    min_NA_proportion = 0.5,
                    r_command = 'Rscript',
-                   change_detection_location = glue("{getwd()}/change_detection"),
+                   change_detection_location = glue("{getwd()}/analysis/change_detection"),
                    change_detection_script = 'change_detection.R',
-                   results_extract_location = glue("{getwd()}/change_detection"),
+                   results_extract_location = glue("{getwd()}/analysis/change_detection"),
                    results_extract_script = 'results_extract.R' )
          )
 
@@ -182,12 +182,9 @@ shape_dataframe = function(cd) {
         mutate( code = 1:n() ) %>%
         select( code, month, everything() ) 
     
-    ### Python script removes the bottom 5 rows - is this necessary?
-    ### I'll do this here so that I can check that the results are the same
-    # input_data = input_data %>%
-    #     ungroup() %>% # removing grouping to allow slice
-    #     slice(  1:(n()-5) ) 
-    
+    ### Python script seems to remove the bottom 5 rows - but have left
+    ### this out here
+
     ### Drop columns with identical values
     ratio_variability = input_data %>% ungroup() %>% select( -month, -code ) %>%
         map( ~sd(.,na.rm=T) )
@@ -250,6 +247,16 @@ check_input_file_exists = function(cd) {
         stop( report_error( cd, glue( "input file does not exist: {cd@indir}/{cd@csv_name}" ) ) )
     }
 }
+
+
+check_output_dir_exists = function(cd) {
+    if ( !dir.exists(cd@outdir) ) {
+        report_info( cd, glue("creating output directory: {cd@outdir}") )
+        dir.create(cd@outdir)
+    } 
+}
+
+
 
 divide_data_frame = function( cd, df ) {
     df = df %>% pivot_longer( starts_with(cd@code_tag ),
@@ -363,7 +370,9 @@ r_extract = function( cd ) {
 
 
 run = function(cd) {
-    report_info( cd, "running new change detection..." )
+    report_info( cd, "Running new change detection..." )
+
+    check_output_dir_exists( cd )
     
     cd@working_dir = check_input_file_exists( cd )
     

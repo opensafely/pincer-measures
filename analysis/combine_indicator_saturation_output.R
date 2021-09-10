@@ -90,8 +90,9 @@ time_since_epoch <- function(d) {
 }
 
 
-# top_level_dir = arguments[1]
-top_level_dir = "/Users/lisahopcroft/Work/Projects/PINCER/pincer-measures/output/indicator_saturation"
+in_dir = arguments[1]
+out_dir = arguments[2]
+# in_dir = "/Users/lisahopcroft/Work/Projects/PINCER/pincer-measures/output/indicator_saturation"
 # intervention_moment
 #intervention_moment = "2019-10-15"
 #known.t = time_since_epoch( intervention_moment )
@@ -104,9 +105,9 @@ top_level_dir = "/Users/lisahopcroft/Work/Projects/PINCER/pincer-measures/output
 #####################################################################
 
 results_files = data.frame(
-  file_name = list.files(path=top_level_dir, pattern="r_output_.*.csv", recursive = TRUE )
+  file_name = list.files(path=in_dir, pattern="r_output_.*.csv", recursive = TRUE )
 ) %>%
-  mutate( file_name_full = paste( top_level_dir, file_name, sep="/" ) ) %>% 
+  mutate( file_name_full = paste( in_dir, file_name, sep="/" ) ) %>% 
   mutate( indicator = dirname( file_name ) ) %>% 
   mutate( id = 1:n() )
 
@@ -129,15 +130,15 @@ for ( results_i in 1:nrow( results_files ) ) {
 #####################################################################
 
 plotdata_files = data.frame(
-  file_name = list.files(path=top_level_dir, pattern=".*_plotdata.RData", recursive = TRUE )
+  file_name = list.files(path=in_dir, pattern=".*_plotdata.RData", recursive = TRUE )
 ) %>%
-  mutate( file_name_full = paste( top_level_dir, file_name, sep="/" ) ) %>% 
+  mutate( file_name_full = paste( in_dir, file_name, sep="/" ) ) %>% 
   mutate( indicator = dirname( file_name ) ) %>% 
   mutate( id = 1:n() )
 
 plotdata_holder = data.frame()
 
-fig_path_tis_analysis = top_level_dir
+fig_path_tis_analysis = out_dir
 
 ###### Timing Measures
 ### ADD CHANGE OF GUIDANCE HERE
@@ -342,8 +343,6 @@ for ( results_i in 1:nrow( plotdata_files ) ) {
 ### Summary figure of slope intensity
 #####################################################################
 
-results_holder %>% filter( is.nbreak > 0 )
-
 ggplot( data = results_holder %>% filter( is.nbreak > 0 ),
         aes( x = indicator,
              y = name,
@@ -354,6 +353,12 @@ ggplot( data = results_holder %>% filter( is.nbreak > 0 ),
   theme_minimal() +
   theme( axis.text.x = element_text(angle=90,
                                     hjust=1)) 
+
+ggsave( glue("{fig_path_tis_analysis}/SUMMARY_heatmap.png"),
+        units = "px",
+        width = 2*1024,
+        height = 2*1024 )
+
 
 
 #####################################################################
@@ -367,7 +372,10 @@ significant_plot_data = plotdata_holder %>%
   mutate( tag = glue("{indicator}_{name}") ) %>% 
   group_by( indicator, name )
 
-draw_change_detection_plot( significant_plot_data ) + facet_wrap( ~tag, scales="free_y")
+draw_change_detection_plot( significant_plot_data ) +
+  theme( axis.text.x = element_text(angle=90,
+                                    hjust=1)) +
+  facet_wrap( ~tag, scales="free_y")
 
 ggsave( glue("{fig_path_tis_analysis}/SUMMARY_significant.png"),
         units = "px",
@@ -380,7 +388,9 @@ ggsave( glue("{fig_path_tis_analysis}/SUMMARY_significant.png"),
 #####################################################################
 
 draw_change_detection_plot( plotdata_holder %>% group_by(indicator,name) ) +
-  facet_grid( name~indicator, scales="free_y")
+  facet_grid( name~indicator, scales="free_y") +
+  theme( axis.text.x = element_text(angle=90,
+                                    hjust=1)) 
 
 ggsave( glue("{fig_path_tis_analysis}/SUMMARY_all.png"),
         units = "px",
@@ -397,12 +407,14 @@ for ( n in plotdata_holder %>% pull(name) %>% unique) {
                                 filter( name == n ) %>% 
                                 group_by( indicator) ) +
     facet_wrap( ~indicator, scales="free_y" ) +
-    labs( title=glue("All indicators for [{n}]") )
+    labs( title=glue("All indicators for [{n}]") ) +
+    theme( axis.text.x = element_text(angle=90,
+                                      hjust=1)) 
   
   ggsave( glue("{fig_path_tis_analysis}/SUMMARY_PRACTICE-{n}.png"),
           units = "px",
-          width = 1024,
-          height = 1024 )
+          width = 1.5*1024,
+          height = 1.5*1024 )
 }
 
 #####################################################################
@@ -415,12 +427,14 @@ for ( ind in plotdata_holder %>% pull(indicator) %>% unique) {
                                 filter( indicator == ind ) %>% 
                                 group_by( name ) ) +
     facet_wrap( ~name, scales="free_y" ) +
-    labs( title=glue("All practices for [{ind}]") )
+    labs( title=glue("All practices for [{ind}]") ) +
+    theme( axis.text.x = element_text(angle=90,
+                                      hjust=1)) 
   
   ggsave( glue("{fig_path_tis_analysis}/SUMMARY_INDICATOR-{ind}.png"),
           units = "px",
-          width = 1024,
-          height = 1024 )
+          width = 1.5*1024,
+          height = 1.5*1024 )
 }
 
 

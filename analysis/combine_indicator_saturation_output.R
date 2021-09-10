@@ -92,6 +92,11 @@ time_since_epoch <- function(d) {
 
 in_dir = arguments[1]
 out_dir = arguments[2]
+
+if ( !dir.exists(out_dir ) ) {
+  cat(sprintf("Making this directory: %s", out_dir))
+  dir.create(out_dir, showWarnings = FALSE)
+}
 # in_dir = "/Users/lisahopcroft/Work/Projects/PINCER/pincer-measures/output/indicator_saturation"
 # intervention_moment
 #intervention_moment = "2019-10-15"
@@ -117,10 +122,10 @@ for ( results_i in 1:nrow( results_files ) ) {
   this_result_file = ( results_files %>% pull(file_name_full) )[results_i]
   this_indicator = ( results_files %>% pull(indicator) )[results_i]
   
-  these_results = read_csv( this_result_file, show_col_types=FALSE ) %>% 
-    select( -...1 ) %>% 
+  these_results = read.csv( this_result_file,
+                            row.names = 1) %>% 
     mutate( indicator = this_indicator )
-
+  
   results_holder = results_holder %>% 
     bind_rows( these_results )
 }
@@ -303,9 +308,9 @@ for ( results_i in 1:nrow( plotdata_files ) ) {
     theme_bw()
   
   ggsave(glue("{fig_path_tis_analysis}/{this_indicator}_{this_object}_NEW.png"),
-         units = "px",
-         width = 1024,
-         height = 1024 )
+         units = "mm",
+         width = 270,
+         height = 270 )
   
   filename <- glue("{fig_path_tis_analysis}/{this_indicator}_{this_object}_ORIGINAL.png")
   
@@ -355,9 +360,8 @@ ggplot( data = results_holder %>% filter( is.nbreak > 0 ),
                                     hjust=1)) 
 
 ggsave( glue("{fig_path_tis_analysis}/SUMMARY_heatmap.png"),
-        units = "px",
-        width = 2*1024,
-        height = 2*1024 )
+        width = 6,
+        height = 6 )
 
 
 
@@ -378,9 +382,8 @@ draw_change_detection_plot( significant_plot_data ) +
   facet_wrap( ~tag, scales="free_y")
 
 ggsave( glue("{fig_path_tis_analysis}/SUMMARY_significant.png"),
-        units = "px",
-        width = 1024*5,
-        height = 1024*5 )
+        width = 8,
+        height = 8 )
 
 
 #####################################################################
@@ -393,9 +396,8 @@ draw_change_detection_plot( plotdata_holder %>% group_by(indicator,name) ) +
                                     hjust=1)) 
 
 ggsave( glue("{fig_path_tis_analysis}/SUMMARY_all.png"),
-        units = "px",
-        width = 1024*5,
-        height = 1024*10 )
+        width = 24,
+        height = 24 )
 
 #####################################################################
 ### Draw all indicators for each practice
@@ -412,9 +414,8 @@ for ( n in plotdata_holder %>% pull(name) %>% unique) {
                                       hjust=1)) 
   
   ggsave( glue("{fig_path_tis_analysis}/SUMMARY_PRACTICE-{n}.png"),
-          units = "px",
-          width = 1.5*1024,
-          height = 1.5*1024 )
+          width = 8,
+          height = 8 )
 }
 
 #####################################################################
@@ -432,9 +433,8 @@ for ( ind in plotdata_holder %>% pull(indicator) %>% unique) {
                                       hjust=1)) 
   
   ggsave( glue("{fig_path_tis_analysis}/SUMMARY_INDICATOR-{ind}.png"),
-          units = "px",
-          width = 1.5*1024,
-          height = 1.5*1024 )
+          width = 8,
+          height = 8 )
 }
 
 

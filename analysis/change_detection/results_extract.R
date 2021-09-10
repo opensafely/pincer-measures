@@ -73,6 +73,25 @@ results$is.intlev.finallev <- NA ### End level
 results$is.intlev.levd <- NA ### Difference between pre and end level
 results$is.intlev.levdprop <- NA ### Proportion of drop
 
+
+########################################
+############### Objects to save to draw graphs
+
+target_list = c("this_name",
+                "islstr.res",
+                "tis.path",
+                "trendline",
+                "nbreak",
+                "fit.res",
+                "is.first.pknown",
+                "coef.p.hl",
+                "mconst.res",
+                "big.break.index",
+                "data.pick",
+                "tdates",
+                "is.first")
+
+
 ########################################
 ################### Loop over different series
 
@@ -329,6 +348,16 @@ for (i in 1:(vars.list))
     dev.off()
     dev.off()
   }
+  
+  rfilename <- paste( results$name[i], "_plotdata.RData", sep="")
+  this_name = results$name[i]
+  these_results = 
+  cat( sprintf( "Writing %d objects to %s output file.\n",
+                length( intersect(target_list,ls())),
+                rfilename) )
+  
+  save( list = intersect( target_list, ls() ),
+        file = rfilename )
 
 } #loop over i closed 
 

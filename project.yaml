@@ -108,7 +108,7 @@ actions:
       highly_sensitive:
         plots: output/indicator_saturation/indicator_saturation_a/figures/*.png
         rdat: output/indicator_saturation/indicator_saturation_a/*.RData
-        csv: output/indicator_saturation/indicator_saturation_a/*.csv
+        csv: output/indicator_saturation/indicator_saturation_a/*_output_*.csv
   
   indicator_saturation_b:
     run: r:latest analysis/indicator_saturation_analysis.R -I b -T date -C practice -f -v -i output -o output/indicator_saturation measure_indicator_b_rate.csv 
@@ -117,7 +117,7 @@ actions:
       highly_sensitive:
         plots: output/indicator_saturation/indicator_saturation_b/figures/*.png
         rdat: output/indicator_saturation/indicator_saturation_b/*.RData
-        csv: output/indicator_saturation/indicator_saturation_b/*.csv
+        csv: output/indicator_saturation/indicator_saturation_b/*_output_*.csv
 
   indicator_saturation_c:
     run: r:latest analysis/indicator_saturation_analysis.R -I c -T date -C practice -f -v -i output -o output/indicator_saturation measure_indicator_c_rate.csv 
@@ -126,7 +126,7 @@ actions:
       highly_sensitive:
         plots: output/indicator_saturation/indicator_saturation_c/figures/*.png
         rdat: output/indicator_saturation/indicator_saturation_c/*.RData
-        csv: output/indicator_saturation/indicator_saturation_c/*.csv
+        csv: output/indicator_saturation/indicator_saturation_c/*_output_*.csv
 
   indicator_saturation_d:
     run: r:latest analysis/indicator_saturation_analysis.R -I d -T date -C practice -f -v -i output -o output/indicator_saturation measure_indicator_d_rate.csv 
@@ -135,7 +135,7 @@ actions:
       highly_sensitive:
         plots: output/indicator_saturation/indicator_saturation_d/figures/*.png
         rdat: output/indicator_saturation/indicator_saturation_d/*.RData
-        csv: output/indicator_saturation/indicator_saturation_d/*.csv
+        csv: output/indicator_saturation/indicator_saturation_d/*_output_*.csv
 
   indicator_saturation_e:
     run: r:latest analysis/indicator_saturation_analysis.R -I e -T date -C practice -f -v -i output -o output/indicator_saturation measure_indicator_e_rate.csv 
@@ -144,7 +144,7 @@ actions:
       highly_sensitive:
         plots: output/indicator_saturation/indicator_saturation_e/figures/*.png
         rdat: output/indicator_saturation/indicator_saturation_e/*.RData
-        csv: output/indicator_saturation/indicator_saturation_e/*.csv
+        csv: output/indicator_saturation/indicator_saturation_e/*_output_*.csv
 
   indicator_saturation_f:
     run: r:latest analysis/indicator_saturation_analysis.R -I f -T date -C practice -f -v -i output -o output/indicator_saturation measure_indicator_f_rate.csv 
@@ -153,7 +153,7 @@ actions:
       highly_sensitive:
         plots: output/indicator_saturation/indicator_saturation_f/figures/*.png
         rdat: output/indicator_saturation/indicator_saturation_f/*.RData
-        csv: output/indicator_saturation/indicator_saturation_f/*.csv
+        csv: output/indicator_saturation/indicator_saturation_f/*_output_*.csv
         
   indicator_saturation_g:
     run: r:latest analysis/indicator_saturation_analysis.R -I g -T date -C practice -f -v -i output -o output/indicator_saturation measure_indicator_g_rate.csv 
@@ -162,7 +162,7 @@ actions:
       highly_sensitive:
         plots: output/indicator_saturation/indicator_saturation_g/figures/*.png
         rdat: output/indicator_saturation/indicator_saturation_g/*.RData
-        csv: output/indicator_saturation/indicator_saturation_g/*.csv
+        csv: output/indicator_saturation/indicator_saturation_g/*_output_*.csv
 
   indicator_saturation_i:
     run: r:latest analysis/indicator_saturation_analysis.R -I i -T date -C practice -f -v -i output -o output/indicator_saturation measure_indicator_i_rate.csv 
@@ -171,7 +171,7 @@ actions:
       highly_sensitive:
         plots: output/indicator_saturation/indicator_saturation_i/figures/*.png
         rdat: output/indicator_saturation/indicator_saturation_i/*.RData
-        csv: output/indicator_saturation/indicator_saturation_i/*.csv
+        csv: output/indicator_saturation/indicator_saturation_i/*_output_*.csv
 
   indicator_saturation_k:
     run: r:latest analysis/indicator_saturation_analysis.R -I k -T date -C practice -f -v -i output -o output/indicator_saturation measure_indicator_k_rate.csv 
@@ -180,7 +180,7 @@ actions:
       highly_sensitive:
         plots: output/indicator_saturation/indicator_saturation_k/figures/*.png
         rdat: output/indicator_saturation/indicator_saturation_k/*.RData
-        csv: output/indicator_saturation/indicator_saturation_k/*.csv
+        csv: output/indicator_saturation/indicator_saturation_k/*_output_*.csv
 
   indicator_saturation_ac:
     run: r:latest analysis/indicator_saturation_analysis.R -I ac -T date -C practice -f -v -i output -o output/indicator_saturation measure_indicator_ac_rate.csv 
@@ -189,7 +189,7 @@ actions:
       highly_sensitive:
         plots: output/indicator_saturation/indicator_saturation_ac/figures/*.png
         rdat: output/indicator_saturation/indicator_saturation_ac/*.RData
-        csv: output/indicator_saturation/indicator_saturation_ac/*.csv
+        csv: output/indicator_saturation/indicator_saturation_ac/*_output_*.csv
 
   indicator_saturation_me_no_fbc:
     run: r:latest analysis/indicator_saturation_analysis.R -I me_no_fbc -T date -C practice -B indicator_me_denominator -f -v -i output -o output/indicator_saturation measure_indicator_me_no_fbc_rate.csv 
@@ -198,7 +198,7 @@ actions:
       highly_sensitive:
         plots: output/indicator_saturation/indicator_saturation_me_no_fbc/figures/*.png
         rdat: output/indicator_saturation/indicator_saturation_me_no_fbc/*.RData
-        csv: output/indicator_saturation/indicator_saturation_me_no_fbc/*.csv
+        csv: output/indicator_saturation/indicator_saturation_me_no_fbc/*_output_*.csv
         
   indicator_saturation_me_no_lft:
     run: r:latest analysis/indicator_saturation_analysis.R -I me_no_lft -T date -C practice -B indicator_me_denominator -f -v -i output -o output/indicator_saturation measure_indicator_me_no_lft_rate.csv 
@@ -207,7 +207,7 @@ actions:
       highly_sensitive:
         plots: output/indicator_saturation/indicator_saturation_me_no_lft/figures/*.png
         rdat: output/indicator_saturation/indicator_saturation_me_no_lft/*.RData
-        csv: output/indicator_saturation/indicator_saturation_me_no_lft/*.csv
+        csv: output/indicator_saturation/indicator_saturation_me_no_lft/*_output_*.csv
 
   indicator_saturation_li:
     run: r:latest analysis/indicator_saturation_analysis.R -I li -T date -C practice -f -v -i output -o output/indicator_saturation measure_indicator_li_rate.csv 
@@ -216,7 +216,7 @@ actions:
       highly_sensitive:
         plots: output/indicator_saturation/indicator_saturation_li/figures/*.png
         rdat: output/indicator_saturation/indicator_saturation_li/*.RData
-        csv: output/indicator_saturation/indicator_saturation_li/*.csv
+        csv: output/indicator_saturation/indicator_saturation_li/*_output_*.csv
 
   indicator_saturation_am:
     run: r:latest analysis/indicator_saturation_analysis.R -I am -T date -C practice -f -v -i output -o output/indicator_saturation measure_indicator_am_rate.csv 
@@ -225,7 +225,7 @@ actions:
       highly_sensitive:
         plots: output/indicator_saturation/indicator_saturation_am/figures/*.png
         rdat: output/indicator_saturation/indicator_saturation_am/*.RData
-        csv: output/indicator_saturation/indicator_saturation_am/*.csv
+        csv: output/indicator_saturation/indicator_saturation_am/*_output_*.csv
 
   combine_indicator_saturation_data:
     run: r:latest analysis/combine_indicator_saturation_output.R output/indicator_saturation output/indicator_saturation/combined

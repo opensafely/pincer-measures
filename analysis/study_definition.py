@@ -696,7 +696,7 @@ study = StudyDefinition(
         between=["index_date - 3 months", "index_date"],
     ),
 
-    lithium_level_3_months = patients.with_these_medications(
+    lithium_level_3_months = patients.with_these_clinical_events(
         codelist = lithium_level_codelist, 
         find_last_match_in_period=True,
         returning="binary_flag",

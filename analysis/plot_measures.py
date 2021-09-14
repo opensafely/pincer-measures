@@ -27,7 +27,7 @@ for i in indicators_list:
     # Need this for dummy data
     df = df.replace(np.inf, np.nan) 
 
-    deciles_chart(df, filename=f"plot_{i}", period_column="date", column="rate", title=f"Decile Chart Indicator {i}", ylabel="Rate per 1000")
+    deciles_chart(df, filename=f"plot_{i}", period_column="date", column="rate", count_column = f"indicator_{i}_numerator",title=f"Decile Chart Indicator {i}", ylabel="Rate per 1000")
 
     
 

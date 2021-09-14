@@ -25,12 +25,10 @@ actions:
           
   check_EGFR:
     run: python:latest python analysis/check_EGFR.py
-    needs: [generate_study_population_1, generate_study_population_2, generate_study_population_3]
+    needs: [join_ethnicity_region]
     outputs:
       moderately_sensitive:
-        boxplots: output/BOXPLOT_*.png
-        histograms: output/HISTOGRAM_*.png
-        counts: output/CROSSTAB_*.csv
+        counts: output/egfr_tabulation.csv
 
   generate_study_population_ethnicity:
     run: cohortextractor:latest generate_cohort --study-definition study_definition_ethnicity --output-format feather

@@ -246,6 +246,7 @@ def deciles_chart_ebm(
     if title:
         ax.set_title(title, size=18)
     # set ymax across all subplots as largest value across dataset
+    
     ax.set_ylim([0, df[column].max() * 1.05])
     ax.tick_params(labelsize=12)
     ax.set_xlim(
@@ -312,6 +313,7 @@ def compute_redact_deciles(df, period_column, count_column, column):
     df = compute_deciles(df, period_column, column, False).merge(n_practices, on="date").merge(quintile_10, on="date")
     df['drop'] = ((df['practice']*0.1) * df[count_column]) <=5
     df = df[df['drop']==False]
+    
     return df
 
 
@@ -320,17 +322,19 @@ def deciles_chart(df, filename, period_column=None, column=None, count_column=No
 
     df = compute_redact_deciles(df, period_column, count_column, column)
     
-    deciles_chart_ebm(
-        df,
-        period_column="date",
-        column="rate",
-        ylabel="rate per 1000",
-        show_outer_percentiles=False,
-    )
+    #need this for dummy data
+    if df.shape[0] != 0:
+        deciles_chart_ebm(
+            df,
+            period_column="date",
+            column="rate",
+            ylabel="rate per 1000",
+            show_outer_percentiles=False,
+        )
 
-    plt.tight_layout()
-    plt.savefig(f"output/{filename}.jpeg")
-    plt.clf()
+        plt.tight_layout()
+        plt.savefig(f"output/{filename}.jpeg")
+        plt.clf()
 
 def get_composite_indicator_counts(df, numerators, denominator: str, date: str):
     """

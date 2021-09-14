@@ -193,9 +193,15 @@ class CUSUM(object):
 demographics = ["age_band", "sex", "region", "imd", "care_home_type"]
 
 cusum_results = {}
+
+#these are not generated in the main generate measures action
+additional_indicators = ["e","f"]
+indicators_list.extend(additional_indicators)
+
 for i in indicators_list:
     df = pd.read_csv(OUTPUT_DIR / f'measure_indicator_{i}_rate.csv')
     df = df.replace(np.inf, np.nan)
+    
     df = df[df['value'].notnull()]
 
     df = drop_irrelevant_practices(df)

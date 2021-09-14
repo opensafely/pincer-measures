@@ -54,17 +54,18 @@ actions:
 
   calculate_composite_indicators:
     run: python:latest python analysis/composite_indicators.py
-    needs: [calculate_numerators]
+    needs: [calculate_numerators, join_ethnicity_region]
     outputs:
       moderately_sensitive:
         counts: output/*_composite_measure.csv
 
   generate_measures:
     run: cohortextractor:latest generate_measures --study-definition study_definition --output-dir=output
-    needs: [calculate_numerators]
+    needs: [join_ethnicity_region]
     outputs:
         moderately_sensitive:
           measure_csv: output/measure_*_rate.csv
+
   
   check_asthma:
     run: python:latest python analysis/check_asthma.py
@@ -75,10 +76,11 @@ actions:
   
   generate_measures_demographics:
     run: python:latest python analysis/calculate_measures.py
-    needs: [calculate_numerators]
+    needs: [calculate_numerators, join_ethnicity_region]
     outputs:
       moderately_sensitive:
         counts: output/indicator_measure_*.csv
+        measure_csv: output/measure*_rate.csv
   
   generate_plots:
     run: python:latest python analysis/plot_measures.py
@@ -89,14 +91,14 @@ actions:
 
   cusum:
     run: python:latest python analysis/cusum.py
-    needs: [generate_measures]
+    needs: [generate_measures, generate_measures_demographics]
     outputs:
       moderately_sensitive:
         cusum: output/cusum_results.json
   
   plot_cusum:
     run: python:latest python analysis/plot_cusum.py
-    needs: [generate_measures, cusum]
+    needs: [cusum, generate_measures, generate_measures_demographics]
     outputs:
       moderately_sensitive:
         cusum: output/cusum_indicator_*.jpeg

@@ -830,10 +830,17 @@ measures.extend([
     ),
 
     Measure(
+        id=f"asthma_resolved_rate",
+        numerator=f"asthma_resolved",
+        denominator=f"population",
+        group_by=["practice"]
+    ),
+
+    Measure(
         id=f"lithium_level_rate",
         numerator="lithium_level_3_months",
         denominator="population",
-        group_by="population"
+        group_by=["practice"]
     ),
     
 ]

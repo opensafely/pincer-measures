@@ -25,18 +25,8 @@ study = StudyDefinition(
        NOT died AND
        (age >=18 AND age <=120) AND
        (
-           (age >=65 AND ppi) OR
-           (methotrexate_6_3_months AND methotrexate_3_months) OR
-           (lithium_6_3_months AND lithium_3_months) OR
-           (amiodarone_12_6_months AND amiodarone_6_months) OR
-           ((gi_bleed OR peptic_ulcer) AND (NOT ppi)) OR
-           (anticoagulant) OR
-           (aspirin AND (NOT ppi)) OR
-           ((asthma AND (NOT asthma_resolved)) OR (asthma_resolved_date <= asthma_date)) OR
-           (heart_failure) OR
-           (egfr_less_than_45) OR
-           (age >= 75 AND acei AND acei_recent) OR
-           (age >=75 AND loop_diuretic AND loop_diuretic_recent)
+           (lithium_6_3_months AND lithium_3_months)
+           
        )
        """
     ),
@@ -68,6 +58,19 @@ study = StudyDefinition(
     # LI - Lithium audit (MO_P17)
     ####
 
+    lithium_6_3_months = patients.with_these_medications(
+        codelist = lithium_codelist, 
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        between=["index_date - 6 months", "index_date - 3 months"],
+    ),
+
+    lithium_3_months = patients.with_these_medications(
+        codelist = lithium_codelist, 
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        between=["index_date - 3 months", "index_date"],
+    ),
 
     lithium_level_3_months = patients.with_these_clinical_events(
         codelist = lithium_level_codelist, 
@@ -101,14 +104,14 @@ indicators_list = ["li"]
 for indicator in indicators_list:
 
     
-    m = Measure(
+    measures = [ Measure(
         id=f"indicator_{indicator}_rate",
         numerator=f"indicator_{indicator}_numerator",
         denominator=f"indicator_{indicator}_denominator",
         group_by=["practice"]
     )
-
-    measures.append(m)
+    ]
+    
 
 measures.extend([
 

@@ -27,4 +27,5 @@ df['egfr_numeric_value_present'] = df['egfr'].notnull()
 
 df = df.replace({False: 0, True: 1})
 print(df)
-df.groupby(by=["egfr_numeric_value_present", "egfr_binary_flag", "egfr_less_than_45", "egfr_less_than_45_including_binary_flag", "negative_egfr", "egfr_over_200", "egfr_0", "egfr_code"])[['egfr_code']].count().to_csv(OUTPUT_DIR / 'egfr_tabulation.csv')
+df = df[["egfr_numeric_value_present", "egfr_binary_flag", "egfr_less_than_45", "egfr_less_than_45_including_binary_flag", "negative_egfr", "egfr_over_200", "egfr_0"]].sum()
+df.to_csv(OUTPUT_DIR / "egfr_tabulation.csv")

@@ -39,15 +39,15 @@ if __name__ == "__main__":
             li_numerator_dict = dict(zip(lithium_df['patient_id'], lithium_df['indicator_li_numerator']))
             li_denominator_dict = dict(zip(lithium_df['patient_id'], lithium_df['indicator_li_denominator']))
 
-            df['indicator_li_numerator'] = df['patient_id'].map(li_numerator_dict)
-            df['indicator_li_denominator'] = df['patient_id'].map(li_denominator_dict)
+            df['indicator_li_numerator'] = df['patient_id'].map(li_numerator_dict).astype(float)
+            df['indicator_li_denominator'] = df['patient_id'].map(li_denominator_dict).astype(float)
 
 
             for additional_indicator in additional_indicators:
                 
                 event = df.groupby(by=["practice"])[[f"indicator_{additional_indicator}_numerator", f"indicator_{additional_indicator}_denominator"]].sum().reset_index()
                 event["value"] = event[f"indicator_{additional_indicator}_numerator"].div(event[f"indicator_{additional_indicator}_denominator"].where(event[f"indicator_{additional_indicator}_denominator"]!=0, np.nan))
-                
+                event["value"] = event["value"].replace({np.nan: 0})
                 event["date"] = date
                 
                 df_dict_additional[additional_indicator].append(event)

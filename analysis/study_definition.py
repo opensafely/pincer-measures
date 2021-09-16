@@ -782,7 +782,7 @@ measures = [
     )
 ]
 
-indicators_list = ["a", "b", "c", "d", "g", "i", "k", "ac", "me_no_fbc", "me_no_lft", "li", "am"]
+indicators_list = ["a", "b", "c", "d", "g", "i", "k", "ac", "me_no_fbc", "me_no_lft", "am"]
 
 for indicator in indicators_list:
 
@@ -833,13 +833,6 @@ measures.extend([
         id=f"asthma_resolved_rate",
         numerator=f"asthma_resolved",
         denominator=f"population",
-        group_by=["practice"]
-    ),
-
-    Measure(
-        id=f"lithium_level_rate",
-        numerator="lithium_level_3_months",
-        denominator="population",
         group_by=["practice"]
     ),
     

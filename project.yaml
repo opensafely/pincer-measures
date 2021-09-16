@@ -81,7 +81,7 @@ actions:
   
   generate_measures_demographics:
     run: python:latest python analysis/calculate_measures.py
-    needs: [calculate_numerators, join_ethnicity_region]
+    needs: [calculate_numerators, join_ethnicity_region, generate_study_population_lithium]
     outputs:
       moderately_sensitive:
         counts: output/indicator_measure_*.csv

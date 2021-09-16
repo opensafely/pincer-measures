@@ -1,9 +1,10 @@
 import pandas as pd
+import numpy as np
 from utilities import OUTPUT_DIR, match_input_files, get_date_input_file, calculate_rate, redact_small_numbers
 from study_definition import indicators_list
 
 #these are not generated in the main generate measures action
-additional_indicators = ["e","f"]
+additional_indicators = ["e","f", "li"]
 indicators_list.extend(additional_indicators)
 
 demographics = ["age_band", "sex", "region", "imd", "care_home_type"]
@@ -21,6 +22,7 @@ if __name__ == "__main__":
     for file in OUTPUT_DIR.iterdir():
         
         if match_input_files(file.name):
+            print(file.name)
             df = pd.read_feather(OUTPUT_DIR / file.name)
             date = get_date_input_file(file.name)
 
@@ -29,11 +31,25 @@ if __name__ == "__main__":
             f_dict =  dict(zip(indicator_e_f['patient_id'], indicator_e_f['indicator_f_numerator']))
             df['indicator_e_numerator'] = df['patient_id'].map(e_dict)
             df['indicator_f_numerator'] = df['patient_id'].map(f_dict)
+            
+
+
+            #add lithium numerator and denominator
+            lithium_df = pd.read_feather(OUTPUT_DIR / f'input_lithium_{date}.feather')
+            li_numerator_dict = dict(zip(lithium_df['patient_id'], lithium_df['indicator_li_numerator']))
+            li_denominator_dict = dict(zip(lithium_df['patient_id'], lithium_df['indicator_li_denominator']))
+
+            df['indicator_li_numerator'] = df['patient_id'].map(li_numerator_dict).astype(float)
+            df['indicator_li_denominator'] = df['patient_id'].map(li_denominator_dict).astype(float)
+
 
             for additional_indicator in additional_indicators:
+                
                 event = df.groupby(by=["practice"])[[f"indicator_{additional_indicator}_numerator", f"indicator_{additional_indicator}_denominator"]].sum().reset_index()
-                event["value"] = event[f"indicator_{additional_indicator}_numerator"] / event[f"indicator_{additional_indicator}_denominator"]
+                event["value"] = event[f"indicator_{additional_indicator}_numerator"].div(event[f"indicator_{additional_indicator}_denominator"].where(event[f"indicator_{additional_indicator}_denominator"]!=0, np.nan))
+                event["value"] = event["value"].replace({np.nan: 0})
                 event["date"] = date
+                
                 df_dict_additional[additional_indicator].append(event)
 
 

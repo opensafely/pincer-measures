@@ -8,6 +8,8 @@ from utilities import *
 import numpy as np
 import matplotlib.pyplot as plt
 
+additional_indicators = ["e","f", "li"]
+indicators_list.extend(additional_indicators)
 
 for i in indicators_list:
     # indicator plots
@@ -20,8 +22,9 @@ for i in indicators_list:
                     
     else:
         denominator = f"indicator_{i}_denominator"
-
-    df["rate"] = (df[f"indicator_{i}_numerator"] / df[denominator])*1000
+    
+    df["rate"] = df[f"value"]*1000
+    print(df.head())
     df = df.drop(["value"], axis=1)
 
     # Need this for dummy data

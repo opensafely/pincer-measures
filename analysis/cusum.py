@@ -195,7 +195,7 @@ demographics = ["age_band", "sex", "region", "imd", "care_home_type"]
 cusum_results = {}
 
 #these are not generated in the main generate measures action
-additional_indicators = ["e","f"]
+additional_indicators = ["e","f", "li"]
 indicators_list.extend(additional_indicators)
 
 for i in indicators_list:

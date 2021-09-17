@@ -323,7 +323,9 @@ def compute_redact_deciles(df, period_column, count_column, column):
         ((df[count_column]==0) & (df['practice'] <=5))
         )
     
-    df.to_csv(OUTPUT_DIR / 'quintile_10.csv')
+    
+    indicator = df.filter(regex=('indicator_\w*_numerator')).columns[0]
+    df.to_csv(OUTPUT_DIR / f'quintile_10_{indicator}.csv')
     df = df[df['drop']==False]
     
     return df

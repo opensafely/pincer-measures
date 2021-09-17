@@ -22,6 +22,7 @@ study = StudyDefinition(
     population=patients.satisfying(
        """
        registered AND
+       NOT died AND
        (age >=18 AND age <=120) AND
        (
            (age >=65 AND ppi) OR
@@ -41,6 +42,12 @@ study = StudyDefinition(
     ),
 
     registered = patients.registered_as_of("index_date"),
+
+    died = patients.died_from_any_cause(
+        on_or_before="index_date",
+        returning="binary_flag",
+        return_expectations={"incidence": 0.1}
+        ),
 
     practice=patients.registered_practice_as_of(
         "index_date",
@@ -193,8 +200,6 @@ study = StudyDefinition(
         codelist=oral_nsaid_codelist,
         find_last_match_in_period=True,
         returning="binary_flag",
-        include_date_of_match=True,
-        date_format="YYYY-MM-DD",
         between=["index_date - 3 months", "index_date"],
     ),
 
@@ -203,8 +208,6 @@ study = StudyDefinition(
         codelist = ulcer_healing_drugs_codelist,
         find_last_match_in_period=True,
         returning="binary_flag",
-        include_date_of_match=True,
-        date_format="YYYY-MM-DD",
         between=["index_date - 3 months", "index_date"],
     ),
 
@@ -234,8 +237,6 @@ study = StudyDefinition(
         codelist=peptic_ulcer_codelist,
         find_last_match_in_period=True,
         returning="binary_flag",
-        include_date_of_match=True,
-        date_format="YYYY-MM-DD",
         on_or_before="index_date - 3 months",
     ),
 
@@ -243,8 +244,6 @@ study = StudyDefinition(
         codelist=gi_bleed_codelist,
         find_last_match_in_period=True,
         returning="binary_flag",
-        include_date_of_match=True,
-        date_format="YYYY-MM-DD",
         on_or_before="index_date - 3 months",
     ),
   
@@ -370,12 +369,18 @@ study = StudyDefinition(
         on_or_before="index_date",
     ),
 
+    no_asthma_resolved = patients.satisfying(
+        """
+        asthma AND
+        (NOT asthma_resolved)
+        """,
+    ),
+
+
     non_selective_bb = patients.with_these_medications(
         codelist = non_selective_bb_codelist, 
         find_last_match_in_period=True,
         returning="binary_flag",
-        include_date_of_match=True,
-        date_format="YYYY-MM-DD",
         between=["index_date - 3 months", "index_date"],
     ),
 
@@ -413,8 +418,6 @@ study = StudyDefinition(
         codelist=heart_failure_codelist,
         find_first_match_in_period=True,
         returning="binary_flag",
-        include_date_of_match=True,
-        date_format="YYYY-MM-DD",
         on_or_before="index_date - 3 months",
     ),
 
@@ -442,8 +445,6 @@ study = StudyDefinition(
         codelist=egfr_codelist,
         find_last_match_in_period=True,
         returning="numeric_value",
-        include_date_of_match=True,
-        date_format="YYYY-MM-DD",
         on_or_before="index_date - 3 months",
         return_expectations={
             "float": {"distribution": "normal", "mean": 45.0, "stddev": 20},
@@ -451,10 +452,47 @@ study = StudyDefinition(
         },
     ),
 
+    egfr_binary_flag=patients.with_these_clinical_events(
+        codelist=egfr_codelist,
+        find_last_match_in_period=True,
+        returning="binary_flag",
+        on_or_before="index_date - 3 months",
+    ),
+
     egfr_less_than_45 = patients.categorised_as(
         {
             "0": "DEFAULT",
             "1": """ (egfr>=0) AND (egfr < 45)"""
+        },
+        return_expectations = {
+            "rate": "universal",
+            "category": {
+                        "ratios": {
+                            "0": 0.94,
+                            "1": 0.06,
+                                }
+                        },
+            },
+    ),
+
+    egfr_code=patients.with_these_clinical_events(
+        codelist=egfr_codelist,
+        find_last_match_in_period=True,
+        returning="code",
+        on_or_before="index_date - 3 months",
+        return_expectations={"category": {
+            "ratios": {
+                1011481000000105: 0.5,
+                1020291000000106: 0.5,
+                }}, 
+                },
+            
+    ),
+
+    egfr_less_than_45_including_binary_flag = patients.categorised_as(
+        {
+            "0": "DEFAULT",
+            "1": """ egfr_binary_flag AND (egfr>=0) AND (egfr < 45)"""
         },
         return_expectations = {
             "rate": "universal",
@@ -489,8 +527,6 @@ study = StudyDefinition(
         codelist = acei_codelist, 
         find_first_match_in_period=True,
         returning="binary_flag",
-        include_date_of_match=True,
-        date_format="YYYY-MM-DD",
         on_or_before="index_date - 15 months",
     ),
 
@@ -498,8 +534,6 @@ study = StudyDefinition(
         codelist = loop_diuretics_codelist, 
         find_first_match_in_period=True,
         returning="binary_flag",
-        include_date_of_match=True,
-        date_format="YYYY-MM-DD",
         on_or_before="index_date - 15 months",
     ),
 
@@ -507,8 +541,6 @@ study = StudyDefinition(
         codelist = acei_codelist, 
         find_last_match_in_period=True,
         returning="binary_flag",
-        include_date_of_match=True,
-        date_format="YYYY-MM-DD",
         between=["index_date - 6 months", "index_date"],
     ),
 
@@ -516,8 +548,6 @@ study = StudyDefinition(
         codelist = loop_diuretics_codelist, 
         find_last_match_in_period=True,
         returning="binary_flag",
-        include_date_of_match=True,
-        date_format="YYYY-MM-DD",
         between=["index_date - 6 months", "index_date"],
     ),
 
@@ -525,8 +555,6 @@ study = StudyDefinition(
         codelist = renal_function_codelist,
         find_last_match_in_period = True,
         returning="binary_flag",
-        include_date_of_match=True,
-        date_format="YYYY-MM-DD",
         between = ["index_date - 15 months", "index_date"],
     ),
 
@@ -534,8 +562,6 @@ study = StudyDefinition(
         codelist = electrolytes_test_codelist,
         find_last_match_in_period = True,
         returning="binary_flag",
-        include_date_of_match=True,
-        date_format="YYYY-MM-DD",
         between = ["index_date - 15 months", "index_date"],
     ),
 
@@ -564,8 +590,6 @@ study = StudyDefinition(
         codelist = methotrexate_codelist, 
         find_last_match_in_period=True,
         returning="binary_flag",
-        include_date_of_match=True,
-        date_format="YYYY-MM-DD",
         between=["index_date - 6 months", "index_date - 3 months"],
     ),
 
@@ -573,8 +597,6 @@ study = StudyDefinition(
         codelist = methotrexate_codelist, 
         find_last_match_in_period=True,
         returning="binary_flag",
-        include_date_of_match=True,
-        date_format="YYYY-MM-DD",
         between=["index_date - 3 months", "index_date"],
     ),
 
@@ -582,8 +604,6 @@ study = StudyDefinition(
         codelist = full_blood_count_codelist,
         find_last_match_in_period = True,
         returning="binary_flag",
-        include_date_of_match=True,
-        date_format="YYYY-MM-DD",
         between = ["index_date - 3 months", "index_date"],
     ),
 
@@ -591,8 +611,6 @@ study = StudyDefinition(
         codelist = liver_function_test_codelist,
         find_last_match_in_period = True,
         returning="binary_flag",
-        include_date_of_match=True,
-        date_format="YYYY-MM-DD",
         between = ["index_date - 3 months", "index_date"],
     ),
 
@@ -628,8 +646,6 @@ study = StudyDefinition(
         codelist = lithium_codelist, 
         find_last_match_in_period=True,
         returning="binary_flag",
-        include_date_of_match=True,
-        date_format="YYYY-MM-DD",
         between=["index_date - 6 months", "index_date - 3 months"],
     ),
 
@@ -637,17 +653,13 @@ study = StudyDefinition(
         codelist = lithium_codelist, 
         find_last_match_in_period=True,
         returning="binary_flag",
-        include_date_of_match=True,
-        date_format="YYYY-MM-DD",
         between=["index_date - 3 months", "index_date"],
     ),
 
-    lithium_level_3_months = patients.with_these_medications(
+    lithium_level_3_months = patients.with_these_clinical_events(
         codelist = lithium_level_codelist, 
         find_last_match_in_period=True,
         returning="binary_flag",
-        include_date_of_match=True,
-        date_format="YYYY-MM-DD",
         between=["index_date - 3 months", "index_date"],
     ),
 
@@ -676,8 +688,6 @@ study = StudyDefinition(
         codelist = amiodarone_codelist, 
         find_last_match_in_period=True,
         returning="binary_flag",
-        include_date_of_match=True,
-        date_format="YYYY-MM-DD",
         between=["index_date - 12 months", "index_date - 6 months"],
     ),
 
@@ -685,8 +695,6 @@ study = StudyDefinition(
         codelist = amiodarone_codelist, 
         find_last_match_in_period=True,
         returning="binary_flag",
-        include_date_of_match=True,
-        date_format="YYYY-MM-DD",
         between=["index_date - 6 months", "index_date"],
     ),
 
@@ -694,8 +702,6 @@ study = StudyDefinition(
         codelist = thyroid_function_test_codelist, 
         find_last_match_in_period=True,
         returning="binary_flag",
-        include_date_of_match=True,
-        date_format="YYYY-MM-DD",
         between=["index_date - 6 months", "index_date"],
     ),
 
@@ -776,7 +782,7 @@ measures = [
     )
 ]
 
-indicators_list = ["a", "b", "c", "d", "e", "f", "g", "i", "k", "ac", "me_no_fbc", "me_no_lft", "li", "am"]
+indicators_list = ["a", "b", "c", "d", "g", "i", "k", "ac", "me_no_fbc", "me_no_lft", "am"]
 
 for indicator in indicators_list:
 
@@ -814,3 +820,21 @@ for indicator in indicators_list:
         )
 
     measures.append(m)
+
+measures.extend([
+    Measure(
+        id=f"no_asthma_resolved_rate",
+        numerator=f"no_asthma_resolved",
+        denominator=f"population",
+        group_by=["practice"]
+    ),
+
+    Measure(
+        id=f"asthma_resolved_rate",
+        numerator=f"asthma_resolved",
+        denominator=f"population",
+        group_by=["practice"]
+    ),
+    
+]
+)

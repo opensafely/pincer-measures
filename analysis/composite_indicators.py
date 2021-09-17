@@ -37,10 +37,14 @@ all_counts = []
 for file in OUTPUT_DIR.iterdir():
     
     if match_input_files(file.name):
-        df = pd.read_csv(OUTPUT_DIR / file.name)
-
+        df = pd.read_feather(OUTPUT_DIR / file.name)
         date = get_date_input_file(file.name)
-        
+        indicator_e_f = pd.read_feather(OUTPUT_DIR / f'indicator_e_f_{date}.feather')
+        e_dict =  dict(zip(indicator_e_f['patient_id'], indicator_e_f['indicator_e_numerator']))
+        f_dict =  dict(zip(indicator_e_f['patient_id'], indicator_e_f['indicator_f_numerator']))
+        df['indicator_e_numerator'] = df['patient_id'].map(e_dict)
+        df['indicator_f_numerator'] = df['patient_id'].map(f_dict)
+
         gi_bleed_count = get_composite_indicator_counts(df, gi_bleed_numerators, "gi_bleed_composite_denominator", date)
         gi_bleed_counts.append(gi_bleed_count)
         

@@ -26,13 +26,10 @@ CENTER = 10
 
 def match_input_files(file: str) -> bool:
     """Checks if file name has format outputted by cohort extractor"""
-    pattern = r'^input_20\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\.csv' 
+    pattern = r'^input_20\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\.feather' 
     return True if re.match(pattern, file) else False
 
-def match_egfr_files( file: str ) -> bool:
-    """Checks if file name has format outputted by cohort extractor (EGFR values)"""
-    pattern = r'^input_egfr_20\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\.csv'
-    return True if re.match(pattern, file) else False
+
 
 def match_measure_files( file: str ) -> bool:
     """Checks if file name has format outputted by cohort extractor (generate_measures action)"""
@@ -46,7 +43,7 @@ def get_date_input_file(file: str) -> str:
         raise Exception('Not valid input file format')
     
     else:
-        date = result = re.search(r'input_(.*)\.csv', file)
+        date = result = re.search(r'input_(.*)\.feather', file)
         return date.group(1)
 
 def validate_directory(dirpath):
@@ -54,14 +51,14 @@ def validate_directory(dirpath):
         raise ValueError(f"Not a directory")
 
 def join_ethnicity_region(directory: str) -> None:
-    """Finds 'input_ethnicity.csv' in directory and combines with each input file."""
-
+    """Finds 'input_ethnicity.feather' in directory and combines with each input file."""
+    
     dirpath = Path(directory)
     validate_directory(dirpath)
     filelist = dirpath.iterdir()
 
     #get ethnicity input file
-    ethnicity_df = pd.read_csv(dirpath / 'input_ethnicity.csv')
+    ethnicity_df = pd.read_feather(dirpath / 'input_ethnicity.feather')
     
     ## ONS MSOA to region map from here:
     ## https://geoportal.statistics.gov.uk/datasets/fe6c55f0924b4734adf1cf7104a0173e_0/data
@@ -71,18 +68,20 @@ def join_ethnicity_region(directory: str) -> None:
         dtype={"MSOA11CD": "category", "RGN11NM": "category"},
     )
 
+    ethnicity_dict = dict(zip(ethnicity_df['patient_id'], ethnicity_df['ethnicity']))
+    msoa_dict =  dict(zip(msoa_to_region['MSOA11CD'], msoa_to_region['RGN11NM']))    
+
     for file in filelist:
         if match_input_files(file.name):
-            df = pd.read_csv(dirpath / file.name)
-            merged_df = df.merge(
-                ethnicity_df, how='left', on='patient_id'
-                ).merge(
-                msoa_to_region, how="left", left_on="msoa", right_on="MSOA11CD", copy=False)
+            df = pd.read_feather(dirpath / file.name)
+        
+            df['ethnicity'] = df['patient_id'].map(ethnicity_dict)
+            df['region'] = df['msoa'].map(msoa_dict)
+            df.to_feather(dirpath / file.name)
 
-            # rename region column
-            merged_df = merged_df.rename({"RGN11NM":"region"}, axis=1)
             
-            merged_df.to_csv(dirpath / file.name, index=False)
+
+
 
 def calculate_rate(df, value_col: str, population_col: str, rate_per: int): 
     """Calculates the rate of events for given number of the population.
@@ -171,6 +170,7 @@ def plot_measures(df, filename: str, title: str, column_to_plot: str, y_label: s
             1.04, 1), loc="upper left")
     
     plt.tight_layout()
+    
     plt.savefig(f'output/{filename}.jpeg')
     plt.clf()
 
@@ -252,6 +252,7 @@ def deciles_chart_ebm(
     if title:
         ax.set_title(title, size=18)
     # set ymax across all subplots as largest value across dataset
+    
     ax.set_ylim([0, df[column].max() * 1.05])
     ax.tick_params(labelsize=12)
     ax.set_xlim(
@@ -304,23 +305,43 @@ def compute_deciles(
     percentiles["percentile"] = percentiles["percentile"] * 100
     return percentiles
 
+def get_practice_deciles(measure_table, value_column):
+    measure_table['percentile'] = measure_table.groupby(['date'])[value_column].transform(
+                     lambda x: pd.cut(x, 100, labels=range(1,101)))
+    
+    return measure_table
 
-def deciles_chart(df, filename, period_column=None, column=None, title="", ylabel=""):
+def compute_redact_deciles(df, period_column, count_column, column):
+    n_practices = df.groupby(by=['date'])[['practice']].nunique()
+    count_df = compute_deciles(df, period_column, count_column, False)
+    quintile_10 = count_df[count_df['percentile']==10][['date', count_column]]
+    df = compute_deciles(df, period_column, column, False).merge(n_practices, on="date").merge(quintile_10, on="date")
+    df['drop'] = ((df['practice']*0.1) * df[count_column]) <=5
+    df.to_csv(OUTPUT_DIR / 'quintile_10.csv')
+    df = df[df['drop']==False]
+    
+    return df
+
+
+def deciles_chart(df, filename, period_column=None, column=None, count_column=None, title="", ylabel=""):
     """period_column must be dates / datetimes"""
 
-    df = compute_deciles(df, period_column, column, False)
+    df = compute_redact_deciles(df, period_column, count_column, column)
+    
+    #need this for dummy data
+    if df.shape[0] != 0:
+        deciles_chart_ebm(
+            df,
+            period_column="date",
+            column="rate",
+            ylabel="rate per 1000",
+            show_outer_percentiles=False,
+        )
 
-    deciles_chart_ebm(
-        df,
-        period_column="date",
-        column="rate",
-        ylabel="rate per 1000",
-        show_outer_percentiles=False,
-    )
-
-    plt.tight_layout()
-    plt.savefig(f"output/{filename}.jpeg")
-    plt.clf()
+        plt.tight_layout()
+        print((f'output/{filename}.jpeg'))
+        plt.savefig(f"output/{filename}.jpeg")
+        plt.clf()
 
 def get_composite_indicator_counts(df, numerators, denominator: str, date: str):
     """
@@ -329,16 +350,17 @@ def get_composite_indicator_counts(df, numerators, denominator: str, date: str):
     within each composite.
     """
     indicator_num = df.loc[:, numerators].sum(axis=1)
-    count_dict = Counter(indicator_num)
+    count_df = indicator_num.value_counts().reset_index()
+    count_df = count_df.rename(columns={'index':'num_indicators', 0:'count'}).sort_values(by='num_indicators')
 
     # drop count of individuals with no indicators within composite
-    count_dict.pop(0, None)
+    count_df = count_df[count_df['num_indicators']!= 0]
 
-    count_df = pd.DataFrame.from_dict(count_dict, orient='index').reset_index()
-    count_df = count_df.rename(columns={'index':'num_indicators', 0:'count'})
     count_df["date"] = date
     count_df["denominator"] =  df[denominator].sum()
+    
     return count_df
+    
 
 def co_prescription(df, medications_x: str, medications_y: str) -> None:
     """
@@ -443,4 +465,30 @@ def co_prescription(df, medications_x: str, medications_y: str) -> None:
     )
     
     )
+
+    df[f"co_prescribed_{medications_x}_{medications_y}"] = df[f"co_prescribed_{medications_x}_{medications_y}"].map({False: 0, True: 1})
     
+def drop_irrelevant_practices(df):
+    """Drops irrelevant practices from the given measure table.
+    An irrelevant practice has zero events during the study period.
+    Args:
+        df: A measure table.
+    Returns:
+        A copy of the given measure table with irrelevant practices dropped.
+    """
+    is_relevant = df.groupby("practice").value.any()
+    return df[df.practice.isin(is_relevant[is_relevant == True].index)]
+
+def suppress_practice_measures(df, n, numerator, denominator, rate_column):
+
+    df_grouped = df.groupby(by=['date'])[[numerator, denominator]].sum().reset_index()
+    df_grouped["rate"] = (df_grouped[numerator] / df_grouped[denominator])*1000
+    print(df_grouped)
+    df_grouped = redact_small_numbers(df_grouped, 10, numerator, denominator, "rate")
+    print(df_grouped)
+    print(df_grouped.shape) 
+    dates_to_drop = df_grouped.loc[(df_grouped[numerator].isnull()) | (df_grouped[denominator].isnull(), 'date')]
+    print(dates_to_drop)
+    df['drop'] = df['date'].map(dates_to_drop)
+    df.loc[df['drop']==True, [numerator, denominator, rate_column]] = np.nan
+    return df

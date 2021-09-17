@@ -12,7 +12,7 @@ from pandas.api.types import is_datetime64_dtype, is_numeric_dtype
 @pytest.fixture()
 def filename():
     """Returns a input file as produced by cohortextractor."""
-    def create(name='input_2020-01-01.csv'):
+    def create(name='input_2020-01-01.feather'):
         return (name)
     return create
 
@@ -57,43 +57,16 @@ def input_file_ethnicity():
     )
 
 @pytest.fixture
-def measure_table_from_csv():
-    """Returns a measure table that could have been read from a CSV file.
-
-    Practice ID #1 is irrelevant; that is, it has zero events during
-    the study period.
-    """
-    return pd.DataFrame(
-        {
-            "practice": pd.Series([1, 2, 3, 1, 2]),
-            "systolic_bp_event_code": pd.Series([1, 1, 2, 1, 1]),
-            "systolic_bp": pd.Series([0, 1, 1, 0, 1]),
-            "population": pd.Series([1, 1, 1, 1, 1]),
-            "value": pd.Series([0, 1, 1, 0, 1]),
-            "date": pd.Series(
-                [
-                    "2019-01-01",
-                    "2019-01-01",
-                    "2019-01-01",
-                    "2019-02-01",
-                    "2019-02-01",
-                ]
-            ),
-        }
-    )
-
-
-@pytest.fixture
 def measure_table():
     """Returns a measure table that could have been read by calling `load_and_drop`."""
     mt = pd.DataFrame(
         {
-            "practice": pd.Series([2, 3, 2]),
-            "systolic_bp_event_code": pd.Series([1, 2, 1]),
-            "systolic_bp": pd.Series([1, 1, 1]),
-            "population": pd.Series([1, 1, 1]),
-            "value": pd.Series([1, 1, 1]),
-            "date": pd.Series(["2019-01-01", "2019-01-01", "2019-02-01"]),
+            "practice": pd.Series([1, 2, 3, 1, 2]),
+            "systolic_bp_event_code": pd.Series([np.nan,1, 2, np.nan, 1]),
+            "systolic_bp": pd.Series([0, 1, 1, 0, 1]),
+            "population": pd.Series([1,1, 1, 1, 1]),
+            "value": pd.Series([0,1, 1, 0, 1]),
+            "date": pd.Series(["2019-01-01", "2019-01-01", "2019-01-01", "2019-02-01","2019-02-01"]),
         }
     )
     mt["date"] = pd.to_datetime(mt["date"])
@@ -126,7 +99,7 @@ class TestMatchInputFiles:
         assert utilities.match_input_files(good_file_format)==True
 
     def test_bad_file_format(self, filename):
-        bad_file_format = filename(name='input_01-01-2020.csv') #incorrect filename format
+        bad_file_format = filename(name='input_01-01-2020.feather') #incorrect filename format
         assert utilities.match_input_files(bad_file_format)==False
 
 def test_get_date_input_file(filename):
@@ -137,7 +110,7 @@ def test_get_date_input_file(filename):
     # [2] Check that an exception is raised if the file is not in the
     #     correct format
     
-    bad_file_format = filename(name='input_01-01-2020.csv')
+    bad_file_format = filename(name='input_01-01-2020.feather')
     try:
         utilities.get_date_input_file(bad_file_format)
     except Exception as exc:
@@ -181,19 +154,19 @@ def test_join_ethnicity_region(tmp_path, input_file, input_file_ethnicity):
 
     with patch.object(utilities, "OUTPUT_DIR", tmp_path):
         
-        input_file.to_csv(utilities.OUTPUT_DIR / 'input_2020-01-01.csv', index=False)
+        input_file.to_feather(utilities.OUTPUT_DIR / 'input_2020-01-01.feather')
         
         
-        input_file_ethnicity.to_csv(utilities.OUTPUT_DIR / 'input_ethnicity.csv', index=False)
+        input_file_ethnicity.to_feather(utilities.OUTPUT_DIR / 'input_ethnicity.feather')
        
         utilities.join_ethnicity_region(utilities.OUTPUT_DIR)
-        merged_csv = pd.read_csv(utilities.OUTPUT_DIR / 'input_2020-01-01.csv')
+        merged_df = pd.read_feather(utilities.OUTPUT_DIR / 'input_2020-01-01.feather')
       
         #test that ethnicity vars match corresponding patient_ids
-        testing.assert_series_equal(merged_csv['ethnicity'], pd.Series([1, 2, 2, 1, 3], name='ethnicity'))
+        testing.assert_series_equal(merged_df['ethnicity'], pd.Series([1, 2, 2, 1, 3], name='ethnicity'))
         
         #test that region column is as expected
-        testing.assert_series_equal(merged_csv['region'], pd.Series(['East of England', 'East of England', 'East of England', 'North West', 'North West'], name='region'))
+        testing.assert_series_equal(merged_df['region'], pd.Series(['East of England', 'East of England', 'East of England', 'North West', 'North West'], name='region'))
         
 
 @pytest.mark.parametrize( "redact_threshold", [ -1, 0, 10, 100 ] )
@@ -235,15 +208,15 @@ def test_calculate_rate():
 
 
 class TestDropIrrelevantPractices:
-    def test_irrelevant_practices_dropped(self, measure_table_from_csv):
-        obs = utilities.drop_irrelevant_practices(measure_table_from_csv)
+    def test_irrelevant_practices_dropped(self, measure_table):
+        obs = utilities.drop_irrelevant_practices(measure_table)
         # Practice ID #1, which is irrelevant, has been dropped from
         # the measure table.
         assert all(obs.practice.values == [2, 3, 2])
 
-    def test_return_copy(self, measure_table_from_csv):
-        obs = utilities.drop_irrelevant_practices(measure_table_from_csv)
-        assert id(obs) != id(measure_table_from_csv)
+    def test_return_copy(self, measure_table):
+        obs = utilities.drop_irrelevant_practices(measure_table)
+        assert id(obs) != id(measure_table)
 
 @pytest.mark.parametrize(
     "has_outer_percentiles,num_rows",
@@ -274,7 +247,8 @@ def test_compute_deciles(measure_table, has_outer_percentiles, num_rows):
 def test_get_composite_indicator_counts(input_file, multiple_indicator_list):
     composite_results = utilities.get_composite_indicator_counts(
         input_file, multiple_indicator_list, "composite_denominator", "2020-10-10")
-
+    composite_results.index = [0, 1, 2]
+    
     testing.assert_frame_equal(
         composite_results,
         pd.DataFrame(
@@ -298,8 +272,27 @@ def test_co_prescription(input_file):
     
     testing.assert_series_equal(
         input_file['co_prescribed_medications_x_medications_y'],
-        pd.Series([True, False, False, True, False], name='co_prescribed_medications_x_medications_y'),
+        pd.Series([1, 0, 0, 1, 0], name='co_prescribed_medications_x_medications_y'),
     )
-    
+
+
+@pytest.fixture
+def measure_table_for_deciles():
+    """Returns a measure table that could have been read by calling `load_and_drop`."""
+    mt = pd.DataFrame(
+        {
+            "practice": pd.Series([1, 2, 3, 1, 2]),
+            "count": pd.Series([100, 500, 300, 10, 150]),
+            "rate": pd.Series([100,500, 300, 10, 150]),
+            "date": pd.Series(["2019-01-01", "2019-01-01", "2019-01-01", "2019-02-01","2019-02-01"]),
+        }
+    )
+    mt["date"] = pd.to_datetime(mt["date"])
+    return mt
+def test_compute_redact_deciles(measure_table_for_deciles):
+    obs = utilities.compute_redact_deciles(measure_table_for_deciles, 'date', 'count', 'rate')
+    print(obs['date'].unique())
+    #check that 2019-02-01 has been removed
+    assert len(obs['date'].unique()) == 1
     
 

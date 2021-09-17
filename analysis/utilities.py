@@ -324,12 +324,10 @@ def compute_redact_deciles(df, period_column, count_column, column):
         )
     
   
-    indicator = df.filter(regex=('indicator_\w*_numerator')).columns[0]
+   
     
     df.loc[df['drop']==True, ['rate']] = np.nan
-    
-   
-    df.to_csv(OUTPUT_DIR / f'quintile_10_{indicator}.csv')
+
 
     return df
 

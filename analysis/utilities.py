@@ -165,6 +165,7 @@ def plot_measures(df, filename: str, title: str, column_to_plot: str, y_label: s
             1.04, 1), loc="upper left")
     
     plt.tight_layout()
+    
     plt.savefig(f'output/{filename}.jpeg')
     plt.clf()
 
@@ -309,9 +310,9 @@ def compute_redact_deciles(df, period_column, count_column, column):
     n_practices = df.groupby(by=['date'])[['practice']].nunique()
     count_df = compute_deciles(df, period_column, count_column, False)
     quintile_10 = count_df[count_df['percentile']==10][['date', count_column]]
-    
     df = compute_deciles(df, period_column, column, False).merge(n_practices, on="date").merge(quintile_10, on="date")
     df['drop'] = ((df['practice']*0.1) * df[count_column]) <=5
+    df.to_csv(OUTPUT_DIR / 'quintile_10.csv')
     df = df[df['drop']==False]
     
     return df
@@ -333,6 +334,7 @@ def deciles_chart(df, filename, period_column=None, column=None, count_column=No
         )
 
         plt.tight_layout()
+        print((f'output/{filename}.jpeg'))
         plt.savefig(f"output/{filename}.jpeg")
         plt.clf()
 

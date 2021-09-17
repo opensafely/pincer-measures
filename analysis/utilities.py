@@ -31,6 +31,11 @@ def match_input_files(file: str) -> bool:
 
 
 
+def match_measure_files( file: str ) -> bool:
+    """Checks if file name has format outputted by cohort extractor (generate_measures action)"""
+    pattern = r'^measure_.*_rate\.csv'
+    return True if re.match(pattern, file) else False
+
 def get_date_input_file(file: str) -> str:
     """Gets the date in format YYYY-MM-DD from input file name string"""
     # check format

@@ -282,17 +282,18 @@ def measure_table_for_deciles():
     mt = pd.DataFrame(
         {
             "practice": pd.Series([1, 2, 3, 1, 2]),
-            "count": pd.Series([100, 500, 300, 10, 150]),
-            "rate": pd.Series([100,500, 300, 10, 150]),
+            "count": pd.Series([100, 500, 300, 0, 150]),
+            "rate": pd.Series([100,500, 300, 0, 150]),
             "date": pd.Series(["2019-01-01", "2019-01-01", "2019-01-01", "2019-02-01","2019-02-01"]),
         }
     )
     mt["date"] = pd.to_datetime(mt["date"])
     return mt
 def test_compute_redact_deciles(measure_table_for_deciles):
+    
     obs = utilities.compute_redact_deciles(measure_table_for_deciles, 'date', 'count', 'rate')
-    print(obs['date'].unique())
-    #check that 2019-02-01 has been removed
-    assert len(obs['date'].unique()) == 1
+    
+    #check that rate for 2019-02-01 has been set to null
+    assert(len(obs[~obs['rate'].isnull()]['date'].unique())==1)
     
 

@@ -131,6 +131,8 @@ for (i in 1:(vars.list))
     fit.res <- fitted(islstr.res) ##fitted values
     fit.res <- fit.res[!fit.res<0]
     
+    direction = ""
+    
     #### Measure 1.1: the first breaks where the coefficient path is also downward sloping
     if (arguments[5] == 'both'){
       direction <- 'min(which(tis.path$indic.fit$coef != 0))'

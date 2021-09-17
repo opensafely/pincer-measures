@@ -201,7 +201,7 @@ for ( results_i in 1:nrow( plotdata_files ) ) {
     
     break_data = data.frame(
       # x = tdates[min(big.break.index)]
-      x = model_months[tdates[min(big.break.index)]]
+      x = model_months[tdates[big.break.index]]
     ) %>% 
       mutate( y=NA) %>% 
       mutate( set = "break" )

@@ -1,5 +1,5 @@
 import pandas as pd
-from utilities import OUTPUT_DIR, match_input_files, get_date_input_file, get_composite_indicator_counts
+from utilities import OUTPUT_DIR, match_input_files, get_date_input_file, get_composite_indicator_counts,group_low_values
 
 gi_bleed_numerators = [
     "indicator_a_numerator",
@@ -58,7 +58,16 @@ for file in OUTPUT_DIR.iterdir():
         all_counts.append(all_count)
 
 
-gi_bleed_composite_measure = pd.concat(gi_bleed_counts, axis=0).to_csv(OUTPUT_DIR / "gi_bleed_composite_measure.csv", index=False)
-other_prescribing_composite_measure = pd.concat(other_prescribing_counts, axis=0).to_csv(OUTPUT_DIR / "other_prescribing_composite_measure.csv", index=False)
-monitoring_composite_measure = pd.concat(monitoring_counts, axis=0).to_csv(OUTPUT_DIR / "monitoring_composite_measure.csv", index=False)
-all_composite_measure = pd.concat(all_counts, axis=0).to_csv(OUTPUT_DIR / "all_composite_measure.csv", index=False)
+gi_bleed_composite_measure = pd.concat(gi_bleed_counts, axis=0)
+group_low_values(gi_bleed_composite_measure, 'count', 'denominator', 'num_indicators').to_csv(OUTPUT_DIR / "gi_bleed_composite_measure.csv", index=False)
+
+print(group_low_values(gi_bleed_composite_measure, 'count', 'denominator', 'num_indicators'))
+
+other_prescribing_composite_measure = pd.concat(other_prescribing_counts, axis=0)
+group_low_values(other_prescribing_composite_measure, 'count', 'denominator', 'num_indicators').to_csv(OUTPUT_DIR / "other_prescribing_composite_measure.csv", index=False)
+
+monitoring_composite_measure = pd.concat(monitoring_counts, axis=0)
+group_low_values(monitoring_composite_measure, 'count', 'denominator', 'num_indicators').to_csv(OUTPUT_DIR / "monitoring_composite_measure.csv", index=False)
+
+all_composite_measure = pd.concat(all_counts, axis=0)
+group_low_values(all_composite_measure, 'count', 'denominator', 'num_indicators').to_csv(OUTPUT_DIR / "all_composite_measure.csv", index=False)

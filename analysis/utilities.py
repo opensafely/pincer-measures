@@ -502,3 +502,31 @@ def suppress_practice_measures(df, n, numerator, denominator, rate_column):
     df['drop'] = df['date'].map(dates_to_drop)
     df.loc[df['drop']==True, [numerator, denominator, rate_column]] = np.nan
     return df
+
+def group_low_values(df, value_col, population_col, term_col):
+    
+    def suppress(df):
+        suppressed_count = df.loc[df[value_col]<=5, value_col].sum()
+        # population_suppressed_count = df.loc[df[value_col]<=5, population_col].sum()
+        population = df[population_col].mean()
+        if suppressed_count == 0:
+            pass
+
+        else:
+            df.loc[df[value_col] <=5, value_col]  = np.nan
+
+            while suppressed_count <=5:
+                suppressed_count += df[value_col].min()
+                df.loc[df[value_col].idxmin(), value_col] = np.nan 
+                
+                # population_suppressed_count += df.loc[df[value_col].idxmin(), population_col]
+    
+            df = df[df[value_col].notnull()]
+
+            other_row = {term_col:'Other', value_col:suppressed_count, 'date': df['date'].unique()[0],population_col:population}
+            df = df.append(other_row, ignore_index=True)
+        
+        
+        return df
+
+    return df.groupby(by=['date']).apply(suppress).reset_index(drop=True)

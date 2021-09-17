@@ -44,24 +44,29 @@ if (is.null( opt$options$denominator ) ) {
     opt$options$denominator = sprintf( "indicator_%s_denominator", opt$options$indicator )
 }
 
-measure_indicator = ChangeDetection(
-    name = glue('indicator_saturation_{opt$options$indicator}'),
-    code_variable = opt$options$code,
-    numerator_variable = opt$options$numerator,
-    denominator_variable = opt$options$denominator,
-    date_variable = unlist(opt$options$date),
-    date_format = opt$options$ymd,
-    numcores = opt$options$numcores,
-    indir = opt$options$indir,
-    outdir = opt$options$outdir,
-    direction = opt$options$direction,
-    overwrite = opt$options$overwrite,
-    draw_figures = opt$options$figures,
-    verbose = opt$options$verbose,
-    csv_name = opt$args[1]
-)
+for ( this_direction in c( "up","down" ) ) {
+    
+    measure_indicator = ChangeDetection(
+        name = glue('indicator_saturation_{this_direction}_{opt$options$indicator}'),
+        code_variable = opt$options$code,
+        numerator_variable = opt$options$numerator,
+        denominator_variable = opt$options$denominator,
+        date_variable = unlist(opt$options$date),
+        date_format = opt$options$ymd,
+        numcores = opt$options$numcores,
+        indir = opt$options$indir,
+        outdir = opt$options$outdir,
+        direction = this_direction,
+        overwrite = opt$options$overwrite,
+        draw_figures = opt$options$figures,
+        verbose = opt$options$verbose,
+        csv_name = opt$args[1]
+    )
+    
+    run( measure_indicator )
+    
+}
 
-run( measure_indicator )
 
 ### To test:
 ### Rscript indicator_saturation_analysis.R -I a -T date -C practice -v -i ../output -o ../output/indicator_saturation2 measure_indicator_a_rate.csv -f

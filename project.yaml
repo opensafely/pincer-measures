@@ -113,10 +113,14 @@ actions:
   generate_notebook:
     run: jupyter:latest jupyter nbconvert /workspace/analysis/report.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
     needs: [generate_plots]
-    
+    outputs:
+      moderately_sensitive:
+        notebook: output/report.html
+
   indicator_saturation_a:
     run: r:latest analysis/indicator_saturation_analysis.R -I a -T date -C practice -f -v -i output -o output/indicator_saturation measure_indicator_a_rate.csv 
-    needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]    outputs:
+    needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
+    outputs:
       highly_sensitive:
         plots: output/indicator_saturation/indicator_saturation_*_a/figures/*.png
         rdat: output/indicator_saturation/indicator_saturation_*_a/*.RData
@@ -245,13 +249,6 @@ actions:
     outputs:
       highly_sensitive:
         compiled_indicator_saturation: output/indicator_saturation/combined/*
-  
-  # generate_notebook:
-  #   run: jupyter:latest jupyter nbconvert /workspace/analysis/report.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
-  #   needs: [generate_plots]
-  #   outputs:
-  #     moderately_sensitive:
-  #       notebook: output/report.html
   
   run_tests:
     run: python:latest python -m pytest --junit-xml=output/pytest.xml --verbose

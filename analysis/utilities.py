@@ -311,7 +311,13 @@ def compute_redact_deciles(df, period_column, count_column, column):
     count_df = compute_deciles(df, period_column, count_column, False)
     quintile_10 = count_df[count_df['percentile']==10][['date', count_column]]
     df = compute_deciles(df, period_column, column, False).merge(n_practices, on="date").merge(quintile_10, on="date")
-    df['drop'] = ((df['practice']*0.1) * df[count_column]) <=5
+
+    # if quintile 10 is 0, make sure at least 5 practices have 0. If >0, make sure more than 5 practices are in this bottom decile
+    df['drop'] = (
+        (((df['practice']*0.1) * df[count_column]) <=5) & (df[count_column]!=0) | 
+        ((df[count_column]==0) & (df['practice'] <=5))
+        )
+    
     df.to_csv(OUTPUT_DIR / 'quintile_10.csv')
     df = df[df['drop']==False]
     

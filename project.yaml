@@ -93,7 +93,7 @@ actions:
     outputs:
       moderately_sensitive:
         counts: output/plot_*.jpeg
-        quintile: output/quintile_10.csv
+        quintile: output/quintile_10_*.csv
 
   cusum:
     run: python:latest python analysis/cusum.py

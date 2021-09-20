@@ -99,7 +99,8 @@ actions:
     needs: [generate_measures, generate_measures_demographics]
     outputs:
       moderately_sensitive:
-        cusum: output/cusum_results.json
+        cusum: output/cusum/cusum_results.json
+        alerts: output/cusum/cusum_alerts_summary.json
   
   plot_cusum:
     run: python:latest python analysis/plot_cusum.py

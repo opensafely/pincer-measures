@@ -198,7 +198,14 @@ cusum_results = {}
 additional_indicators = ["e","f", "li"]
 indicators_list.extend(additional_indicators)
 
+num_alerts = {}
+
 for i in indicators_list:
+    num_alerts[i] = {}
+    num_alerts[i]['positive'] = 0
+    num_alerts[i]['negative'] = 0
+    num_alerts[i]['any'] = 0
+
     df = pd.read_csv(OUTPUT_DIR / f'measure_indicator_{i}_rate.csv')
     df = df.replace(np.inf, np.nan)
     
@@ -222,7 +229,25 @@ for i in indicators_list:
         cs = CUSUM(data= percentile_array, window_size=6)
         results = cs.work()
 
-    
+        alert=False
+
+        # if there is a value in positive alerts add 1 to count and positive count
+        if not all(i is None for i in results['alert_percentile_pos']):
+            num_alerts[i]['positive'] +=1
+            alert=True
+        
+        # if there is a value in positive alerts add 1 to count and positive count
+        if not all(i is None for i in results['alert_percentile_neg']):
+            num_alerts[i]['negative'] +=1
+            alert=True
+
+        if alert:
+
+            num_alerts[i]['any'] +=1
+
+            
+
+
         cusum_results[i][str(practice)] = results
         
 
@@ -238,7 +263,8 @@ class NpEncoder(json.JSONEncoder):
         return super(NpEncoder, self).default(obj)
 
 
-
-with open(OUTPUT_DIR / 'cusum_results.json', 'w') as f:
+with open(OUTPUT_DIR / 'cusum/cusum_results.json', 'w') as f:
     json.dump(cusum_results, f,  cls=NpEncoder)
-    
+
+with open(OUTPUT_DIR / 'cusum/cusum_alerts_summary.json', 'w') as f:
+    json.dump(num_alerts, f,  cls=NpEncoder)

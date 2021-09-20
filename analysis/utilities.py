@@ -163,8 +163,10 @@ def plot_measures(df, filename: str, title: str, column_to_plot: str, y_label: s
     plt.xlabel('Date')
     plt.xticks(rotation='vertical')
     plt.title(title)
-    plt.ylim(bottom=0, top=df[column_to_plot].max() + df[column_to_plot].max()* 0.1)
-
+    plt.ylim(bottom=0, top= 1 if df[column_to_plot].isnull().values.all() else df[column_to_plot].max() * 1.05)
+    
+    
+   
     if category:
         plt.legend(sorted(df[category].unique()), bbox_to_anchor=(
             1.04, 1), loc="upper left")
@@ -253,7 +255,7 @@ def deciles_chart_ebm(
         ax.set_title(title, size=18)
     # set ymax across all subplots as largest value across dataset
     
-    ax.set_ylim([0, df[column].max() * 1.05])
+    ax.set_ylim([0, 1 if df[column].isnull().values.all() else df[column].max() * 1.05])
     ax.tick_params(labelsize=12)
     ax.set_xlim(
         [df[period_column].min(), df[period_column].max()]
@@ -323,11 +325,12 @@ def compute_redact_deciles(df, period_column, count_column, column):
         ((df[count_column]==0) & (df['practice'] <=5))
         )
     
+  
+   
     
-    indicator = df.filter(regex=('indicator_\w*_numerator')).columns[0]
-    df.to_csv(OUTPUT_DIR / f'quintile_10_{indicator}.csv')
-    df = df[df['drop']==False]
-    
+    df.loc[df['drop']==True, ['rate']] = np.nan
+
+
     return df
 
 
@@ -336,20 +339,19 @@ def deciles_chart(df, filename, period_column=None, column=None, count_column=No
 
     df = compute_redact_deciles(df, period_column, count_column, column)
     
-    #need this for dummy data
-    if df.shape[0] != 0:
-        deciles_chart_ebm(
-            df,
-            period_column="date",
-            column="rate",
-            ylabel="rate per 1000",
-            show_outer_percentiles=False,
-        )
+   
+    deciles_chart_ebm(
+        df,
+        period_column="date",
+        column="rate",
+        ylabel="rate per 1000",
+        show_outer_percentiles=False,
+    )
 
-        plt.tight_layout()
-        print((f'output/{filename}.jpeg'))
-        plt.savefig(f"output/{filename}.jpeg")
-        plt.clf()
+    plt.tight_layout()
+    print((f'output/{filename}.jpeg'))
+    plt.savefig(f"output/{filename}.jpeg")
+    plt.clf()
 
 def get_composite_indicator_counts(df, numerators, denominator: str, date: str):
     """
@@ -500,3 +502,31 @@ def suppress_practice_measures(df, n, numerator, denominator, rate_column):
     df['drop'] = df['date'].map(dates_to_drop)
     df.loc[df['drop']==True, [numerator, denominator, rate_column]] = np.nan
     return df
+
+def group_low_values(df, value_col, population_col, term_col):
+    
+    def suppress(df):
+        suppressed_count = df.loc[df[value_col]<=5, value_col].sum()
+        # population_suppressed_count = df.loc[df[value_col]<=5, population_col].sum()
+        population = df[population_col].mean()
+        if suppressed_count == 0:
+            pass
+
+        else:
+            df.loc[df[value_col] <=5, value_col]  = np.nan
+
+            while suppressed_count <=5:
+                suppressed_count += df[value_col].min()
+                df.loc[df[value_col].idxmin(), value_col] = np.nan 
+                
+                # population_suppressed_count += df.loc[df[value_col].idxmin(), population_col]
+    
+            df = df[df[value_col].notnull()]
+
+            other_row = {term_col:'Other', value_col:suppressed_count, 'date': df['date'].unique()[0],population_col:population}
+            df = df.append(other_row, ignore_index=True)
+        
+        
+        return df
+
+    return df.groupby(by=['date']).apply(suppress).reset_index(drop=True)

@@ -93,7 +93,6 @@ actions:
     outputs:
       moderately_sensitive:
         counts: output/plot_*.jpeg
-        quintile: output/quintile_10_*.csv
 
   cusum:
     run: python:latest python analysis/cusum.py
@@ -126,7 +125,6 @@ actions:
         # rdat: output/indicator_saturation/indicator_saturation_*_a/*.RData
         out_csv: output/indicator_saturation/indicator_saturation_*_a/*_output_*.csv
 
-  
   indicator_saturation_b:
     run: r:latest analysis/indicator_saturation_analysis.R -I b -T date -C practice -N 5 -f -v -i output -o output/indicator_saturation measure_indicator_b_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]

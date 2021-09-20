@@ -56,7 +56,7 @@ for i in indicators_list:
                 df = df[df['age_band'].isin(['70-79', '80+'])]
         
         df = redact_small_numbers(df, 10, f"indicator_{i}_numerator", denominator, "rate")  
-
+    
         plot_measures(df = df, filename=f"plot_{i}_{d}", title=f"Indicator {i} by {d}",  column_to_plot = "rate", y_label = 'Rate per 1000', as_bar=False, category = d)
 
 # plot composite measures
@@ -68,13 +68,20 @@ for i in composite_indicators:
 
     # group those with 7+ indicators if all-composite
     if i == "all":
-        df_7_plus = df.loc[df["num_indicators"]>6,:].groupby(["date"])[["count", "denominator"]].sum().reset_index()
+        
+        num_indicators = list(df['num_indicators'].unique())
+        if 'Other' in num_indicators:
+            num_indicators.remove('Other')
+        max_indicator = max(num_indicators)
+
+
+        df_7_plus = df.loc[df["num_indicators"].isin([7, 8, 9, 10, 11, 12, 13, 14, 'Other']),:].groupby(["date"])[["count", "denominator"]].sum().reset_index()
         df_7_plus["num_indicators"] = '7+'
         #rearrange columns
         df_7_plus.loc[:, ["num_indicators", "count", "date", "denominator"]]
 
         #drop combined columns from original df
-        df = df.loc[df["num_indicators"]<6,:]
+        df = df.loc[df["num_indicators"].isin([0, 1, 2, 3, 4, 5]),:]
         
         #concatenate
         df = pd.concat([df, df_7_plus])

@@ -39,7 +39,8 @@ setClass("ChangeDetection",
              change_detection_location = 'character',
              change_detection_script = 'character',
              results_extract_location = 'character',
-             results_extract_script = 'character'
+             results_extract_script = 'character',
+             test_number = 'numeric'
          ),
          prototype(name = NA_character_,
                    verbose = FALSE,
@@ -68,7 +69,8 @@ setClass("ChangeDetection",
                    change_detection_location = glue("{getwd()}/analysis/change_detection"),
                    change_detection_script = 'change_detection.R',
                    results_extract_location = glue("{getwd()}/analysis/change_detection"),
-                   results_extract_script = 'results_extract.R' )
+                   results_extract_script = 'results_extract.R',
+                   test_number = NA_integer_ )
          )
 
 ChangeDetection <- function(...) {
@@ -226,8 +228,25 @@ shape_dataframe = function(cd) {
         mutate( index = date_to_epoch(month) ) %>% 
         select( month, index, everything())
     
-    if ( cd@sample ) {
-        input_data = input_data %>% sample_n(df, 100, seed=1234)
+    # if ( cd@sample ) {
+    #     input_data = input_data %>% sample_n(df, 100, seed=1234)
+    # }
+    
+    if ( !is.na( cd@test_number ) ) {
+        
+        data_columns = input_data %>% colnames %>% keep( ~str_detect(.x, cd@code_tag) )
+        
+        if (  cd@test_number > length(data_columns) ) {
+            cd@test_number = length(data_columns)
+            report_info( cd, glue( "{cd@test_number} samples requested to test, \\
+                            but only {length(data_columns)} exist in the dataset. \\
+                           Testing will continue on {length(data_columns)} samples." ))
+        }
+        
+        report_info( cd, glue( "Running analysis on first {cd@test_number} samples" ))
+        report_info( cd, glue( "-{1:cd@test_number}- {data_columns[1:cd@test_number]} ") )
+        
+        input_data = input_data %>% select( month, index, code, data_columns[1:cd@test_number] )
     }
     
     return(input_data)
@@ -317,6 +336,7 @@ run_r_script = function(cd, i, script_name, input_name, output_name, module_fold
 r_detect = function( cd ) {
     
     df = shape_dataframe( cd )
+    
     df_list = divide_data_frame(cd, df)
     
     ### Launch an R process for each of these split dataframes
@@ -405,6 +425,8 @@ option_list = list(
                 help="direction (up/down/both) of change to identify [default=%default]", metavar="character"),
     make_option(c("-Z", "--numcores"), type="numeric", default=default_values@numcores,
                 help="number of cores to use [default=%default]", metavar="numeric"),
+    make_option(c("-N", "--test"), type="numeric", default=default_values@test_number,
+                help="number of samples to run to test [default=%default]", metavar="numeric"),
     
     ### Parameters that define the input/output/reporting
     make_option(c("-v", "--verbose"), action="store_true", default=default_values@verbose,

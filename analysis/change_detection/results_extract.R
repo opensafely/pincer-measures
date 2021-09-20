@@ -12,6 +12,14 @@ arguments <- commandArgs(trailingOnly = TRUE)
 #######################################
 ####################################################################
 
+arguments = vector( mode = "list", length = 6 ) %>% unlist
+arguments[1] = "../output/test/"
+arguments[2] = "r_intermediate_1.RData"
+arguments[4] = getwd()
+arguments[5] = "up"
+arguments[6] = "yes"
+
+
 #rm(list = ls())  #clear the workspace
 
 #setwd("C:\\Users\\ajwalker\\Documents\\GitHub\\prescribing_change_metrics\\data\\testing") # for testing only
@@ -22,6 +30,14 @@ load(arguments[2])
 vars.list <- length(result.list)
 
 arguments <- commandArgs(trailingOnly = TRUE)
+
+arguments = vector( mode = "list", length = 6 ) %>% unlist
+arguments[1] = "../output/test/"
+arguments[2] = "r_intermediate_1.RData"
+arguments[4] = "/Users/lisahopcroft/Work/Projects/PINCER/pincer-measures/analysis/change_detection/"
+arguments[5] = "up"
+arguments[6] = "yes"
+
 
 #### additional source code for trend functions for analysis
 source(file.path(arguments[4], "trend_isat_functions.R"))
@@ -54,6 +70,8 @@ results <- data.frame(name=names.rel)
 
 ### Number of Detected Breaks
 results$is.nbreak <- NA ### Number of breaks
+results$is.nbreak.pos <- NA ### Number of positive breaks (ie increases)
+results$is.nbreak.neg <- NA ### Number of negative breaks (ie decreases)
 
 ### Timing Measures
 results$is.tfirst <- NA ### First negative break
@@ -104,8 +122,11 @@ for (i in 1:(vars.list))
   islstr.res <- result.list[[i]]
 
   ### Number of trend breaks
-  nbreak <- NROW(grep("tis", islstr.res$ISnames))  
+  nbreak <- NROW(grep("tis", islstr.res$ISnames))
+  
   results$is.nbreak[i] <-  nbreak #number of breaks
+  results$is.nbreak.neg[i] = sum(tis.path$indic.fit$coef < 0)
+  results$is.nbreak.pos[i] = sum(tis.path$indic.fit$coef > 0)
   
   ###coefficient path 
   tis.path <- trend.var(islstr.res)
@@ -334,9 +355,9 @@ for (i in 1:(vars.list))
     lines(trendline,  col="red", lwd=2) ###fitted lines
     if (nbreak > 0){
         if (!is.first==Inf){
-        abline(h=fit.res[is.first.pknown-1], lty=3, col="purple", lwd=2)### start value
-        abline(h=fit.res[NROW(fit.res)], lty=3, col="purple", lwd=2)### end value
-        lines(coef.p.hl+mconst.res, col=rgb(red = 1, green = 0.4118, blue = 0, alpha = 0.5), lwd=15) ###section used to evaluate slope
+          abline(h=fit.res[is.first.pknown-1], lty=3, col="purple", lwd=2)### start value
+          abline(h=fit.res[NROW(fit.res)], lty=3, col="purple", lwd=2)### end value
+          lines(coef.p.hl+mconst.res, col=rgb(red = 1, green = 0.4118, blue = 0, alpha = 0.5), lwd=15) ###section used to evaluate slope
         #print(big.break.index)
         if (length(big.break.index) != 0){
           abline(v=tdates[min(big.break.index)], lty=2, col="blue", lwd=2) ## first negative break after intervention which is not off-set

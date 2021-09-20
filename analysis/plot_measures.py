@@ -1,5 +1,6 @@
 from utilities import *
 import pandas as pd
+import os
 from study_definition import indicators_list
 from calculate_measures import demographics
 import re
@@ -10,6 +11,10 @@ import matplotlib.pyplot as plt
 
 additional_indicators = ["e","f", "li"]
 indicators_list.extend(additional_indicators)
+
+
+if not (OUTPUT_DIR / 'figures').exists():
+    os.mkdir(OUTPUT_DIR / 'figures')
 
 for i in indicators_list:
     # indicator plots

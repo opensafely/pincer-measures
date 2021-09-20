@@ -173,7 +173,7 @@ def plot_measures(df, filename: str, title: str, column_to_plot: str, y_label: s
     
     plt.tight_layout()
     
-    plt.savefig(f'output/{filename}.jpeg')
+    plt.savefig(f'output/figures/{filename}.jpeg')
     plt.clf()
 
 def drop_irrelevant_practices(df):
@@ -350,7 +350,7 @@ def deciles_chart(df, filename, period_column=None, column=None, count_column=No
 
     plt.tight_layout()
     print((f'output/{filename}.jpeg'))
-    plt.savefig(f"output/{filename}.jpeg")
+    plt.savefig(f"output/figures/{filename}.jpeg")
     plt.clf()
 
 def get_composite_indicator_counts(df, numerators, denominator: str, date: str):

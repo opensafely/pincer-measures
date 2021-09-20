@@ -41,7 +41,7 @@ for i in indicators_list:
 
     # demographic plots
     for d in demographics:
-        df = pd.read_csv(OUTPUT_DIR / f"indicator_measure_{i}_{d}.csv")
+        df = pd.read_csv(OUTPUT_DIR / f"indicator_measure_{i}_{d}.csv", parse_dates=["date"])
 
         if d == 'sex':
             df = df[df['sex'].isin(['M', 'F'])]
@@ -77,20 +77,32 @@ for i in composite_indicators:
         num_indicators = list(df['num_indicators'].unique())
         if 'Other' in num_indicators:
             num_indicators.remove('Other')
-        max_indicator = max(num_indicators)
+        max_indicator = min([int(max(num_indicators)), 6])
+        
+        above_nums = [f'{i}' for i in range(max_indicator, 14)]
+        above_nums.extend(["Other"])
+        below_nums = [f'{i}' for i in range(0, max_indicator)]
+      
+        df_7_plus_count = df.loc[df["num_indicators"].isin(above_nums),:].groupby(["date"])[["count"]].sum().reset_index()
+        df_7_plus_population = df.loc[df["num_indicators"].isin(above_nums),:].groupby(["date"])[["denominator"]].mean().reset_index()
+        
+      
+        df_7_plus = df_7_plus_count.merge(df_7_plus_population, on=["date"])
+       
+        
+        if max_indicator < 7:
+            df_7_plus["num_indicators"] = f'{max_indicator}+'
+        else:
+            df_7_plus["num_indicators"] = '7+'
 
-
-        df_7_plus = df.loc[df["num_indicators"].isin([7, 8, 9, 10, 11, 12, 13, 14, 'Other']),:].groupby(["date"])[["count", "denominator"]].sum().reset_index()
-        df_7_plus["num_indicators"] = '7+'
-        #rearrange columns
-        df_7_plus.loc[:, ["num_indicators", "count", "date", "denominator"]]
+       
 
         #drop combined columns from original df
-        df = df.loc[df["num_indicators"].isin([0, 1, 2, 3, 4, 5]),:]
-        
+        df = df.loc[df["num_indicators"].isin(below_nums),:]
+       
         #concatenate
         df = pd.concat([df, df_7_plus])
-
+        
         df["num_indicators"] = df["num_indicators"].astype('str')
 
     df["rate"] = (df["count"] / df["denominator"])*1000

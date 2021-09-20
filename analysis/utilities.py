@@ -163,8 +163,10 @@ def plot_measures(df, filename: str, title: str, column_to_plot: str, y_label: s
     plt.xlabel('Date')
     plt.xticks(rotation='vertical')
     plt.title(title)
-    plt.ylim(bottom=0, top=df[column_to_plot].max() + df[column_to_plot].max()* 0.1)
-
+    plt.ylim(bottom=0, top= 1 if df[column_to_plot].isnull().values.all() else df[column_to_plot].max() * 1.05)
+    
+    
+   
     if category:
         plt.legend(sorted(df[category].unique()), bbox_to_anchor=(
             1.04, 1), loc="upper left")

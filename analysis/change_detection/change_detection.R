@@ -33,10 +33,12 @@ data.pick <- read.csv(arguments[2], header=TRUE)   #load raw input data
 ############################################
 
 pick.rel <- grep(variable , names(data.pick)) 
+data_names = names(data.pick)[pick.rel]
 
 month.c  <-  as.POSIXct(as.numeric(as.character(data.pick$month)),origin="1970-01-01",tz="GMT")
 
-data.pick <- data.frame(month.c, data.pick[,pick.rel]) 
+data.pick <- data.frame(month.c, data.pick[,pick.rel])
+colnames(data.pick)[2:ncol(data.pick)] = data_names
 
 names.rel <- names(data.pick)[pick.rel]
 vars <- length(pick.rel)

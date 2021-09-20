@@ -1,4 +1,5 @@
 import json
+import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -14,7 +15,7 @@ def plot_cusum(results, filename):
         plt.xlabel('date')
         plt.xticks(ticks = [i for i in range(len(data['date']))], labels = data['date'].values, rotation=90)
         plt.tight_layout()
-        plt.savefig(OUTPUT_DIR / f'cusum/{filename}')
+        plt.savefig(OUTPUT_DIR / f'cusum/cusum/{filename}')
         plt.clf()
 
 def plot_median(array, results, filename):
@@ -29,12 +30,15 @@ def plot_median(array, results, filename):
         for i in results['alert']:
             plt.scatter(x=i, y=array[i], color='green', s=50)
         plt.tight_layout()
-        plt.savefig(OUTPUT_DIR / f'alerts/{filename}')
+        plt.savefig(OUTPUT_DIR / f'cusum/alerts/{filename}')
         plt.clf()
 
 
 
-
+if not (OUTPUT_DIR / 'cusum').exists():
+    os.mkdir(OUTPUT_DIR / 'cusum')
+    os.mkdir(OUTPUT_DIR / 'cusum/cusum')
+    os.mkdir(OUTPUT_DIR / 'cusum/alerts')
 
 with open(OUTPUT_DIR / 'cusum_results.json') as file:
     # Load its content and make a new dictionary

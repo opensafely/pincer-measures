@@ -11,6 +11,10 @@ import matplotlib.pyplot as plt
 additional_indicators = ["e","f", "li"]
 indicators_list.extend(additional_indicators)
 
+
+if not (OUTPUT_DIR / 'figures').exists():
+    os.mkdir(OUTPUT_DIR / 'figures')
+
 for i in indicators_list:
     # indicator plots
     df = pd.read_csv(OUTPUT_DIR / f"measure_indicator_{i}_rate.csv", parse_dates=["date"])

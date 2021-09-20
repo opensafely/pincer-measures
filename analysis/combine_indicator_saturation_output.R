@@ -12,6 +12,11 @@ library(stringr)
 ##### Retrive arguments from Python command
 arguments <- commandArgs(trailingOnly = TRUE)
 
+### For testing
+arguments[1] = "output/indicator_saturation"
+arguments[2] = "output/indicator_saturation/combined"
+
+
 ###################################################################
 #######################################
 ########### B: Extract Trend-Break Results
@@ -114,17 +119,22 @@ results_files = data.frame(
 ) %>%
   mutate( file_name_full = paste( in_dir, file_name, sep="/" ) ) %>% 
   mutate( indicator = dirname( file_name ) ) %>% 
+  mutate( direction = indicator %>% str_replace("indicator_saturation_", "") %>% str_replace( "_.*", "" )) %>% 
+  mutate( indicator_string = indicator %>% str_replace( glue("indicator_saturation_{direction}_"), "" )) %>% 
   mutate( id = 1:n() )
 
 results_holder = data.frame()
 
 for ( results_i in 1:nrow( results_files ) ) {
   this_result_file = ( results_files %>% pull(file_name_full) )[results_i]
-  this_indicator = ( results_files %>% pull(indicator) )[results_i]
+  this_indicator = ( results_files %>% pull(indicator_string) )[results_i]
+  this_direction = ( results_files %>% pull(direction) )[results_i]
+  
   
   these_results = read.csv( this_result_file,
                             row.names = 1) %>% 
-    mutate( indicator = this_indicator )
+    mutate( indicator = this_indicator ) %>% 
+    mutate( direction = this_direction )
   
   results_holder = results_holder %>% 
     bind_rows( these_results )
@@ -139,6 +149,8 @@ plotdata_files = data.frame(
 ) %>%
   mutate( file_name_full = paste( in_dir, file_name, sep="/" ) ) %>% 
   mutate( indicator = dirname( file_name ) ) %>% 
+  mutate( direction = indicator %>% str_replace("indicator_saturation_", "") %>% str_replace( "_.*", "" )) %>% 
+  mutate( indicator_string = indicator %>% str_replace( glue("indicator_saturation_{direction}_"), "" )) %>%
   mutate( id = 1:n() )
 
 plotdata_holder = data.frame()
@@ -157,10 +169,11 @@ slope.lim <- 0.5   ### Proportion of slope drop for construction of slope measur
 for ( results_i in 1:nrow( plotdata_files ) ) {
   
   this_result_file = ( plotdata_files %>% pull(file_name_full) )[results_i]
-  this_indicator = ( plotdata_files %>% pull(indicator) )[results_i]
+  this_indicator = ( plotdata_files %>% pull(indicator_string) )[results_i]
+  this_direction = ( plotdata_files %>% pull(direction) )[results_i]
   this_object = basename( this_result_file ) %>% str_remove( "_plotdata.RData" )
   
-  cat( glue("[{results_i}] Reading data from {this_indicator} // {this_object}\n\n"))
+  cat( glue("[{results_i}] Reading data from {this_indicator} // {this_direction} // {this_object}\n\n"))
   
   load( this_result_file )
   
@@ -251,6 +264,7 @@ for ( results_i in 1:nrow( plotdata_files ) ) {
     bind_rows( intervention_data ) %>% 
     bind_rows( annotation_data ) %>% 
     mutate( indicator = this_indicator,
+            direction = this_direction,
             name = this_name )
   
   plotdata_holder = plotdata_holder %>% 
@@ -307,12 +321,12 @@ for ( results_i in 1:nrow( plotdata_files ) ) {
                               plot_data %>% pull(x) %>% max(na.rm=TRUE)) ) +
     theme_bw()
   
-  ggsave(glue("{fig_path_tis_analysis}/{this_indicator}_{this_object}_NEW.png"),
+  ggsave(glue("{fig_path_tis_analysis}/{this_indicator}_{this_direction}_{this_object}_NEW.png"),
          units = "mm",
          width = 270,
          height = 270 )
   
-  filename <- glue("{fig_path_tis_analysis}/{this_indicator}_{this_object}_ORIGINAL.png")
+  filename <- glue("{fig_path_tis_analysis}/{this_indicator}_{this_direction}_{this_object}_ORIGINAL.png")
   
   wid <- 500
   hei <- 500
@@ -351,7 +365,7 @@ save( results_holder,
 ### Summary figure of slope intensity
 #####################################################################
 
-ggplot( data = results_holder %>% filter( is.nbreak > 0 ),
+ggplot( data = results_holder %>% filter( is.nbreak > 0 ) %>% filter( direction=="up"),
         aes( x = indicator,
              y = name,
              z = is.slope.ma,
@@ -362,20 +376,34 @@ ggplot( data = results_holder %>% filter( is.nbreak > 0 ),
   theme( axis.text.x = element_text(angle=90,
                                     hjust=1)) 
 
-ggsave( glue("{fig_path_tis_analysis}/SUMMARY_heatmap.png"),
+ggsave( glue("{fig_path_tis_analysis}/SUMMARY_up_heatmap.png"),
         width = 6,
         height = 6 )
 
 
+ggplot( data = results_holder %>% filter( is.nbreak > 0 ) %>% filter( direction=="down"),
+        aes( x = indicator,
+             y = name,
+             z = is.slope.ma,
+             fill=is.slope.ma)) + geom_tile(col="black",size=0.5) +
+  # scale_fill_brewer(type="div")
+  scale_fill_distiller(palette = "PuOr") +
+  theme_minimal() +
+  theme( axis.text.x = element_text(angle=90,
+                                    hjust=1)) 
+
+ggsave( glue("{fig_path_tis_analysis}/SUMMARY_down_heatmap.png"),
+        width = 6,
+        height = 6 )
 
 #####################################################################
 ### Draw all significant results
 #####################################################################
 
-significant_results = results_holder %>% filter( is.nbreak > 0 ) %>% select( name, indicator )
+significant_results = results_holder %>% filter( is.nbreak > 0 ) %>% select( name, indicator, direction )
 
 significant_plot_data = plotdata_holder %>% 
-  inner_join( significant_results, by=c( "indicator", "name" ) ) %>% 
+  inner_join( significant_results, by=c( "indicator", "name", "direction" ) ) %>% 
   mutate( tag = glue("{indicator}_{name}") ) %>% 
   group_by( indicator, name )
 

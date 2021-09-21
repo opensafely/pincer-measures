@@ -5,6 +5,10 @@ import matplotlib.pyplot as plt
 import json
 from utilities import OUTPUT_DIR, drop_irrelevant_practices
 from study_definition import indicators_list
+import os
+
+if not (OUTPUT_DIR / 'cusum').exists():
+    os.mkdir(OUTPUT_DIR / 'cusum')
 
 def compute_deciles(
     measure_table, values_col, has_all_percentiles=True

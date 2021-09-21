@@ -371,7 +371,7 @@ r_extract = function( cd ) {
     ### by the number of cores)
     for ( i in 1:cd@numcores) {
         input_file_name = glue("r_intermediate_{i-1}.RData")
-        output_file_name = glue("r_output_{i-1}.csv")
+        output_file_name = glue("r_output.csv")
         
         run_r_script( cd=cd,
                       i =i,

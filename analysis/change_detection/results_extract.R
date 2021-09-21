@@ -2,6 +2,7 @@ print("Extracting and classifying changes")
 
 library(caTools)
 library(gets) ### main package for break detection - see Pretis, Reade, and Sucarrat, Journal of Stat. Software, in press.
+library(magrittr)
 
 ##### Retrive arguments from Python command
 arguments <- commandArgs(trailingOnly = TRUE)
@@ -12,12 +13,14 @@ arguments <- commandArgs(trailingOnly = TRUE)
 #######################################
 ####################################################################
 
-arguments = vector( mode = "list", length = 6 ) %>% unlist
-arguments[1] = "../output/test/"
-arguments[2] = "r_intermediate_1.RData"
-arguments[4] = getwd()
-arguments[5] = "up"
-arguments[6] = "yes"
+# arguments = vector( mode = "list", length = 6 ) %>% unlist
+# arguments[1] = "/Users/lisahopcroft/Work/Projects/PINCER/pincer-measures/output/test/"
+# arguments[2] = "r_intermediate_1.RData"
+# arguments[3] = "test_output.csv"
+# arguments[4] = getwd()
+# arguments[5] = "up"
+# arguments[6] = "yes"
+# print( arguments )
 
 
 #rm(list = ls())  #clear the workspace
@@ -27,16 +30,18 @@ setwd(arguments[1])
 
 #load("r_intermediate_2.RData")
 load(arguments[2])
+
 vars.list <- length(result.list)
 
 arguments <- commandArgs(trailingOnly = TRUE)
 
-arguments = vector( mode = "list", length = 6 ) %>% unlist
-arguments[1] = "../output/test/"
-arguments[2] = "r_intermediate_1.RData"
-arguments[4] = "/Users/lisahopcroft/Work/Projects/PINCER/pincer-measures/analysis/change_detection/"
-arguments[5] = "up"
-arguments[6] = "yes"
+# arguments = vector( mode = "list", length = 6 ) %>% unlist
+# arguments[1] = "/Users/lisahopcroft/Work/Projects/PINCER/pincer-measures/output/test/"
+# arguments[2] = "r_intermediate_1.RData"
+# arguments[3] = "test_output.csv"
+# arguments[4] = "/Users/lisahopcroft/Work/Projects/PINCER/pincer-measures/analysis/change_detection/"
+# arguments[5] = "up"
+# arguments[6] = "yes"
 
 
 #### additional source code for trend functions for analysis
@@ -125,11 +130,13 @@ for (i in 1:(vars.list))
   nbreak <- NROW(grep("tis", islstr.res$ISnames))
   
   results$is.nbreak[i] <-  nbreak #number of breaks
-  results$is.nbreak.neg[i] = sum(tis.path$indic.fit$coef < 0)
-  results$is.nbreak.pos[i] = sum(tis.path$indic.fit$coef > 0)
+  results$direction = arguments[5]
   
   ###coefficient path 
   tis.path <- trend.var(islstr.res)
+  
+  results$is.nbreak.neg[i] = sum(tis.path$indic.fit$coef < 0)
+  results$is.nbreak.pos[i] = sum(tis.path$indic.fit$coef > 0)
   
   #############################################
   ##### Measure 1: Timing of Breaks
@@ -372,17 +379,22 @@ for (i in 1:(vars.list))
     dev.off()
   }
   
-  rfilename <- paste( results$name[i], "_plotdata.RData", sep="")
-  this_name = results$name[i]
-  these_results = 
-  cat( sprintf( "Writing %d objects to %s output file.\n",
-                length( intersect(target_list,ls())),
-                rfilename) )
-  
-  save( list = intersect( target_list, ls() ),
-        file = rfilename )
+  # rfilename <- paste( results$name[i], "_plotdata.RData", sep="")
+  # this_name = results$name[i]
+  # these_results = 
+  # cat( sprintf( "Writing %d objects to %s output file.\n",
+  #               length( intersect(target_list,ls())),
+  #               rfilename) )
+  # 
+  # save( list = intersect( target_list, ls() ),
+  #       file = rfilename )
 
 } #loop over i closed 
 
-write.csv(results, file = arguments[3])
+write.table(results,
+            file = arguments[3], 
+            sep=",", 
+            col.names = !file.exists(arguments[3]),
+            append=TRUE)
+
 print("Done extracting results")

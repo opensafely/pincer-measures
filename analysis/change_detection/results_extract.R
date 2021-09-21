@@ -77,6 +77,10 @@ results <- data.frame(name=names.rel)
 results$is.nbreak <- NA ### Number of breaks
 results$is.nbreak.pos <- NA ### Number of positive breaks (ie increases)
 results$is.nbreak.neg <- NA ### Number of negative breaks (ie decreases)
+results$breaks.loc.pos = NA
+results$breaks.loc.neg = NA
+results$breaks.coef.pos = NA
+results$breaks.coef.neg = NA
 
 ### Timing Measures
 results$is.tfirst <- NA ### First negative break
@@ -137,6 +141,28 @@ for (i in 1:(vars.list))
   
   results$is.nbreak.neg[i] = sum(tis.path$indic.fit$coef < 0)
   results$is.nbreak.pos[i] = sum(tis.path$indic.fit$coef > 0)
+  
+  results$breaks.loc.pos[i] = list( tis.path$coef.var %>%
+                                      arrange( tis ) %>% 
+                                  filter( coef>0 ) %>%
+                                  pull( tis ) %>%
+                                  str_remove( "tis" ) %>% 
+                                  as.integer )
+  results$breaks.loc.neg[i] = list( tis.path$coef.var %>%
+                                      arrange( tis )%>%
+                                  filter( coef<0 ) %>%
+                                  pull( tis ) %>%
+                                  str_remove( "tis" ) %>% 
+                                  as.integer )
+  
+  results$breaks.coef.pos[i] = list( tis.path$coef.var %>%
+                                       arrange( tis )%>%
+                                      filter( coef>0 ) %>%
+                                      pull( coef ) )
+  results$breaks.coef.neg[i] = list( tis.path$coef.var %>%
+                                       arrange( tis )%>%
+                                      filter( coef<0 ) %>%
+                                      pull( coef ) )
   
   #############################################
   ##### Measure 1: Timing of Breaks

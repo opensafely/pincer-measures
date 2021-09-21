@@ -5,6 +5,7 @@
     * [output/figures/plot_a.jpeg](output/figures/plot_a.jpeg)
     * [output/figures/plot_ac.jpeg](output/figures/plot_ac.jpeg)
     * [output/figures/plot_all_composite.jpeg](output/figures/plot_all_composite.jpeg)
+    * [output/figures/plot_am.jpeg](output/figures/plot_am.jpeg)
     * [output/figures/plot_b.jpeg](output/figures/plot_b.jpeg)
     * [output/figures/plot_c.jpeg](output/figures/plot_c.jpeg)
     * [output/figures/plot_d.jpeg](output/figures/plot_d.jpeg)

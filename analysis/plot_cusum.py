@@ -11,7 +11,7 @@ def plot_cusum(results, filename):
         plt.plot([a+b for a, b in zip(results['target_mean'], results['smax'])], color='turquoise')
         plt.plot([a+b for a, b in zip(results['target_mean'], results['alert_threshold'])], color='black', linestyle='--')
         plt.plot([a-b for a, b in zip(results['target_mean'], results['alert_threshold'])], color='black', linestyle='--')  
-        plt.ylabel('value')
+        plt.ylabel('Percentile')
         plt.xlabel('date')
         plt.xticks(ticks = [i for i in range(len(data['date']))], labels = data['date'].values, rotation=90)
         plt.tight_layout()
@@ -23,7 +23,7 @@ def plot_median(array, results, filename):
         plt.figure(figsize=(15,8))
         plt.plot(array)
         plt.plot(results['target_mean'], color='red')
-        plt.ylabel('value')
+        plt.ylabel('Percentile')
         plt.xlabel('date')
         plt.xticks(ticks = [i for i in range(len(data['date']))], labels = data['date'].values, rotation=90)
             

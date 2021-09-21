@@ -40,7 +40,7 @@ if not (OUTPUT_DIR / 'cusum').exists():
     os.mkdir(OUTPUT_DIR / 'cusum/cusum')
     os.mkdir(OUTPUT_DIR / 'cusum/alerts')
 
-with open(OUTPUT_DIR / 'cusum_results.json') as file:
+with open(OUTPUT_DIR / 'cusum/cusum_results.json') as file:
     # Load its content and make a new dictionary
     data = json.load(file)
 

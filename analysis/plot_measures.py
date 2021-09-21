@@ -28,14 +28,14 @@ for i in indicators_list:
     else:
         denominator = f"indicator_{i}_denominator"
     
-    df["rate"] = df[f"value"]*1000
+    df["rate"] = df[f"value"]
     print(df.head())
     df = df.drop(["value"], axis=1)
 
     # Need this for dummy data
     df = df.replace(np.inf, np.nan) 
 
-    deciles_chart(df, filename=f"plot_{i}", period_column="date", column="rate", count_column = f"indicator_{i}_numerator",title=f"Decile Chart Indicator {i}", ylabel="Rate per 1000")
+    deciles_chart(df, filename=f"plot_{i}", period_column="date", column="rate", count_column = f"indicator_{i}_numerator",title=f"Decile Chart Indicator {i}", ylabel="Proportion")
 
     
 
@@ -62,7 +62,7 @@ for i in indicators_list:
         
         df = redact_small_numbers(df, 10, f"indicator_{i}_numerator", denominator, "rate")  
     
-        plot_measures(df = df, filename=f"plot_{i}_{d}", title=f"Indicator {i} by {d}",  column_to_plot = "rate", y_label = 'Rate per 1000', as_bar=False, category = d)
+        plot_measures(df = df, filename=f"plot_{i}_{d}", title=f"Indicator {i} by {d}",  column_to_plot = "rate", y_label = 'Proportion', as_bar=False, category = d)
 
 # plot composite measures
 
@@ -105,6 +105,6 @@ for i in composite_indicators:
         
         df["num_indicators"] = df["num_indicators"].astype('str')
 
-    df["rate"] = (df["count"] / df["denominator"])*1000
-    plot_measures(df = df, filename=f"plot_{i}_composite", title=f"{i} composite indicator",  column_to_plot = "rate", y_label = 'Rate per 1000', as_bar=False, category = "num_indicators")
+    df["rate"] = (df["count"] / df["denominator"])
+    plot_measures(df = df, filename=f"plot_{i}_composite", title=f"{i} composite indicator",  column_to_plot = "rate", y_label = 'Proportion', as_bar=False, category = "num_indicators")
 

@@ -37,8 +37,13 @@ def plot_median(array, results, filename):
 
 if not (OUTPUT_DIR / 'cusum').exists():
     os.mkdir(OUTPUT_DIR / 'cusum')
+
+if not (OUTPUT_DIR / 'cusum/cusum').exists():
     os.mkdir(OUTPUT_DIR / 'cusum/cusum')
+
+if not (OUTPUT_DIR / 'cusum/alerts').exists():
     os.mkdir(OUTPUT_DIR / 'cusum/alerts')
+ 
 
 with open(OUTPUT_DIR / 'cusum/cusum_results.json') as file:
     # Load its content and make a new dictionary

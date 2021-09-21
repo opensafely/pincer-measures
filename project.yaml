@@ -118,130 +118,116 @@ actions:
         notebook: output/report.html
 
   indicator_saturation_a:
-    run: r:latest analysis/indicator_saturation_analysis.R -I a -T date -C practice -N 5 -f -v -i output -o output/indicator_saturation measure_indicator_a_rate.csv 
+    run: r:latest analysis/indicator_saturation_analysis.R -I a -T date -C practice -v -i output -o output/indicator_saturation measure_indicator_a_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
       moderately_sensitive:
-        plots: output/indicator_saturation/indicator_saturation_*_a/figures/*.png
-        # rdat: output/indicator_saturation/indicator_saturation_*_a/*.RData
-        out_csv: output/indicator_saturation/indicator_saturation_*_a/*_output_*.csv
+        out_csv: output/indicator_saturation/indicator_saturation_*_a/summary_output.csv
+        plot_csv: output/indicator_saturation/indicator_saturation_*_a/plot_data.csv
 
   indicator_saturation_b:
-    run: r:latest analysis/indicator_saturation_analysis.R -I b -T date -C practice -N 5 -f -v -i output -o output/indicator_saturation measure_indicator_b_rate.csv 
+    run: r:latest analysis/indicator_saturation_analysis.R -I b -T date -C practice -v -i output -o output/indicator_saturation measure_indicator_b_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
       moderately_sensitive:
-        plots: output/indicator_saturation/indicator_saturation_*_b/figures/*.png
-        # rdat: output/indicator_saturation/indicator_saturation_*_b/*.RData
-        csv: output/indicator_saturation/indicator_saturation_*_b/*_output_*.csv
+        out_csv: output/indicator_saturation/indicator_saturation_*_b/summary_output.csv
+        plot_csv: output/indicator_saturation/indicator_saturation_*_b/plot_data.csv
 
   indicator_saturation_c:
-    run: r:latest analysis/indicator_saturation_analysis.R -I c -T date -C practice -N 5 -f -v -i output -o output/indicator_saturation measure_indicator_c_rate.csv 
+    run: r:latest analysis/indicator_saturation_analysis.R -I c -T date -C practice -v -i output -o output/indicator_saturation measure_indicator_c_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
       moderately_sensitive:
-        plots: output/indicator_saturation/indicator_saturation_*_c/figures/*.png
-        # rdat: output/indicator_saturation/indicator_saturation_*_c/*.RData
-        csv: output/indicator_saturation/indicator_saturation_*_c/*_output_*.csv
+        out_csv: output/indicator_saturation/indicator_saturation_*_c/summary_output.csv
+        plot_csv: output/indicator_saturation/indicator_saturation_*_c/plot_data.csv
 
   indicator_saturation_d:
-    run: r:latest analysis/indicator_saturation_analysis.R -I d -T date -C practice -N 5 -f -v -i output -o output/indicator_saturation measure_indicator_d_rate.csv 
+    run: r:latest analysis/indicator_saturation_analysis.R -I d -T date -C practice -v -i output -o output/indicator_saturation measure_indicator_d_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
       moderately_sensitive:
-        plots: output/indicator_saturation/indicator_saturation_*_d/figures/*.png
-        # rdat: output/indicator_saturation/indicator_saturation_*_d/*.RData
-        csv: output/indicator_saturation/indicator_saturation_*_d/*_output_*.csv
+        out_csv: output/indicator_saturation/indicator_saturation_*_d/summary_output.csv
+        plot_csv: output/indicator_saturation/indicator_saturation_*_d/plot_data.csv
 
   indicator_saturation_e:
-    run: r:latest analysis/indicator_saturation_analysis.R -I e -T date -C practice -N 5 -f -v -i output -o output/indicator_saturation measure_indicator_e_rate.csv 
+    run: r:latest analysis/indicator_saturation_analysis.R -I e -T date -C practice -v -i output -o output/indicator_saturation measure_indicator_e_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
       moderately_sensitive:
-        plots: output/indicator_saturation/indicator_saturation_*_e/figures/*.png
-        # rdat: output/indicator_saturation/indicator_saturation_*_e/*.RData
-        csv: output/indicator_saturation/indicator_saturation_*_e/*_output_*.csv
+        out_csv: output/indicator_saturation/indicator_saturation_*_e/summary_output.csv
+        plot_csv: output/indicator_saturation/indicator_saturation_*_e/plot_data.csv
 
   indicator_saturation_f:
-    run: r:latest analysis/indicator_saturation_analysis.R -I f -T date -C practice -N 5 -f -v -i output -o output/indicator_saturation measure_indicator_f_rate.csv 
+    run: r:latest analysis/indicator_saturation_analysis.R -I f -T date -C practice -v -i output -o output/indicator_saturation measure_indicator_f_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
       moderately_sensitive:
-        plots: output/indicator_saturation/indicator_saturation_*_f/figures/*.png
-        # rdat: output/indicator_saturation/indicator_saturation_*_f/*.RData
-        csv: output/indicator_saturation/indicator_saturation_*_f/*_output_*.csv
+        out_csv: output/indicator_saturation/indicator_saturation_*_f/summary_output.csv
+        plot_csv: output/indicator_saturation/indicator_saturation_*_f/plot_data.csv
         
   indicator_saturation_g:
-    run: r:latest analysis/indicator_saturation_analysis.R -I g -T date -C practice -N 5 -f -v -i output -o output/indicator_saturation measure_indicator_g_rate.csv 
+    run: r:latest analysis/indicator_saturation_analysis.R -I g -T date -C practice -v -i output -o output/indicator_saturation measure_indicator_g_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
       moderately_sensitive:
-        plots: output/indicator_saturation/indicator_saturation_*_g/figures/*.png
-        # rdat: output/indicator_saturation/indicator_saturation_*_g/*.RData
-        csv: output/indicator_saturation/indicator_saturation_*_g/*_output_*.csv
+        out_csv: output/indicator_saturation/indicator_saturation_*_g/summary_output.csv
+        plot_csv: output/indicator_saturation/indicator_saturation_*_g/plot_data.csv
 
   indicator_saturation_i:
-    run: r:latest analysis/indicator_saturation_analysis.R -I i -T date -C practice -N 5 -f -v -i output -o output/indicator_saturation measure_indicator_i_rate.csv 
+    run: r:latest analysis/indicator_saturation_analysis.R -I i -T date -C practice -v -i output -o output/indicator_saturation measure_indicator_i_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
       moderately_sensitive:
-        plots: output/indicator_saturation/indicator_saturation_*_i/figures/*.png
-        # rdat: output/indicator_saturation/indicator_saturation_*_i/*.RData
-        csv: output/indicator_saturation/indicator_saturation_*_i/*_output_*.csv
+        out_csv: output/indicator_saturation/indicator_saturation_*_i/summary_output.csv
+        plot_csv: output/indicator_saturation/indicator_saturation_*_i/plot_data.csv
 
   indicator_saturation_k:
-    run: r:latest analysis/indicator_saturation_analysis.R -I k -T date -C practice -N 5 -f -v -i output -o output/indicator_saturation measure_indicator_k_rate.csv 
+    run: r:latest analysis/indicator_saturation_analysis.R -I k -T date -C practice -v -i output -o output/indicator_saturation measure_indicator_k_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
       moderately_sensitive:
-        plots: output/indicator_saturation/indicator_saturation_*_k/figures/*.png
-        # rdat: output/indicator_saturation/indicator_saturation_*_k/*.RData
-        csv: output/indicator_saturation/indicator_saturation_*_k/*_output_*.csv
+        out_csv: output/indicator_saturation/indicator_saturation_*_k/summary_output.csv
+        plot_csv: output/indicator_saturation/indicator_saturation_*_k/plot_data.csv
 
   indicator_saturation_ac:
-    run: r:latest analysis/indicator_saturation_analysis.R -I ac -T date -C practice -N 5 -f -v -i output -o output/indicator_saturation measure_indicator_ac_rate.csv 
+    run: r:latest analysis/indicator_saturation_analysis.R -I ac -T date -C practice -v -i output -o output/indicator_saturation measure_indicator_ac_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
       moderately_sensitive:
-        plots: output/indicator_saturation/indicator_saturation_*_ac/figures/*.png
-        # rdat: output/indicator_saturation/indicator_saturation_*_ac/*.RData
-        csv: output/indicator_saturation/indicator_saturation_*_ac/*_output_*.csv
+        out_csv: output/indicator_saturation/indicator_saturation_*_ac/summary_output.csv
+        plot_csv: output/indicator_saturation/indicator_saturation_*_ac/plot_data.csv
 
   indicator_saturation_me_no_fbc:
-    run: r:latest analysis/indicator_saturation_analysis.R -I me_no_fbc -T date -C practice -B indicator_me_denominator -N 5 -f -v -i output -o output/indicator_saturation measure_indicator_me_no_fbc_rate.csv 
+    run: r:latest analysis/indicator_saturation_analysis.R -I me_no_fbc -T date -C practice -B indicator_me_denominator -v -i output -o output/indicator_saturation measure_indicator_me_no_fbc_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
       moderately_sensitive:
-        plots: output/indicator_saturation/indicator_saturation_*_me_no_fbc/figures/*.png
-        # rdat: output/indicator_saturation/indicator_saturation_*_me_no_fbc/*.RData
-        csv: output/indicator_saturation/indicator_saturation_*_me_no_fbc/*_output_*.csv
+        out_csv: output/indicator_saturation/indicator_saturation_*_me_no_fbc/summary_output.csv
+        plot_csv: output/indicator_saturation/indicator_saturation_*_me_no_fbc/plot_data.csv
         
   indicator_saturation_me_no_lft:
-    run: r:latest analysis/indicator_saturation_analysis.R -I me_no_lft -T date -C practice -B indicator_me_denominator -N 5 -f -v -i output -o output/indicator_saturation measure_indicator_me_no_lft_rate.csv 
+    run: r:latest analysis/indicator_saturation_analysis.R -I me_no_lft -T date -C practice -B indicator_me_denominator -v -i output -o output/indicator_saturation measure_indicator_me_no_lft_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
       moderately_sensitive:
-        plots: output/indicator_saturation/indicator_saturation_*_me_no_lft/figures/*.png
-        # rdat: output/indicator_saturation/indicator_saturation_*_me_no_lft/*.RData
-        csv: output/indicator_saturation/indicator_saturation_*_me_no_lft/*_output_*.csv
+        out_csv: output/indicator_saturation/indicator_saturation_*_me_no_lft/summary_output.csv
+        plot_csv: output/indicator_saturation/indicator_saturation_*_me_no_lft/plot_data.csv
 
   indicator_saturation_li:
-    run: r:latest analysis/indicator_saturation_analysis.R -I li -T date -C practice -N 5 -f -v -i output -o output/indicator_saturation measure_indicator_li_rate.csv 
+    run: r:latest analysis/indicator_saturation_analysis.R -I li -T date -C practice -v -i output -o output/indicator_saturation measure_indicator_li_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
       moderately_sensitive:
-        plots: output/indicator_saturation/indicator_saturation_*_li/figures/*.png
-        # rdat: output/indicator_saturation/indicator_saturation_*_li/*.RData
-        csv: output/indicator_saturation/indicator_saturation_*_li/*_output_*.csv
+        out_csv: output/indicator_saturation/indicator_saturation_*_li/summary_output.csv
+        plot_csv: output/indicator_saturation/indicator_saturation_*_li/plot_data.csv
 
   indicator_saturation_am:
-    run: r:latest analysis/indicator_saturation_analysis.R -I am -T date -C practice -N 5 -f -v -i output -o output/indicator_saturation measure_indicator_am_rate.csv 
+    run: r:latest analysis/indicator_saturation_analysis.R -I am -T date -C practice -v -i output -o output/indicator_saturation measure_indicator_am_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
       moderately_sensitive:
-        plots: output/indicator_saturation/indicator_saturation_*_am/figures/*.png
-        # rdat: output/indicator_saturation/indicator_saturation_*_am/*.RData
-        csv: output/indicator_saturation/indicator_saturation_*_am/*_output_*.csv
+        out_csv: output/indicator_saturation/indicator_saturation_*_am/summary_output.csv
+        plot_csv: output/indicator_saturation/indicator_saturation_*_am/plot_data.csv
 
   # combine_indicator_saturation_data:
   #   run: r:latest analysis/combine_indicator_saturation_output.R output/indicator_saturation output/indicator_saturation/combined

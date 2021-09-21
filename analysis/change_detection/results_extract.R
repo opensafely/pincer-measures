@@ -2,6 +2,11 @@ print("Extracting and classifying changes")
 
 library(caTools)
 library(gets) ### main package for break detection - see Pretis, Reade, and Sucarrat, Journal of Stat. Software, in press.
+library(magrittr)
+library(dplyr)
+library(stringr)
+library(glue)
+library(rlang)
 
 ##### Retrive arguments from Python command
 arguments <- commandArgs(trailingOnly = TRUE)
@@ -12,6 +17,16 @@ arguments <- commandArgs(trailingOnly = TRUE)
 #######################################
 ####################################################################
 
+# arguments = vector( mode = "list", length = 6 ) %>% unlist
+# arguments[1] = "/Users/lisahopcroft/Work/Projects/PINCER/pincer-measures/output/test/"
+# arguments[2] = "r_intermediate_1.RData"
+# arguments[3] = "test_output.csv"
+# arguments[4] = getwd()
+# arguments[5] = "up"
+# arguments[6] = "yes"
+# print( arguments )
+
+
 #rm(list = ls())  #clear the workspace
 
 #setwd("C:\\Users\\ajwalker\\Documents\\GitHub\\prescribing_change_metrics\\data\\testing") # for testing only
@@ -19,9 +34,19 @@ setwd(arguments[1])
 
 #load("r_intermediate_2.RData")
 load(arguments[2])
+
 vars.list <- length(result.list)
 
 arguments <- commandArgs(trailingOnly = TRUE)
+
+# arguments = vector( mode = "list", length = 6 ) %>% unlist
+# arguments[1] = "/Users/lisahopcroft/Work/Projects/PINCER/pincer-measures/output/test/"
+# arguments[2] = "r_intermediate_1.RData"
+# arguments[3] = "test_output.csv"
+# arguments[4] = "/Users/lisahopcroft/Work/Projects/PINCER/pincer-measures/analysis/change_detection/"
+# arguments[5] = "up"
+# arguments[6] = "yes"
+
 
 #### additional source code for trend functions for analysis
 source(file.path(arguments[4], "trend_isat_functions.R"))
@@ -54,6 +79,12 @@ results <- data.frame(name=names.rel)
 
 ### Number of Detected Breaks
 results$is.nbreak <- NA ### Number of breaks
+results$is.nbreak.pos <- NA ### Number of positive breaks (ie increases)
+results$is.nbreak.neg <- NA ### Number of negative breaks (ie decreases)
+results$breaks.loc.pos = NA
+results$breaks.loc.neg = NA
+results$breaks.coef.pos = NA
+results$breaks.coef.neg = NA
 
 ### Timing Measures
 results$is.tfirst <- NA ### First negative break
@@ -91,24 +122,55 @@ target_list = c("this_name",
                 "tdates",
                 "is.first")
 
+plotdata_holder = data.frame()
 
 ########################################
 ################### Loop over different series
 
 for (i in 1:(vars.list)) 
-
+  
 {
   #print(names.rel[i])
   y <- data.pick[names.rel[i]]
   results$name[i] <- names.rel[i]
   islstr.res <- result.list[[i]]
-
+  
   ### Number of trend breaks
-  nbreak <- NROW(grep("tis", islstr.res$ISnames))  
+  nbreak <- NROW(grep("tis", islstr.res$ISnames))
+  
   results$is.nbreak[i] <-  nbreak #number of breaks
+  results$direction = arguments[5]
   
   ###coefficient path 
   tis.path <- trend.var(islstr.res)
+  
+  results$is.nbreak.neg[i] = sum(tis.path$indic.fit$coef < 0)
+  results$is.nbreak.pos[i] = sum(tis.path$indic.fit$coef > 0)
+  
+  if ( !is.null( tis.path$coef.var ) ) {
+    results$breaks.loc.pos[i] = list( tis.path$coef.var %>%
+                                        arrange( tis ) %>% 
+                                        filter( coef>0 ) %>%
+                                        pull( tis ) %>%
+                                        str_remove( "tis" ) %>% 
+                                        as.integer )
+    
+    results$breaks.loc.neg[i] = list( tis.path$coef.var %>%
+                                        arrange( tis )%>%
+                                        filter( coef<0 ) %>%
+                                        pull( tis ) %>%
+                                        str_remove( "tis" ) %>% 
+                                        as.integer )
+    
+    results$breaks.coef.pos[i] = list( tis.path$coef.var %>%
+                                         arrange( tis )%>%
+                                         filter( coef>0 ) %>%
+                                         pull( coef ) )
+    results$breaks.coef.neg[i] = list( tis.path$coef.var %>%
+                                         arrange( tis )%>%
+                                         filter( coef<0 ) %>%
+                                         pull( coef ) )
+  }
   
   #############################################
   ##### Measure 1: Timing of Breaks
@@ -234,7 +296,7 @@ for (i in 1:(vars.list))
     #############################################
     ##### Measure 2 Steepness/Slope: average slope of the steepest contiguous segment contributing to at least XX% of the total level change
     ################################################
-#    print(!is.first==Inf)
+    #    print(!is.first==Inf)
     if (!is.first==Inf)  #first break not to lie before the known break date
     {
       
@@ -318,6 +380,107 @@ for (i in 1:(vars.list))
     results$is.intlev.levd[i] <- as.numeric(init.lev) - as.numeric(end.lev)   #absulte change
     results$is.intlev.levdprop[i] <-  (as.numeric(init.lev) - as.numeric(end.lev))/as.numeric(init.lev)         #percentage change
     
+    ### ================================= ###
+    ### RECORDING THE PLOT DATA FOR LATER ###
+    ### ================================= ###
+    
+    this_object  = names.rel[i]
+    model_months = data.pick$month.c
+    y            = data.pick[this_object]
+    
+    ### Construct the plot data
+    real_data = data.frame(
+      y=islstr.res$aux$y ) %>%
+      mutate( y = ifelse( y==99, NA, y) ) %>% 
+      mutate( x = model_months ) %>% 
+      mutate( set = "real" )
+    
+    trend_data = data.frame(
+      y = tis.path$indic.fit$indic.fit+islstr.res$coefficients[islstr.res$specific.spec["mconst"]]
+    ) %>% 
+      mutate( x = model_months ) %>% 
+      mutate( set="trend" )
+    
+    startend_data = data.frame()
+    slope_data = data.frame()
+    break_data = data.frame()
+    annotation_data = data.frame() 
+    
+    if ( nbreak > 0 ) {
+      startend_data = data.frame(
+        y = as.vector( fit.res[c(is.first.pknown-1,NROW(fit.res))] )
+      ) %>%
+        mutate( x = NA ) %>%
+        mutate( set = "startend")
+      
+      slope_data = data.frame(
+        y = coef.p.hl+mconst.res
+      ) %>% 
+        mutate( x = model_months )  %>% 
+        filter( !is.na(y) ) %>% 
+        mutate( set = "slope" )
+      
+      break_data = data.frame(
+        # x = tdates[min(big.break.index)]
+        x = model_months[tdates[big.break.index]]
+      ) %>% 
+        mutate( y=NA) %>% 
+        mutate( set = "break" )
+      
+    }
+    
+    intervention_data = data.frame(
+      x = model_months[known.t]
+    ) %>% 
+      mutate( y=NA ) %>% 
+      mutate( set = "intervention" ) %>% 
+      filter( x != 0 )
+    
+    if ( exists( "annotation.t" ) ) {
+      annotation_data = data.frame(
+        x = model_months[annotation.t]
+      ) %>% 
+        mutate( y=NA ) %>% 
+        mutate( set = "annotation" ) %>% 
+        filter( x != 0 )
+    }
+    
+    plot_data = real_data %>% 
+      bind_rows( trend_data )
+    
+    if ( nbreak > 0 ) {
+      if( !is.first==Inf ) {
+        plot_data = plot_data %>% 
+          bind_rows( startend_data ) %>% 
+          bind_rows( slope_data )
+        if ( length(big.break.index) != 0 ) {
+          plot_data = plot_data %>% bind_rows( break_data )
+        } else {
+          plot_data = plot_data %>% bind_rows( data.frame( x=NA,
+                                                           y=NA,
+                                                           set="break") )
+        }
+      }  
+    } else {
+      plot_data = plot_data %>% bind_rows( data.frame( x=c(NA,NA),
+                                                       y=c(NA,NA),
+                                                       set=c("startend","startend") ) )
+      plot_data = plot_data %>% bind_rows( data.frame( x=NA,
+                                                       y=NA,
+                                                       set="slope") )
+    }
+    
+    plot_data = plot_data %>% 
+      bind_rows( intervention_data ) %>% 
+      bind_rows( annotation_data )
+    
+    plotdata_holder = plotdata_holder %>% 
+      bind_rows( plot_data )
+    
+    
+    
+    
+    
     print(paste(round((i / vars)*100,1), "%"))
   } ## if there are breaks closed
   
@@ -333,7 +496,7 @@ for (i in 1:(vars.list))
     trendline <- tis.path$indic.fit$indic.fit+islstr.res$coefficients[islstr.res$specific.spec["mconst"]]
     lines(trendline,  col="red", lwd=2) ###fitted lines
     if (nbreak > 0){
-        if (!is.first==Inf){
+      if (!is.first==Inf){
         abline(h=fit.res[is.first.pknown-1], lty=3, col="purple", lwd=2)### start value
         abline(h=fit.res[NROW(fit.res)], lty=3, col="purple", lwd=2)### end value
         lines(coef.p.hl+mconst.res, col=rgb(red = 1, green = 0.4118, blue = 0, alpha = 0.5), lwd=15) ###section used to evaluate slope
@@ -351,17 +514,32 @@ for (i in 1:(vars.list))
     dev.off()
   }
   
-  rfilename <- paste( results$name[i], "_plotdata.RData", sep="")
-  this_name = results$name[i]
-  these_results = 
-  cat( sprintf( "Writing %d objects to %s output file.\n",
-                length( intersect(target_list,ls())),
-                rfilename) )
+  # rfilename <- paste( results$name[i], "_plotdata.RData", sep="")
+  # this_name = results$name[i]
+  # these_results = 
+  # cat( sprintf( "Writing %d objects to %s output file.\n",
+  #               length( intersect(target_list,ls())),
+  #               rfilename) )
+  # 
+  # save( list = intersect( target_list, ls() ),
+  #       file = rfilename )
   
-  save( list = intersect( target_list, ls() ),
-        file = rfilename )
-
 } #loop over i closed 
 
-write.csv(results, file = arguments[3])
+print( glue( "Writing to: {arguments[3]}" ) )
+
+write.table(results %>% mutate_if( is_list, as.character ),
+            file = arguments[3],
+            sep=",",
+            row.names = FALSE,
+            col.names = !file.exists(arguments[3]),
+            append=TRUE)
+
+write.table(plotdata_holder,
+            file = "plot_data.csv", 
+            sep=",", 
+            row.names = FALSE,
+            col.names = !file.exists(arguments[3]),
+            append=TRUE)
+
 print("Done extracting results")

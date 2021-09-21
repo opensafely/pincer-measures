@@ -536,7 +536,7 @@ write.table(results %>% mutate_if( is_list, as.character ),
             append=TRUE)
 
 write.table(plotdata_holder,
-            file = "plotdata.csv", 
+            file = "plot_data.csv", 
             sep=",", 
             row.names = FALSE,
             col.names = !file.exists(arguments[3]),

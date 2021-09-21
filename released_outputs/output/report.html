@@ -1,0 +1,576 @@
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 align="center">Changes in PINCER measures during the pandemic</h1><p>Pharmacist-led information technology intervention (PINCER) is an effective way to reduce errors in prescription and medication monitoring which are responsible for a large proportion of adverse drug events. This is achieved through the monitoring of 12 PINCER measures.</p>
+<p>The purpose of this notebook is observe changes in adherence to each of the PINCER measures at the practice level during the pandemic.  For each of these measures we provide a link to the codelist containing all the codes used for that measure, a description of what the measure is and a brief overview of why the measure is important. A summary of the number of events for each measure is produced and monthly rates of recorded activity for each measure is plotted as a decile chart.</p>
+<p>The 12 PINCER measures include:</p>
+<ul>
+<li>### <a href="#gi_bleed">Gastrointestinal (GI) Bleed Indicators</a><ul>
+<li><a href="#a">Age 65+, on oral NSAID without gastroprotection (GI_P3A)</a></li>
+<li><a href="#b">H/O peptic ulcer, on oral NSAID without gastroprotection (GI_P3B)</a></li>
+<li><a href="#c">H/O peptic ulcer, on OAC without gastroprotection (GI_P3C)</a></li>
+<li><a href="#d">On OAC and oral NSAID (GI_P3D)</a></li>
+<li><a href="#e">On OAC and antiplatelet without gastroprotection (GI_P3E)</a></li>
+<li><a href="#f">On aspirin and antiplatelet without gastroprotection (GI_P3F)</a></li>
+</ul>
+</li>
+<li>### <a href="#monitoring">Monitoring Indicators</a><ul>
+<li><a href="#ac">Age 75+, on ACEI or loop, no renal function/electrolytes test (MO_P13)</a></li>
+<li><a href="#me">Methotrexate audit (MO_P15)</a><ul>
+<li><a href="#me_no_fbc">On methotrexate without recorded full blood count (FBC)</a></li>
+<li><a href="#me_no_lft">On methotrexate without recorded liver functon test (LFT)</a></li>
+</ul>
+</li>
+<li><a href="#li">On lithium without recent lithium test (MO_P17)</a></li>
+<li><a href="#am">On amiodarone without recent thyroid function test (TFT) (MO_P18)</a></li>
+</ul>
+</li>
+<li>### <a href="#other">Other Indicators</a><ul>
+<li><a href="#g">Asthma and non-selective BB (AS_P3G)</a></li>
+<li><a href="#i">Heart failure and oral NSAID (HF_P3I)</a></li>
+<li><a href="#k">eGFR &lt;45 and oral NSAID (KI_P3K)</a></li>
+</ul>
+</li>
+</ul>
+<p>There are also a set of <a href="#composites">composite indicators</a> which indicate the number of people with 1 or more of each of the broad measure categories:</p>
+<ul>
+<li>### <a href="#composite_gi_bleed">GI Bleed Composite Indicator</a></li>
+<li>### <a href="#composite_monitoring">Monitoring Composite Indicator</a></li>
+<li>### <a href="#composite_other">Other Composite Indicator</a></li>
+<li>### <a href="#composite_all">Combined Composite Indicator</a></li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a id="gi_bleed"></a></p>
+<h2 id="Gastrointestinal-(GI)-Bleed-Indicators">Gastrointestinal (GI) Bleed Indicators<a class="anchor-link" href="#Gastrointestinal-(GI)-Bleed-Indicators">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a id="a"></a></p>
+<h3 id="Age-65+,-on-oral-NSAID-without-gastroprotection-(GI_P3A)">Age 65+, on oral NSAID without gastroprotection (GI_P3A)<a class="anchor-link" href="#Age-65+,-on-oral-NSAID-without-gastroprotection-(GI_P3A)">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<img src="../output/figures/plot_a.jpeg"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a id="b"></a></p>
+<h3 id="H/O-peptic-ulcer,-on-oral-NSAID-without-gastroprotection-(GI_P3B)">H/O peptic ulcer, on oral NSAID without gastroprotection (GI_P3B)<a class="anchor-link" href="#H/O-peptic-ulcer,-on-oral-NSAID-without-gastroprotection-(GI_P3B)">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<img src="../output/figures/plot_b.jpeg"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a id="c"></a></p>
+<h3 id="H/O-peptic-ulcer,-on-OAC-without-gastroprotection-(GI_P3C)">H/O peptic ulcer, on OAC without gastroprotection (GI_P3C)<a class="anchor-link" href="#H/O-peptic-ulcer,-on-OAC-without-gastroprotection-(GI_P3C)">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<img src="../output/figures/plot_c.jpeg"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a id="d"></a></p>
+<h3 id="On-OAC-and-oral-NSAID-(GI_P3D)">On OAC and oral NSAID (GI_P3D)<a class="anchor-link" href="#On-OAC-and-oral-NSAID-(GI_P3D)">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<img src="../output/figures/plot_d.jpeg"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a id="e"></a></p>
+<h3 id="On-OAC-and-antiplatelet-without-gastroprotection-(GI_P3E)">On OAC and antiplatelet without gastroprotection (GI_P3E)<a class="anchor-link" href="#On-OAC-and-antiplatelet-without-gastroprotection-(GI_P3E)">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<img src="../output/figures/plot_e.jpeg"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a id="f"></a></p>
+<h3 id="On-aspirin-and-antiplatelet-without-gastroprotection-(GI_P3F)">On aspirin and antiplatelet without gastroprotection (GI_P3F)<a class="anchor-link" href="#On-aspirin-and-antiplatelet-without-gastroprotection-(GI_P3F)">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<img src="../output/figures/plot_f.jpeg"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a id="monitoring"></a></p>
+<h2 id="Monitoring-Indicators">Monitoring Indicators<a class="anchor-link" href="#Monitoring-Indicators">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a id="ac"></a></p>
+<h3 id="Age-75+,-on-ACEI-or-loop,-no-renal-function/electrolytes-test-(MO_P13)">Age 75+, on ACEI or loop, no renal function/electrolytes test (MO_P13)<a class="anchor-link" href="#Age-75+,-on-ACEI-or-loop,-no-renal-function/electrolytes-test-(MO_P13)">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<img src="../output/figures/plot_ac.jpeg"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a id="me"></a></p>
+<h3 id="Methotrexate-audit-(MO_P15)">Methotrexate audit (MO_P15)<a class="anchor-link" href="#Methotrexate-audit-(MO_P15)">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a id="me_no_fbc"></a></p>
+<h4 id="On-methotrexate-without-recorded-full-blood-count">On methotrexate without recorded full blood count<a class="anchor-link" href="#On-methotrexate-without-recorded-full-blood-count">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<img src="../output/figures/plot_me_no_fbc.jpeg"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a id="me_no_lft"></a></p>
+<h4 id="On-methotrexate-without-recorded-liver-function-test">On methotrexate without recorded liver function test<a class="anchor-link" href="#On-methotrexate-without-recorded-liver-function-test">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<img src="../output/figures/plot_me_no_lft.jpeg"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a id="li"></a></p>
+<h3 id="On-lithium-without-recent-lithium-test-(MO_P17)">On lithium without recent lithium test (MO_P17)<a class="anchor-link" href="#On-lithium-without-recent-lithium-test-(MO_P17)">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<img src="../output/figures/plot_li.jpeg"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a id="am"></a></p>
+<h3 id="On-amiodarone-without-recent-thyroid-function-test-(MO_P18)">On amiodarone without recent thyroid function test (MO_P18)<a class="anchor-link" href="#On-amiodarone-without-recent-thyroid-function-test-(MO_P18)">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<img src="../output/figures/plot_am.jpeg"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a id="other"></a></p>
+<h2 id="Other-Indicators">Other Indicators<a class="anchor-link" href="#Other-Indicators">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a id="g"></a></p>
+<h3 id="Asthma-and-non-selective-BB-(AS_P3G)">Asthma and non-selective BB (AS_P3G)<a class="anchor-link" href="#Asthma-and-non-selective-BB-(AS_P3G)">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<img src="../output/figures/plot_g.jpeg"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a id="i"></a></p>
+<h3 id="Heart-failure-and-oral-NSAID-(HF_P3I)">Heart failure and oral NSAID (HF_P3I)<a class="anchor-link" href="#Heart-failure-and-oral-NSAID-(HF_P3I)">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<img src="../output/figures/plot_i.jpeg"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a id="k"></a></p>
+<h3 id="eGFR-&lt;45-and-oral-NSAID-(KI_P3K)">eGFR &lt;45 and oral NSAID (KI_P3K)<a class="anchor-link" href="#eGFR-&lt;45-and-oral-NSAID-(KI_P3K)">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<img src="../output/figures/plot_k.jpeg"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a id="composites"></a></p>
+<h2 id="Composite-Indicators">Composite Indicators<a class="anchor-link" href="#Composite-Indicators">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<img src="../output/figures/plot_k.jpeg"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a id="composite_gi_bleed"></a></p>
+<h3 id="GI-Bleed-Composite-Indicator">GI Bleed Composite Indicator<a class="anchor-link" href="#GI-Bleed-Composite-Indicator">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<img src="../output/figures/plot_gi_bleed_composite.jpeg"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a id="composite_monitoring"></a></p>
+<h3 id="Monitoring-Composite-Indicator]">Monitoring Composite Indicator]<a class="anchor-link" href="#Monitoring-Composite-Indicator]">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<img src="../output/figures/plot_monitoring_composite.jpeg"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a id="composite_other"></a></p>
+<h3 id="Other-Composite-Indicator">Other Composite Indicator<a class="anchor-link" href="#Other-Composite-Indicator">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<img src="../output/figures/plot_other_prescribing_composite.jpeg"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a id="composite_all"></a></p>
+<h3 id="Combined-Composite-Indicator">Combined Composite Indicator<a class="anchor-link" href="#Combined-Composite-Indicator">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<img src="../output/figures/plot_all_composite.jpeg"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+ 
+

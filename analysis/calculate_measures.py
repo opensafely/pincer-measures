@@ -63,8 +63,7 @@ if __name__ == "__main__":
                     
                     
                     event = df.groupby(by=[d])[[f"indicator_{i}_numerator", denominator]].sum().reset_index()
-                    event["rate"] = calculate_rate(event, f"indicator_{i}_numerator", denominator, 1000)
-                    
+                    event["rate"] = calculate_rate(event, f"indicator_{i}_numerator", denominator, 1)
                     
                     event["date"] = date
                     df_dict[d][i].append(event)

@@ -237,7 +237,7 @@ actions:
         counts: output/indicator_saturation/combined/*.csv
         plots: output/indicator_saturation/combined/CDPLOT_*.png
         summary: output/indicator_saturation/combined/SUMMARY_*.png
-        Rdat: output/indicator_saturation/combined/ANALYSIS_OUTPUT.Rdat
+        # Rdat: output/indicator_saturation/combined/ANALYSIS_OUTPUT.Rdat
   
   run_tests:
     run: python:latest python -m pytest --junit-xml=output/pytest.xml --verbose

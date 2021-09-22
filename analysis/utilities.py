@@ -1,4 +1,5 @@
 import re
+import json
 from pathlib import Path
 import pandas as pd
 import numpy as np
@@ -34,6 +35,7 @@ def match_input_files(file: str) -> bool:
 def match_measure_files( file: str ) -> bool:
     """Checks if file name has format outputted by cohort extractor (generate_measures action)"""
     pattern = r'^measure_.*_rate\.csv'
+
     return True if re.match(pattern, file) else False
 
 def get_date_input_file(file: str) -> str:
@@ -530,3 +532,42 @@ def group_low_values(df, value_col, population_col, term_col):
         return df
 
     return df.groupby(by=['date']).apply(suppress).reset_index(drop=True)
+
+
+def get_number_practices(df):
+    """Gets the number of practices in the given measure table.
+    Args:
+        df: A measure table.
+    """
+    return len(df.practice.unique())
+
+def get_percentage_practices(measure_table):
+    """Gets the percentage of practices in the given measure table.
+    Args:
+        measure_table: A measure table.
+    """
+    with open(OUTPUT_DIR / "practice_count.json") as f:
+        num_practices = json.load(f)["num_practices"]
+
+    num_practices_in_study = get_number_practices(measure_table)
+
+    return np.round((num_practices_in_study / num_practices) * 100, 2)
+
+
+def get_number_events(measure_table, measure_id):
+    """Gets the number of events.
+    Args:
+        measure_table: A measure table.
+        measure_id: The measure ID.
+    """
+    return measure_table[f'indicator_{measure_id}_numerator'].sum()
+
+
+def get_number_patients(measure_id):
+    """Gets the number of patients.
+    Args:
+        measure_id: The measure ID.
+    """
+    with open(OUTPUT_DIR / "patient_count.json") as f:
+        d = json.load(f)
+    return d["num_patients"][measure_id]

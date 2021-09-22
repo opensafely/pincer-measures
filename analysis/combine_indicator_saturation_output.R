@@ -28,9 +28,16 @@ arguments[2] = "output/indicator_saturation/combined"
 #setwd(arguments[1])
 
 draw_change_detection_plot = function( plot_data,
-                                       plot_title="Change detection plot" ) {
+                                       plot_title="Change detection plot",
+                                       annotations = c( COVID = "2020-03-01" ) ) {
   cd = ggplot( plot_data,
           aes(group=code)) +
+    annotate( "segment",
+              x = annotations,
+              xend=annotations,
+              y = -Inf,
+              yend = Inf,
+              colour="green", size=1)+
     ### Plot the real data
     geom_line( data = plot_data %>% filter( set == "real" ),
                aes(x=x, y=y) ) +
@@ -70,7 +77,7 @@ draw_change_detection_plot = function( plot_data,
     ### Add any annotation of interest
     geom_vline( data = plot_data %>% filter( set == "annotation" ),
                 aes( xintercept = x ),
-                col="green", linetype = "dashed", size=1) +
+                col="green", linetype = "dashed", size=1)  +
     geom_rect( data = plot_data %>% filter( set == "firstbreak" ),
                aes( xmin = -Inf,
                     xmax = x,

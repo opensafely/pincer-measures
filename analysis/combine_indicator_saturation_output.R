@@ -211,6 +211,32 @@ save( results_holder,
       plotdata_holder,
       file = glue("{fig_path_tis_analysis}/ANALYSIS_OUTPUT.RData") )
 
+
+for ( this_indicator in plotdata_holder$indicator %>% unique() ) {
+  
+  this_plotdata_holder = plotdata_holder %>% 
+    filter( indicator == this_indicator )
+  
+  for ( this_code in this_plotdata_holder$code %>% unique() ) {
+    
+    for ( this_direction in c( "up", "down" ) ) {
+      
+      print( glue( "{this_indicator} in {this_code}\n" ) )
+      
+      this_d = plotdata_holder %>%
+        filter( code == this_code,
+                indicator == this_indicator,
+                direction == this_direction )
+      
+      graph_object = glue("{this_indicator}_{this_direction}_{this_code}_plot")
+      
+      assign( graph_object, draw_change_detection_plot( this_d ) )
+      
+    }
+  }
+}
+
+
 #####################################################################
 ### Summary figure of slope intensity
 #####################################################################

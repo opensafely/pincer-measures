@@ -105,6 +105,41 @@ draw_change_detection_plot = function( plot_data,
 }
 
 
+occurs_in_window = function( locations, window ) {
+  
+  o = rep.int( FALSE, length(locations) )
+  
+  for ( i in 1:length(locations) ) {
+    
+    l = locations[i] %>% unlist
+    
+    if ( !is.na(l) ) {
+      
+      if ( is.character( l ) ){
+        l = eval( parse(text=l) )
+      }
+      
+      # cat( "breaks are: " )
+      # cat( paste( l, collapse=":"))
+      # cat( sprintf( "\n") )
+      # cat( "window is: " )
+      # cat( paste( window, collapse=":"))
+      # cat( sprintf( "\n") )
+      # cat( "intersect is: " )
+      # cat( paste( intersect(l,window), collapse=":"))
+      # cat( sprintf( "\n") )
+      # cat( "answer is: " )
+      # cat( any( intersect(l,window) ) )
+      # cat( sprintf( "\n") )
+      
+      o[i] = any( intersect(l,window) )
+    }
+  }
+  
+  return( o )
+}
+
+
 time_since_epoch <- function(d) {
   x1 <- as.POSIXct(d)
   x2 <- format(x1, tz="GMT", usetz=F)
@@ -210,6 +245,85 @@ for ( results_i in 1:nrow( plotdata_files ) ) {
 save( results_holder,
       plotdata_holder,
       file = glue("{fig_path_tis_analysis}/ANALYSIS_OUTPUT.RData") )
+
+#####################################################################
+##################################################################### 
+### Recording interesting counts ####################################
+#####################################################################
+##################################################################### 
+
+# NB. we can select only "up" results here, as these breaks will
+# be the same for up and down analyses.
+
+### For each indicator, the proportion of practices with at least one
+### break identified
+proportion_of_practices_with_any_breaks = 
+  results_holder %>%
+  filter( direction == "up") %>% 
+  group_by( indicator ) %>%
+  summarise( count=sum(is.nbreak>0),
+             total=n() ) %>% 
+  mutate( proportion = count/total )
+write.csv( proportion_of_practices_with_any_breaks,
+           file=glue("{out_dir}/at-least-one_break.csv"))
+
+### For each indicator, the proportion of practices with at least one
+### positive break identified
+proportion_of_practices_with_pos_breaks = 
+  results_holder %>%
+  filter( direction == "up") %>% 
+  group_by( indicator ) %>%
+  summarise( count=sum(!is.na(breaks.loc.pos)),
+             total=n() ) %>% 
+  mutate( proportion = count/total )
+write.csv( proportion_of_practices_with_pos_breaks,
+           file=glue("{out_dir}/at-least-one_pos-break.csv"))
+
+### For each indicator, the proportion of practices with at least one
+### negative break identified
+proportion_of_practices_with_neg_breaks = 
+  results_holder %>%
+  filter( direction == "up") %>% 
+  group_by( indicator ) %>%
+  summarise( count=sum(!is.na(breaks.loc.neg)),
+             total=n() ) %>% 
+  mutate( proportion = count/total )
+write.csv( proportion_of_practices_with_neg_breaks,
+           file=glue("{out_dir}/at-least-one_neg-break.csv"))
+
+### For each indicator, the proportion of practices with at least one
+### positive break identified within XXX months of COVID starting
+
+proportion_of_practices_with_postCOVID_pos_break = data.frame()
+
+for ( duration in 1:12) {
+  postCOVID_period = which( ( plotdata_holder %>%
+                                pull(x) %>%
+                                unique() %>%
+                                sort ) >= "2020-03-01" )[1:duration]
+  
+  this_d =
+    results_holder %>%
+    filter( direction == "up") %>% 
+    group_by( indicator ) %>%
+    summarise( count=sum(occurs_in_window(breaks.loc.pos,
+                                          postCOVID_period)),
+               total=n() ) %>% 
+    rename( !!glue("plus_{duration}mo") := count )
+  
+  if ( nrow( proportion_of_practices_with_postCOVID_pos_break ) == 0 ) {
+    proportion_of_practices_with_postCOVID_pos_break = this_d
+  } else {
+    proportion_of_practices_with_postCOVID_pos_break = proportion_of_practices_with_postCOVID_pos_break %>% 
+      inner_join( this_d, by=c("indicator","total") )
+  }
+  
+}
+write.csv( proportion_of_practices_with_postCOVID_pos_break,
+           file=glue("{out_dir}/at-least-one_post-COVID_pos-break.csv"))
+
+
+
 
 
 for ( this_indicator in plotdata_holder$indicator %>% unique() ) {

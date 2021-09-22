@@ -4,6 +4,9 @@ import json
 from utilities import *
 from study_definition import indicators_list
 
+#these are not generated in the main generate measures action
+additional_indicators = ["e","f", "li"]
+indicators_list.extend(additional_indicators)
 
 practice_list = []
 patient_counts_dict = {}

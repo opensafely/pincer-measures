@@ -43,7 +43,7 @@ actions:
     outputs:
       highly_sensitive:
         cohort: output/inp*.feather
-  
+
   generate_study_population_lithium:
     run: cohortextractor:latest generate_cohort --study-definition study_definition_lithium --index-date-range "2019-09-01 to 2021-07-01 by month" --output-format feather
     outputs:
@@ -86,6 +86,15 @@ actions:
       moderately_sensitive:
         counts: output/indicator_measure_*.csv
         measure_csv: output/measure*_rate.csv
+  
+  generate_summary_counts:
+    run: python:latest python analysis/summary_statistics.py
+    needs: [join_ethnicity_region, generate_measures, generate_measures_demographics]
+    outputs:
+      highly_sensitive:
+        patient_count: output/patient_count.json
+        practice_count: output/practice_count.json
+        summary: output/indicator_summary_statistics.json
   
   generate_plots:
     run: python:latest python analysis/plot_measures.py

@@ -395,73 +395,73 @@ ggsave( glue("{fig_path_tis_analysis}/SUMMARY_down_heatmap.png"),
 ### Draw all significant results
 #####################################################################
 
-significant_results = results_holder %>% filter( is.nbreak > 0 ) %>% select( name, indicator, direction )
+# significant_results = results_holder %>% filter( is.nbreak > 0 ) %>% select( name, indicator, direction )
 
-significant_plot_data = plotdata_holder %>% 
-  inner_join( significant_results, by=c( "indicator", "name", "direction" ) ) %>% 
-  mutate( tag = glue("{indicator}_{name}") ) %>% 
-  group_by( indicator, name )
+# significant_plot_data = plotdata_holder %>% 
+#   inner_join( significant_results, by=c( "indicator", "name", "direction" ) ) %>% 
+#   mutate( tag = glue("{indicator}_{name}") ) %>% 
+#   group_by( indicator, name )
 
-draw_change_detection_plot( significant_plot_data ) +
-  theme( axis.text.x = element_text(angle=90,
-                                    hjust=1)) +
-  facet_wrap( ~tag, scales="free_y")
+# draw_change_detection_plot( significant_plot_data ) +
+#   theme( axis.text.x = element_text(angle=90,
+#                                     hjust=1)) +
+#   facet_wrap( ~tag, scales="free_y")
 
-ggsave( glue("{fig_path_tis_analysis}/SUMMARY_significant.png"),
-        width = 8,
-        height = 8 )
+# ggsave( glue("{fig_path_tis_analysis}/SUMMARY_significant.png"),
+#         width = 8,
+#         height = 8 )
 
 
 #####################################################################
 ### Draw all results
 #####################################################################
 
-draw_change_detection_plot( plotdata_holder %>% group_by(indicator,name) ) +
-  facet_grid( name~indicator, scales="free_y") +
-  theme( axis.text.x = element_text(angle=90,
-                                    hjust=1)) 
+# draw_change_detection_plot( plotdata_holder %>% group_by(indicator,name) ) +
+#   facet_grid( name~indicator, scales="free_y") +
+#   theme( axis.text.x = element_text(angle=90,
+#                                     hjust=1)) 
 
-ggsave( glue("{fig_path_tis_analysis}/SUMMARY_all.png"),
-        width = 24,
-        height = 24 )
+# ggsave( glue("{fig_path_tis_analysis}/SUMMARY_all.png"),
+#         width = 24,
+#         height = 24 )
 
 #####################################################################
 ### Draw all indicators for each practice
 #####################################################################
 
-for ( n in plotdata_holder %>% pull(name) %>% unique) {
+# for ( n in plotdata_holder %>% pull(name) %>% unique) {
   
-  draw_change_detection_plot( plotdata_holder %>% 
-                                filter( name == n ) %>% 
-                                group_by( indicator) ) +
-    facet_wrap( ~indicator, scales="free_y" ) +
-    labs( title=glue("All indicators for [{n}]") ) +
-    theme( axis.text.x = element_text(angle=90,
-                                      hjust=1)) 
+#   draw_change_detection_plot( plotdata_holder %>% 
+#                                 filter( name == n ) %>% 
+#                                 group_by( indicator) ) +
+#     facet_wrap( ~indicator, scales="free_y" ) +
+#     labs( title=glue("All indicators for [{n}]") ) +
+#     theme( axis.text.x = element_text(angle=90,
+#                                       hjust=1)) 
   
-  ggsave( glue("{fig_path_tis_analysis}/SUMMARY_PRACTICE-{n}.png"),
-          width = 8,
-          height = 8 )
-}
+#   ggsave( glue("{fig_path_tis_analysis}/SUMMARY_PRACTICE-{n}.png"),
+#           width = 8,
+#           height = 8 )
+# }
 
 #####################################################################
 ### Draw all practices for each indicator
 #####################################################################
 
-for ( ind in plotdata_holder %>% pull(indicator) %>% unique) {
+# for ( ind in plotdata_holder %>% pull(indicator) %>% unique) {
   
-  draw_change_detection_plot( plotdata_holder %>% 
-                                filter( indicator == ind ) %>% 
-                                group_by( name ) ) +
-    facet_wrap( ~name, scales="free_y" ) +
-    labs( title=glue("All practices for [{ind}]") ) +
-    theme( axis.text.x = element_text(angle=90,
-                                      hjust=1)) 
+#   draw_change_detection_plot( plotdata_holder %>% 
+#                                 filter( indicator == ind ) %>% 
+#                                 group_by( name ) ) +
+#     facet_wrap( ~name, scales="free_y" ) +
+#     labs( title=glue("All practices for [{ind}]") ) +
+#     theme( axis.text.x = element_text(angle=90,
+#                                       hjust=1)) 
   
-  ggsave( glue("{fig_path_tis_analysis}/SUMMARY_INDICATOR-{ind}.png"),
-          width = 8,
-          height = 8 )
-}
+#   ggsave( glue("{fig_path_tis_analysis}/SUMMARY_INDICATOR-{ind}.png"),
+#           width = 8,
+#           height = 8 )
+# }
 
 
 

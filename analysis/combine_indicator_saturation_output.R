@@ -13,8 +13,8 @@ library(stringr)
 arguments <- commandArgs(trailingOnly = TRUE)
 
 ### For testing
-arguments[1] = "output/indicator_saturation"
-arguments[2] = "output/indicator_saturation/combined"
+# arguments[1] = "output/indicator_saturation"
+# arguments[2] = "output/indicator_saturation/combined"
 
 ###################################################################
 #######################################
@@ -323,33 +323,34 @@ write.csv( proportion_of_practices_with_postCOVID_pos_break,
            file=glue("{out_dir}/at-least-one_post-COVID_pos-break.csv"))
 
 
+#####################################################################
+##################################################################### 
+### Recording interesting counts ####################################
+#####################################################################
+##################################################################### 
 
 
+results_toplot = results_holder %>% 
+  filter( is.nbreak > 0 )
 
-for ( this_indicator in plotdata_holder$indicator %>% unique() ) {
+for ( plot_i in 1:nrow( results_toplot ) ) {
+  this_indicator = ( results_toplot %>% pull(indicator) )[plot_i]
+  this_direction = ( results_toplot %>% pull(direction) )[plot_i]
+  this_code      = ( results_toplot %>% pull(name)      )[plot_i]
   
-  this_plotdata_holder = plotdata_holder %>% 
-    filter( indicator == this_indicator )
+  print( glue( "{this_indicator} in {this_code}\n" ) )
   
-  for ( this_code in this_plotdata_holder$code %>% unique() ) {
-    
-    for ( this_direction in c( "up", "down" ) ) {
-      
-      print( glue( "{this_indicator} in {this_code}\n" ) )
-      
-      this_d = plotdata_holder %>%
-        filter( code == this_code,
-                indicator == this_indicator,
-                direction == this_direction )
-      
-      graph_object = glue("{this_indicator}_{this_direction}_{this_code}_plot")
-      
-      assign( graph_object, draw_change_detection_plot( this_d ) )
-      
-    }
-  }
+  this_d = plotdata_holder %>%
+    filter( code == this_code,
+            indicator == this_indicator,
+            direction == this_direction )
+  
+  this_graph_file = glue("{out_dir}/CDPLOT_{this_indicator}_{this_direction}_{this_code}_plot.png")
+  
+  ggsave( this_graph_file, plot=draw_change_detection_plot( this_d ) )
+  
 }
-
+  
 
 #####################################################################
 ### Summary figure of slope intensity

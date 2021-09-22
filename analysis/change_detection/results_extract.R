@@ -401,12 +401,19 @@ for (i in 1:(vars.list))
       mutate( x = model_months ) %>% 
       mutate( set="trend" )
     
+    firstbreak_data = data.frame()
     startend_data = data.frame()
     slope_data = data.frame()
     break_data = data.frame()
-    annotation_data = data.frame() 
+    annotation_data = data.frame()
     
     if ( nbreak > 0 ) {
+      firstbreak_data = data.frame(
+        x = month.c[is.first.pknown-1]
+      ) %>%
+        mutate( y = islstr.res$aux$y[is.first.pknown-1] ) %>% 
+        mutate( set = "firstbreak" )
+      
       startend_data = data.frame(
         y = as.vector( fit.res[c(is.first.pknown-1,NROW(fit.res))] )
       ) %>%
@@ -452,7 +459,8 @@ for (i in 1:(vars.list))
       if( !is.first==Inf ) {
         plot_data = plot_data %>% 
           bind_rows( startend_data ) %>% 
-          bind_rows( slope_data )
+          bind_rows( slope_data ) %>% 
+          bind_rows( firstbreak_data )
         if ( length(big.break.index) != 0 ) {
           plot_data = plot_data %>% bind_rows( break_data )
         } else {
@@ -472,15 +480,12 @@ for (i in 1:(vars.list))
     
     plot_data = plot_data %>% 
       bind_rows( intervention_data ) %>% 
-      bind_rows( annotation_data )
+      bind_rows( annotation_data ) %>% 
+      mutate( id = this_object )
     
     plotdata_holder = plotdata_holder %>% 
       bind_rows( plot_data )
-    
-    
-    
-    
-    
+  
     print(paste(round((i / vars)*100,1), "%"))
   } ## if there are breaks closed
   

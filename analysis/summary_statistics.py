@@ -66,5 +66,5 @@ for indicator in indicators_list:
 
 
 with open('output/indicator_summary_statistics.json', 'w') as f:
-    json.dump(counts_dict, f) 
+    json.dump({"summary": counts_dict}, f) 
     

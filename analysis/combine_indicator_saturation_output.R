@@ -230,6 +230,8 @@ for ( results_i in 1:nrow( plotdata_files ) ) {
   
   cat( glue("[{results_i}] Reading data from {this_indicator} // {this_direction} // {this_object}\n\n"))
   
+  if ( file.info(this_result_file)$size > 0 ) {
+  
   these_results = read.csv( this_result_file,
                             col.names = c( "y", "x", "set", "code")) %>%
     mutate( indicator = this_indicator ) %>% 
@@ -237,6 +239,8 @@ for ( results_i in 1:nrow( plotdata_files ) ) {
   
   plotdata_holder = plotdata_holder %>% 
     bind_rows( these_results )
+  
+  }
 
   # draw_change_detection_plot( these_results %>% filter( code == "ratio_quantity.34"))
 

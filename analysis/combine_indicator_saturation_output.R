@@ -246,9 +246,9 @@ for ( results_i in 1:nrow( plotdata_files ) ) {
 
 }
 
-save( results_holder,
-      plotdata_holder,
-      file = glue("{fig_path_tis_analysis}/ANALYSIS_OUTPUT.RData") )
+# save( results_holder,
+#       plotdata_holder,
+#       file = glue("{fig_path_tis_analysis}/ANALYSIS_OUTPUT.RData") )
 
 #####################################################################
 ##################################################################### 

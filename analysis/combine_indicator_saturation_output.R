@@ -13,8 +13,8 @@ library(stringr)
 arguments <- commandArgs(trailingOnly = TRUE)
 
 ### For testing
-arguments[1] = "output/indicator_saturation"
-arguments[2] = "output/indicator_saturation/combined"
+# arguments[1] = "output/indicator_saturation"
+# arguments[2] = "output/indicator_saturation/combined"
 
 ###################################################################
 #######################################

@@ -13,9 +13,8 @@ library(stringr)
 arguments <- commandArgs(trailingOnly = TRUE)
 
 ### For testing
-arguments[1] = "output/indicator_saturation"
-arguments[2] = "output/indicator_saturation/combined"
-
+# arguments[1] = "output/indicator_saturation"
+# arguments[2] = "output/indicator_saturation/combined"
 
 ###################################################################
 #######################################
@@ -28,60 +27,116 @@ arguments[2] = "output/indicator_saturation/combined"
 #setwd("C:\\Users\\ajwalker\\Documents\\GitHub\\prescribing_change_metrics\\data\\testing") # for testing only
 #setwd(arguments[1])
 
-draw_change_detection_plot = function( pd,
-                                       plot_title="Change detection plot" ) {
-  cd_plot = ggplot( pd ) +
+draw_change_detection_plot = function( plot_data,
+                                       plot_title="Change detection plot",
+                                       annotations = c( COVID = "2020-03-01" ) ) {
+  cd = ggplot( plot_data,
+          aes(group=code)) +
+    annotate( "segment",
+              x = annotations,
+              xend=annotations,
+              y = -Inf,
+              yend = Inf,
+              colour="green", size=1)+
     ### Plot the real data
-    geom_line( data = pd %>% filter( set == "real" ),
-               aes(x=x, y=y)) +
+    geom_line( data = plot_data %>% filter( set == "real" ),
+               aes(x=x, y=y) ) +
     ### Plot the trend on top of that
-    geom_line( data = pd %>% filter( set == "trend" ),
+    geom_line( data = plot_data %>% filter( set == "trend" ),
                aes(x=x, y=y),
                col="red") +
     ### Plot the start/end points
-    geom_rect( data=pd %>%
-                 filter( set == "startend" ) %>%
-                 arrange(y) %>%
-                 mutate( val = LETTERS[1:n()] ) %>%
-                 pivot_wider( names_from="val", values_from="y") %>% 
-                 mutate( xmin=plot_data %>% pull(x) %>% min(na.rm=TRUE) - years(1), #as.POSIXct("2019-05-01"),
-                         xmax=plot_data %>% pull(x) %>% max(na.rm=TRUE) + years(1) ),
-               aes( ymin=A, ymax=B, xmin = xmin, xmax=xmax ),
-               fill="purple",
-               alpha=0.2) +
-    geom_hline( data = pd %>% filter( set == "startend" ),
-                aes(yintercept=y),
-                col="purple", linetype="dashed", size=1) +
+    # geom_rect( data=plot_data %>%
+    #              filter( set == "startend" ) %>%
+    #              arrange(y) %>%
+    #              mutate( val = LETTERS[1:n()] ) %>%
+    #              pivot_wider( names_from="val", values_from="y") %>%
+    #              mutate( xmin=plot_data %>% pull(x) %>% min(na.rm=TRUE) - years(1), #as.POSIXct("2019-05-01"),
+    #                      xmax=plot_data %>% pull(x) %>% max(na.rm=TRUE) + years(1) ),
+    #            aes( ymin=A, ymax=B, xmin = xmin, xmax=xmax ),
+    #            fill="purple",
+    #            alpha=0.2) +
+  
+  geom_hline( data = plot_data %>% filter( set == "startend" ),
+              aes(yintercept=y),
+              col="purple", linetype="dashed", size=1) +
     ### Highlight the slope
-    geom_line( data = pd %>% filter( set == "slope" ),
+    geom_line( data = plot_data %>% filter( set == "slope" ),
                aes(x=x, y=y),
                col=rgb(red = 1, green = 0.4118, blue = 0, alpha = 0.5),
                size=5,
                lineend = "round" ) +
     ### Plot the breaks
-    geom_vline( data = pd %>% filter( set == "break" ),
+    geom_vline( data = plot_data %>% filter( set == "break" ),
                 aes( xintercept = x ),
                 col="blue", linetype = "dashed", size=1) +
     ### Plot the intervention of interest
-    geom_vline( data = pd %>% filter( set == "intervention" ),
+    geom_vline( data = plot_data %>% filter( set == "intervention" ),
                 aes( xintercept = x ),
                 col="orange", linetype = "dashed", size=1) +
     ### Add any annotation of interest
-    geom_vline( data = pd %>% filter( set == "annotation" ),
+    geom_vline( data = plot_data %>% filter( set == "annotation" ),
                 aes( xintercept = x ),
-                col="green", linetype = "dashed", size=1) +
+                col="green", linetype = "dashed", size=1)  +
+    geom_rect( data = plot_data %>% filter( set == "firstbreak" ),
+               aes( xmin = -Inf,
+                    xmax = x,
+                    ymin = -Inf,
+                    ymax = Inf ), col="grey", alpha=0.3) +
     ### Remove space between data and axes
     #scale_x_continuous(expand = c(0, 0)) +
     #scale_y_continuous(expand = c(0, 0)) +
     ### Add new labels
-    labs( title = plot_title,
+    labs( title = glue( "{this_indicator} // {this_direction} // {this_object}" ),
           x = "Time series months",
           y = "Numerator over denominator" ) +
-    coord_cartesian( xlim = c( pd %>% pull(x) %>% min(na.rm=TRUE),
-                               pd %>% pull(x) %>% max(na.rm=TRUE)) ) +
-    theme_bw()
+    # coord_cartesian( xlim = c(plot_data %>% pull(x) %>% min(na.rm=TRUE),
+    #                           plot_data %>% pull(x) %>% max(na.rm=TRUE)) ) +
+    theme_bw() +
+    theme( axis.text.x = element_text( angle=90))
+  
+  # ggsave(glue("{fig_path_tis_analysis}/{this_indicator}_{this_direction}_{this_object}_NEW.png"),
+  #        units = "mm",
+  #        width = 270,
+  #        height = 270 )
+  
+  return( cd )
+  
+}
 
-  return( cd_plot )
+
+occurs_in_window = function( locations, window ) {
+  
+  o = rep.int( FALSE, length(locations) )
+  
+  for ( i in 1:length(locations) ) {
+    
+    l = locations[i] %>% unlist
+    
+    if ( !is.na(l) ) {
+      
+      if ( is.character( l ) ){
+        l = eval( parse(text=l) )
+      }
+      
+      # cat( "breaks are: " )
+      # cat( paste( l, collapse=":"))
+      # cat( sprintf( "\n") )
+      # cat( "window is: " )
+      # cat( paste( window, collapse=":"))
+      # cat( sprintf( "\n") )
+      # cat( "intersect is: " )
+      # cat( paste( intersect(l,window), collapse=":"))
+      # cat( sprintf( "\n") )
+      # cat( "answer is: " )
+      # cat( any( intersect(l,window) ) )
+      # cat( sprintf( "\n") )
+      
+      o[i] = any( intersect(l,window) )
+    }
+  }
+  
+  return( o )
 }
 
 
@@ -102,6 +157,7 @@ if ( !dir.exists(out_dir ) ) {
   cat(sprintf("Making this directory: %s", out_dir))
   dir.create(out_dir, showWarnings = FALSE)
 }
+
 # in_dir = "/Users/lisahopcroft/Work/Projects/PINCER/pincer-measures/output/indicator_saturation"
 # intervention_moment
 #intervention_moment = "2019-10-15"
@@ -115,7 +171,7 @@ if ( !dir.exists(out_dir ) ) {
 #####################################################################
 
 results_files = data.frame(
-  file_name = list.files(path=in_dir, pattern="r_output_.*.csv", recursive = TRUE )
+  file_name = list.files(path=in_dir, pattern="summary_output.csv", recursive = TRUE )
 ) %>%
   mutate( file_name_full = paste( in_dir, file_name, sep="/" ) ) %>% 
   mutate( indicator = dirname( file_name ) ) %>% 
@@ -130,11 +186,10 @@ for ( results_i in 1:nrow( results_files ) ) {
   this_indicator = ( results_files %>% pull(indicator_string) )[results_i]
   this_direction = ( results_files %>% pull(direction) )[results_i]
   
-  
-  these_results = read.csv( this_result_file,
-                            row.names = 1) %>% 
+  these_results = read.csv( this_result_file ) %>% 
     mutate( indicator = this_indicator ) %>% 
-    mutate( direction = this_direction )
+    mutate( direction = this_direction ) %>% 
+    mutate_at( vars(starts_with( "breaks." )), as.list  )
   
   results_holder = results_holder %>% 
     bind_rows( these_results )
@@ -145,7 +200,7 @@ for ( results_i in 1:nrow( results_files ) ) {
 #####################################################################
 
 plotdata_files = data.frame(
-  file_name = list.files(path=in_dir, pattern=".*_plotdata.RData", recursive = TRUE )
+  file_name = list.files(path=in_dir, pattern="plot_data.csv$", recursive = TRUE )
 ) %>%
   mutate( file_name_full = paste( in_dir, file_name, sep="/" ) ) %>% 
   mutate( indicator = dirname( file_name ) ) %>% 
@@ -171,195 +226,135 @@ for ( results_i in 1:nrow( plotdata_files ) ) {
   this_result_file = ( plotdata_files %>% pull(file_name_full) )[results_i]
   this_indicator = ( plotdata_files %>% pull(indicator_string) )[results_i]
   this_direction = ( plotdata_files %>% pull(direction) )[results_i]
-  this_object = basename( this_result_file ) %>% str_remove( "_plotdata.RData" )
+  this_object = basename( this_result_file )
   
   cat( glue("[{results_i}] Reading data from {this_indicator} // {this_direction} // {this_object}\n\n"))
   
-  load( this_result_file )
+  if ( file.info(this_result_file)$size > 0 ) {
   
-  model_months = data.pick$month.c
-  y            = data.pick[this_object]
-  
-  
-  ### Construct the plot data
-  real_data = data.frame(
-    y=islstr.res$aux$y ) %>%
-    mutate( y = ifelse( y==99, NA, y) ) %>% 
-    mutate( x = model_months ) %>% 
-    mutate( set = "real" )
-  
-  trend_data = data.frame(
-    y = tis.path$indic.fit$indic.fit+islstr.res$coefficients[islstr.res$specific.spec["mconst"]]
-  ) %>% 
-    mutate( x = model_months ) %>% 
-    mutate( set="trend" )
-  
-  startend_data = data.frame()
-  slope_data = data.frame()
-  break_data = data.frame()
-  
-  if ( nbreak > 0 ) {
-    startend_data = data.frame(
-      y = as.vector( fit.res[c(is.first.pknown-1,NROW(fit.res))] )
-    ) %>%
-      mutate( x = NA ) %>%
-      mutate( set = "startend")
-    
-    slope_data = data.frame(
-      y = coef.p.hl+mconst.res
-    ) %>% 
-      mutate( x = model_months )  %>% 
-      filter( !is.na(y) ) %>% 
-      mutate( set = "slope" )
-    
-    break_data = data.frame(
-      # x = tdates[min(big.break.index)]
-      x = model_months[tdates[big.break.index]]
-    ) %>% 
-      mutate( y=NA) %>% 
-      mutate( set = "break" )
-    
-  }
-  
-  intervention_data = data.frame(
-    x = model_months[known.t]
-  ) %>% 
-    mutate( y=NA ) %>% 
-    mutate( set = "intervention" ) %>% 
-    filter( x != 0 )
-  
-  annotation_data = data.frame(
-    x = model_months[annotation.t]
-  ) %>% 
-    mutate( y=NA ) %>% 
-    mutate( set = "annotation" ) %>% 
-    filter( x != 0 )
-
-  plot_data = real_data %>% 
-    bind_rows( trend_data )
-  
-  if ( nbreak > 0 ) {
-    if( !is.first==Inf ) {
-      plot_data = plot_data %>% 
-        bind_rows( startend_data ) %>% 
-        bind_rows( slope_data )
-      if ( length(big.break.index) != 0 ) {
-        plot_data = plot_data %>% bind_rows( break_data )
-      } else {
-        plot_data = plot_data %>% bind_rows( data.frame( x=NA,
-                                                         y=NA,
-                                                         set="break") )
-      }
-    }  
-  } else {
-    plot_data = plot_data %>% bind_rows( data.frame( x=c(NA,NA),
-                                                     y=c(NA,NA),
-                                                     set=c("startend","startend") ) )
-    plot_data = plot_data %>% bind_rows( data.frame( x=NA,
-                                                     y=NA,
-                                                     set="slope") )
-  }
-  
-  plot_data = plot_data %>% 
-    bind_rows( intervention_data ) %>% 
-    bind_rows( annotation_data ) %>% 
-    mutate( indicator = this_indicator,
-            direction = this_direction,
-            name = this_name )
+  these_results = read.csv( this_result_file,
+                            col.names = c( "y", "x", "set", "code")) %>%
+    mutate( indicator = this_indicator ) %>% 
+    mutate( direction = this_direction )
   
   plotdata_holder = plotdata_holder %>% 
-    bind_rows( plot_data )
+    bind_rows( these_results )
   
-  ggplot( plot_data ) +
-    ### Plot the real data
-    geom_line( data = plot_data %>% filter( set == "real" ),
-               aes(x=x, y=y)) +
-    ### Plot the trend on top of that
-    geom_line( data = plot_data %>% filter( set == "trend" ),
-               aes(x=x, y=y),
-               col="red") +
-    ### Plot the start/end points
-    geom_rect( data=plot_data %>%
-                 filter( set == "startend" ) %>%
-                 arrange(y) %>%
-                 mutate( val = LETTERS[1:n()] ) %>%
-                 pivot_wider( names_from="val", values_from="y") %>% 
-                 mutate( xmin=plot_data %>% pull(x) %>% min(na.rm=TRUE) - years(1), #as.POSIXct("2019-05-01"),
-                         xmax=plot_data %>% pull(x) %>% max(na.rm=TRUE) + years(1) ),
-               aes( ymin=A, ymax=B, xmin = xmin, xmax=xmax ),
-               fill="purple",
-               alpha=0.2) +
-    geom_hline( data = plot_data %>% filter( set == "startend" ),
-                aes(yintercept=y),
-                col="purple", linetype="dashed", size=1) +
-    ### Highlight the slope
-    geom_line( data = plot_data %>% filter( set == "slope" ),
-               aes(x=x, y=y),
-               col=rgb(red = 1, green = 0.4118, blue = 0, alpha = 0.5),
-               size=5,
-               lineend = "round" ) +
-    ### Plot the breaks
-    geom_vline( data = plot_data %>% filter( set == "break" ),
-                aes( xintercept = x ),
-                col="blue", linetype = "dashed", size=1) +
-    ### Plot the intervention of interest
-    geom_vline( data = plot_data %>% filter( set == "intervention" ),
-                aes( xintercept = x ),
-                col="orange", linetype = "dashed", size=1) +
-    ### Add any annotation of interest
-    geom_vline( data = plot_data %>% filter( set == "annotation" ),
-                aes( xintercept = x ),
-                col="green", linetype = "dashed", size=1) +
-    ### Remove space between data and axes
-    #scale_x_continuous(expand = c(0, 0)) +
-    #scale_y_continuous(expand = c(0, 0)) +
-    ### Add new labels
-    labs( title = glue( "{this_indicator} // {this_name}" ),
-          x = "Time series months",
-          y = "Numerator over denominator" ) +
-    coord_cartesian( xlim = c(plot_data %>% pull(x) %>% min(na.rm=TRUE),
-                              plot_data %>% pull(x) %>% max(na.rm=TRUE)) ) +
-    theme_bw()
-  
-  ggsave(glue("{fig_path_tis_analysis}/{this_indicator}_{this_direction}_{this_object}_NEW.png"),
-         units = "mm",
-         width = 270,
-         height = 270 )
-  
-  filename <- glue("{fig_path_tis_analysis}/{this_indicator}_{this_direction}_{this_object}_ORIGINAL.png")
-  
-  wid <- 500
-  hei <- 500
-  png(filename)
-  
-  par(mfrow=c(1,1))
-  islstr.res$aux$y[islstr.res$aux$y == 99] <- NA
-  plot(islstr.res$aux$y, col="black", ylab="Numerator over denominator", xlab="Time series months", type="l",las=1) ##
-  trendline <- tis.path$indic.fit$indic.fit+islstr.res$coefficients[islstr.res$specific.spec["mconst"]]
-  lines(trendline,  col="red", lwd=2) ###fitted lines
-  if (nbreak > 0){
-    if (!is.first==Inf){
-      abline(h=fit.res[is.first.pknown-1], lty=3, col="purple", lwd=2)### start value
-      abline(h=fit.res[NROW(fit.res)], lty=3, col="purple", lwd=2)### end value
-      lines(coef.p.hl+mconst.res, col=rgb(red = 1, green = 0.4118, blue = 0, alpha = 0.5), lwd=15) ###section used to evaluate slope
-      #print(big.break.index)
-      if (length(big.break.index) != 0){
-        abline(v=tdates[min(big.break.index)], lty=2, col="blue", lwd=2) ## first negative break after intervention which is not off-set
-      }
-    }
   }
-  abline(v=known.t, lty=1, col="blue", lwd=2)### known intervention, blue dottedwarnings()
-  
-  #print(names.rel[i])
-  dev.copy(png,filename=filename, width=wid, height=hei)
-  dev.off()
-  dev.off()
-  
+
+  # draw_change_detection_plot( these_results %>% filter( code == "ratio_quantity.34"))
+
 }
 
-save( results_holder,
-      plotdata_holder,
-      file = glue("{fig_path_tis_analysis}/ANALYSIS_OUTPUT.RData") )
+# save( results_holder,
+#       plotdata_holder,
+#       file = glue("{fig_path_tis_analysis}/ANALYSIS_OUTPUT.RData") )
+
+#####################################################################
+##################################################################### 
+### Recording interesting counts ####################################
+#####################################################################
+##################################################################### 
+
+# NB. we can select only "up" results here, as these breaks will
+# be the same for up and down analyses.
+
+### For each indicator, the proportion of practices with at least one
+### break identified
+proportion_of_practices_with_any_breaks = 
+  results_holder %>%
+  filter( direction == "up") %>% 
+  group_by( indicator ) %>%
+  summarise( count=sum(is.nbreak>0),
+             total=n() ) %>% 
+  mutate( proportion = count/total )
+write.csv( proportion_of_practices_with_any_breaks,
+           file=glue("{out_dir}/at-least-one_break.csv"))
+
+### For each indicator, the proportion of practices with at least one
+### positive break identified
+proportion_of_practices_with_pos_breaks = 
+  results_holder %>%
+  filter( direction == "up") %>% 
+  group_by( indicator ) %>%
+  summarise( count=sum(!is.na(breaks.loc.pos)),
+             total=n() ) %>% 
+  mutate( proportion = count/total )
+write.csv( proportion_of_practices_with_pos_breaks,
+           file=glue("{out_dir}/at-least-one_pos-break.csv"))
+
+### For each indicator, the proportion of practices with at least one
+### negative break identified
+proportion_of_practices_with_neg_breaks = 
+  results_holder %>%
+  filter( direction == "up") %>% 
+  group_by( indicator ) %>%
+  summarise( count=sum(!is.na(breaks.loc.neg)),
+             total=n() ) %>% 
+  mutate( proportion = count/total )
+write.csv( proportion_of_practices_with_neg_breaks,
+           file=glue("{out_dir}/at-least-one_neg-break.csv"))
+
+### For each indicator, the proportion of practices with at least one
+### positive break identified within XXX months of COVID starting
+
+proportion_of_practices_with_postCOVID_pos_break = data.frame()
+
+for ( duration in 1:12) {
+  postCOVID_period = which( ( plotdata_holder %>%
+                                pull(x) %>%
+                                unique() %>%
+                                sort ) >= "2020-03-01" )[1:duration]
+  
+  this_d =
+    results_holder %>%
+    filter( direction == "up") %>% 
+    group_by( indicator ) %>%
+    summarise( count=sum(occurs_in_window(breaks.loc.pos,
+                                          postCOVID_period)),
+               total=n() ) %>% 
+    rename( !!glue("plus_{duration}mo") := count )
+  
+  if ( nrow( proportion_of_practices_with_postCOVID_pos_break ) == 0 ) {
+    proportion_of_practices_with_postCOVID_pos_break = this_d
+  } else {
+    proportion_of_practices_with_postCOVID_pos_break = proportion_of_practices_with_postCOVID_pos_break %>% 
+      inner_join( this_d, by=c("indicator","total") )
+  }
+  
+}
+write.csv( proportion_of_practices_with_postCOVID_pos_break,
+           file=glue("{out_dir}/at-least-one_post-COVID_pos-break.csv"))
+
+
+#####################################################################
+##################################################################### 
+### Recording interesting counts ####################################
+#####################################################################
+##################################################################### 
+
+
+results_toplot = results_holder %>% 
+  filter( is.nbreak > 0 )
+
+for ( plot_i in 1:nrow( results_toplot ) ) {
+  this_indicator = ( results_toplot %>% pull(indicator) )[plot_i]
+  this_direction = ( results_toplot %>% pull(direction) )[plot_i]
+  this_code      = ( results_toplot %>% pull(name)      )[plot_i]
+  
+  print( glue( "{this_indicator} in {this_code}\n" ) )
+  
+  this_d = plotdata_holder %>%
+    filter( code == this_code,
+            indicator == this_indicator,
+            direction == this_direction )
+  
+  this_graph_file = glue("{out_dir}/CDPLOT_{this_indicator}_{this_direction}_{this_code}_plot.png")
+  
+  ggsave( this_graph_file, plot=draw_change_detection_plot( this_d ) )
+  
+}
+  
 
 #####################################################################
 ### Summary figure of slope intensity
@@ -400,73 +395,73 @@ ggsave( glue("{fig_path_tis_analysis}/SUMMARY_down_heatmap.png"),
 ### Draw all significant results
 #####################################################################
 
-significant_results = results_holder %>% filter( is.nbreak > 0 ) %>% select( name, indicator, direction )
+# significant_results = results_holder %>% filter( is.nbreak > 0 ) %>% select( name, indicator, direction )
 
-significant_plot_data = plotdata_holder %>% 
-  inner_join( significant_results, by=c( "indicator", "name", "direction" ) ) %>% 
-  mutate( tag = glue("{indicator}_{name}") ) %>% 
-  group_by( indicator, name )
+# significant_plot_data = plotdata_holder %>% 
+#   inner_join( significant_results, by=c( "indicator", "name", "direction" ) ) %>% 
+#   mutate( tag = glue("{indicator}_{name}") ) %>% 
+#   group_by( indicator, name )
 
-draw_change_detection_plot( significant_plot_data ) +
-  theme( axis.text.x = element_text(angle=90,
-                                    hjust=1)) +
-  facet_wrap( ~tag, scales="free_y")
+# draw_change_detection_plot( significant_plot_data ) +
+#   theme( axis.text.x = element_text(angle=90,
+#                                     hjust=1)) +
+#   facet_wrap( ~tag, scales="free_y")
 
-ggsave( glue("{fig_path_tis_analysis}/SUMMARY_significant.png"),
-        width = 8,
-        height = 8 )
+# ggsave( glue("{fig_path_tis_analysis}/SUMMARY_significant.png"),
+#         width = 8,
+#         height = 8 )
 
 
 #####################################################################
 ### Draw all results
 #####################################################################
 
-draw_change_detection_plot( plotdata_holder %>% group_by(indicator,name) ) +
-  facet_grid( name~indicator, scales="free_y") +
-  theme( axis.text.x = element_text(angle=90,
-                                    hjust=1)) 
+# draw_change_detection_plot( plotdata_holder %>% group_by(indicator,name) ) +
+#   facet_grid( name~indicator, scales="free_y") +
+#   theme( axis.text.x = element_text(angle=90,
+#                                     hjust=1)) 
 
-ggsave( glue("{fig_path_tis_analysis}/SUMMARY_all.png"),
-        width = 24,
-        height = 24 )
+# ggsave( glue("{fig_path_tis_analysis}/SUMMARY_all.png"),
+#         width = 24,
+#         height = 24 )
 
 #####################################################################
 ### Draw all indicators for each practice
 #####################################################################
 
-for ( n in plotdata_holder %>% pull(name) %>% unique) {
+# for ( n in plotdata_holder %>% pull(name) %>% unique) {
   
-  draw_change_detection_plot( plotdata_holder %>% 
-                                filter( name == n ) %>% 
-                                group_by( indicator) ) +
-    facet_wrap( ~indicator, scales="free_y" ) +
-    labs( title=glue("All indicators for [{n}]") ) +
-    theme( axis.text.x = element_text(angle=90,
-                                      hjust=1)) 
+#   draw_change_detection_plot( plotdata_holder %>% 
+#                                 filter( name == n ) %>% 
+#                                 group_by( indicator) ) +
+#     facet_wrap( ~indicator, scales="free_y" ) +
+#     labs( title=glue("All indicators for [{n}]") ) +
+#     theme( axis.text.x = element_text(angle=90,
+#                                       hjust=1)) 
   
-  ggsave( glue("{fig_path_tis_analysis}/SUMMARY_PRACTICE-{n}.png"),
-          width = 8,
-          height = 8 )
-}
+#   ggsave( glue("{fig_path_tis_analysis}/SUMMARY_PRACTICE-{n}.png"),
+#           width = 8,
+#           height = 8 )
+# }
 
 #####################################################################
 ### Draw all practices for each indicator
 #####################################################################
 
-for ( ind in plotdata_holder %>% pull(indicator) %>% unique) {
+# for ( ind in plotdata_holder %>% pull(indicator) %>% unique) {
   
-  draw_change_detection_plot( plotdata_holder %>% 
-                                filter( indicator == ind ) %>% 
-                                group_by( name ) ) +
-    facet_wrap( ~name, scales="free_y" ) +
-    labs( title=glue("All practices for [{ind}]") ) +
-    theme( axis.text.x = element_text(angle=90,
-                                      hjust=1)) 
+#   draw_change_detection_plot( plotdata_holder %>% 
+#                                 filter( indicator == ind ) %>% 
+#                                 group_by( name ) ) +
+#     facet_wrap( ~name, scales="free_y" ) +
+#     labs( title=glue("All practices for [{ind}]") ) +
+#     theme( axis.text.x = element_text(angle=90,
+#                                       hjust=1)) 
   
-  ggsave( glue("{fig_path_tis_analysis}/SUMMARY_INDICATOR-{ind}.png"),
-          width = 8,
-          height = 8 )
-}
+#   ggsave( glue("{fig_path_tis_analysis}/SUMMARY_INDICATOR-{ind}.png"),
+#           width = 8,
+#           height = 8 )
+# }
 
 
 

@@ -13,8 +13,8 @@ library(stringr)
 arguments <- commandArgs(trailingOnly = TRUE)
 
 ### For testing
-# arguments[1] = "output/indicator_saturation"
-# arguments[2] = "output/indicator_saturation/combined"
+arguments[1] = "output/indicator_saturation"
+arguments[2] = "output/indicator_saturation/combined"
 
 ###################################################################
 #######################################
@@ -30,8 +30,9 @@ arguments <- commandArgs(trailingOnly = TRUE)
 draw_change_detection_plot = function( plot_data,
                                        plot_title="Change detection plot",
                                        annotations = c( COVID = "2020-03-01" ) ) {
+  
   cd = ggplot( plot_data,
-          aes(group=code)) +
+               aes(group=code)) +
     annotate( "segment",
               x = annotations,
               xend=annotations,
@@ -77,19 +78,25 @@ draw_change_detection_plot = function( plot_data,
     ### Add any annotation of interest
     geom_vline( data = plot_data %>% filter( set == "annotation" ),
                 aes( xintercept = x ),
-                col="green", linetype = "dashed", size=1)  +
-    geom_rect( data = plot_data %>% filter( set == "firstbreak" ),
-               aes( xmin = -Inf,
-                    xmax = x,
-                    ymin = -Inf,
-                    ymax = Inf ), col="grey", alpha=0.3) +
-    ### Remove space between data and axes
-    #scale_x_continuous(expand = c(0, 0)) +
-    #scale_y_continuous(expand = c(0, 0)) +
-    ### Add new labels
+                col="green", linetype = "dashed", size=1) 
+
+  if ( nrow( plot_data %>% filter( set == "firstbreak" ) ) > 1 ) {
+    cd = cd + geom_rect( data = plot_data %>% filter( set == "firstbreak" ),
+                         aes( xmin = -Inf,
+                              xmax = x,
+                              ymin = -Inf,
+                              ymax = Inf ), col="grey", alpha=0.3)
+    
+  }
+  
+  ### Remove space between data and axes
+  #scale_x_continuous(expand = c(0, 0)) +
+  #scale_y_continuous(expand = c(0, 0)) +
+  ### Add new labels
+  cd = cd +
     labs( title = glue( "{this_indicator} // {this_direction} // {this_object}" ),
-          x = "Time series months",
-          y = "Numerator over denominator" ) +
+                  x = "Time series months",
+                  y = "Numerator over denominator" ) +
     # coord_cartesian( xlim = c(plot_data %>% pull(x) %>% min(na.rm=TRUE),
     #                           plot_data %>% pull(x) %>% max(na.rm=TRUE)) ) +
     theme_bw() +

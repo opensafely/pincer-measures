@@ -13,8 +13,8 @@ library(stringr)
 arguments <- commandArgs(trailingOnly = TRUE)
 
 ### For testing
-arguments[1] = "output/indicator_saturation"
-arguments[2] = "output/indicator_saturation/combined"
+# arguments[1] = "output/indicator_saturation"
+# arguments[2] = "output/indicator_saturation/combined"
 
 ###################################################################
 #######################################
@@ -313,9 +313,7 @@ for ( duration in 1:12) {
 write.csv( proportion_of_practices_with_postCOVID_pos_break_cumulative,
            file=glue("{out_dir}/at-least-one_post-COVID_pos-break_cumulative.csv"))
 
-
 ### For each indicator, the number of positive breaks in each datapoint
-
 
 proportion_of_practices_with_postCOVID_pos_break = results_holder %>%
   filter( direction == "up" ) %>% 

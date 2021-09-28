@@ -112,40 +112,6 @@ draw_change_detection_plot = function( plot_data,
 }
 
 
-occurs_in_window = function( locations, window ) {
-  
-  o = rep.int( FALSE, length(locations) )
-  
-  for ( i in 1:length(locations) ) {
-    
-    l = locations[i] %>% unlist
-    
-    if ( !is.na(l) ) {
-      
-      if ( is.character( l ) ){
-        l = eval( parse(text=l) )
-      }
-      
-      # cat( "breaks are: " )
-      # cat( paste( l, collapse=":"))
-      # cat( sprintf( "\n") )
-      # cat( "window is: " )
-      # cat( paste( window, collapse=":"))
-      # cat( sprintf( "\n") )
-      # cat( "intersect is: " )
-      # cat( paste( intersect(l,window), collapse=":"))
-      # cat( sprintf( "\n") )
-      # cat( "answer is: " )
-      # cat( any( intersect(l,window) ) )
-      # cat( sprintf( "\n") )
-      
-      o[i] = any( intersect(l,window) )
-    }
-  }
-  
-  return( o )
-}
-
 
 time_since_epoch <- function(d) {
   x1 <- as.POSIXct(d)
@@ -188,6 +154,11 @@ results_files = data.frame(
 
 results_holder = data.frame()
 
+expand_list_from_character = function(c) {
+  l = list(eval(parse(text=c)))
+  return(l)
+}
+
 for ( results_i in 1:nrow( results_files ) ) {
   this_result_file = ( results_files %>% pull(file_name_full) )[results_i]
   this_indicator = ( results_files %>% pull(indicator_string) )[results_i]
@@ -196,7 +167,11 @@ for ( results_i in 1:nrow( results_files ) ) {
   these_results = read.csv( this_result_file ) %>% 
     mutate( indicator = this_indicator ) %>% 
     mutate( direction = this_direction ) %>% 
-    mutate_at( vars(starts_with( "breaks." )), as.list  )
+    ungroup() %>% 
+    rowwise( ) %>%
+    # mutate( breaks.loc.pos.l = expand_list_from_character(breaks.loc.pos)) %>% 
+    # mutate( breaks.loc.neg.l = expand_list_from_character(breaks.loc.neg)) 
+    mutate_at( vars(starts_with( "breaks." )), expand_list_from_character )
   
   results_holder = results_holder %>% 
     bind_rows( these_results )
@@ -303,9 +278,11 @@ write.csv( proportion_of_practices_with_neg_breaks,
            file=glue("{out_dir}/at-least-one_neg-break.csv"))
 
 ### For each indicator, the proportion of practices with at least one
-### positive break identified within XXX months of COVID starting
+### positive break identified within XXX months of COVID starting -
+### these numbers are cumulative - i.e., if XXX is 6, then the count is
+### the number of positive breaks that occur in the first 6 months of COVID.
 
-proportion_of_practices_with_postCOVID_pos_break = data.frame()
+proportion_of_practices_with_postCOVID_pos_break_cumulative = data.frame()
 
 for ( duration in 1:12) {
   postCOVID_period = which( ( plotdata_holder %>%
@@ -315,24 +292,45 @@ for ( duration in 1:12) {
   
   this_d =
     results_holder %>%
-    filter( direction == "up") %>% 
+    filter( direction == "up") %>%
+    select( name, indicator, breaks.loc.pos ) %>% 
+    rowwise() %>% 
+    mutate( overlap = length(intersect(unlist(breaks.loc.pos),postCOVID_period) ) ) %>% 
     group_by( indicator ) %>%
-    summarise( count=sum(occurs_in_window(breaks.loc.pos,
-                                          postCOVID_period)),
-               total=n() ) %>% 
+    summarise( count=sum(overlap),
+               total=n()) %>%
     rename( !!glue("plus_{duration}mo") := count )
   
-  if ( nrow( proportion_of_practices_with_postCOVID_pos_break ) == 0 ) {
-    proportion_of_practices_with_postCOVID_pos_break = this_d
+  if ( nrow( proportion_of_practices_with_postCOVID_pos_break_cumulative ) == 0 ) {
+    proportion_of_practices_with_postCOVID_pos_break_cumulative = this_d
   } else {
-    proportion_of_practices_with_postCOVID_pos_break = proportion_of_practices_with_postCOVID_pos_break %>% 
-      inner_join( this_d, by=c("indicator","total") )
+    proportion_of_practices_with_postCOVID_pos_break_cumulative = proportion_of_practices_with_postCOVID_pos_break_cumulative %>% 
+      inner_join( this_d, by=c( "indicator", "total" ) )
   }
   
 }
-write.csv( proportion_of_practices_with_postCOVID_pos_break,
-           file=glue("{out_dir}/at-least-one_post-COVID_pos-break.csv"))
 
+write.csv( proportion_of_practices_with_postCOVID_pos_break_cumulative,
+           file=glue("{out_dir}/at-least-one_post-COVID_pos-break_cumulative.csv"))
+
+### For each indicator, the number of positive breaks in each datapoint
+
+proportion_of_practices_with_postCOVID_pos_break = results_holder %>%
+  filter( direction == "up" ) %>% 
+  select( indicator, name, breaks.loc.pos ) %>% 
+  unnest( cols = "breaks.loc.pos" ) %>% 
+  filter( !is.na( breaks.loc.pos ) ) %>% 
+  group_by( indicator, breaks.loc.pos ) %>% 
+  summarise( n=n() ) %>%
+  mutate( time = sprintf( "mo%02d", breaks.loc.pos ) ) %>% 
+  select( -breaks.loc.pos ) %>% 
+  ungroup() %>% 
+  pivot_wider( names_from = time, 
+                values_from = n ) %>% 
+  select(order(colnames(.)))
+  
+write.csv( proportion_of_practices_with_postCOVID_pos_break,
+           file=glue("{out_dir}/num-pos-break_permonth.csv"))
 
 #####################################################################
 ##################################################################### 
@@ -344,24 +342,24 @@ write.csv( proportion_of_practices_with_postCOVID_pos_break,
 results_toplot = results_holder %>% 
   filter( is.nbreak > 0 )
 
-for ( plot_i in 1:nrow( results_toplot ) ) {
-  this_indicator = ( results_toplot %>% pull(indicator) )[plot_i]
-  this_direction = ( results_toplot %>% pull(direction) )[plot_i]
-  this_code      = ( results_toplot %>% pull(name)      )[plot_i]
-  
-  print( glue( "{this_indicator} in {this_code}\n" ) )
-  
-  this_d = plotdata_holder %>%
-    filter( code == this_code,
-            indicator == this_indicator,
-            direction == this_direction )
-  
-  this_graph_file = glue("{out_dir}/CDPLOT_{this_indicator}_{this_direction}_{this_code}_plot.png")
-  
-  ggsave( this_graph_file, plot=draw_change_detection_plot( this_d ) )
-  
-}
-  
+# for ( plot_i in 1:nrow( results_toplot ) ) {
+#   this_indicator = ( results_toplot %>% pull(indicator) )[plot_i]
+#   this_direction = ( results_toplot %>% pull(direction) )[plot_i]
+#   this_code      = ( results_toplot %>% pull(name)      )[plot_i]
+#   
+#   print( glue( "{this_indicator} in {this_code}\n" ) )
+#   
+#   this_d = plotdata_holder %>%
+#     filter( code == this_code,
+#             indicator == this_indicator,
+#             direction == this_direction )
+#   
+#   this_graph_file = glue("{out_dir}/CDPLOT_{this_indicator}_{this_direction}_{this_code}_plot.png")
+#   
+#   ggsave( this_graph_file, plot=draw_change_detection_plot( this_d ) )
+#   
+# }
+#   
 
 #####################################################################
 ### Summary figure of slope intensity

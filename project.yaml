@@ -239,6 +239,13 @@ actions:
         summary: output/indicator_saturation/combined/SUMMARY_*.png
         # Rdat: output/indicator_saturation/combined/ANALYSIS_OUTPUT.Rdat
   
+  generate_indicator_saturation_plots:
+    run: r:latest analysis/generate_indicator_saturation_plots.R output/indicator_saturation output/indicator_saturation/combined
+    needs: [combine_indicator_saturation_data]
+    outputs:
+      moderately_sensitive:
+        plots: output/indicator_saturation/combined/BREAK-COUNT_*.png
+  
   run_tests:
     run: python:latest python -m pytest --junit-xml=output/pytest.xml --verbose
     outputs:

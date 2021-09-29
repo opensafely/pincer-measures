@@ -228,6 +228,9 @@ for ( results_i in 1:nrow( plotdata_files ) ) {
 
 }
 
+date_mapping = plotdata_holder %>% pull( x ) %>% unique() %>% sort
+COVID_start =  which(date_mapping=="2020-03-01") 
+
 # save( results_holder,
 #       plotdata_holder,
 #       file = glue("{fig_path_tis_analysis}/ANALYSIS_OUTPUT.RData") )
@@ -288,7 +291,7 @@ for ( duration in 1:12) {
   postCOVID_period = which( ( plotdata_holder %>%
                                 pull(x) %>%
                                 unique() %>%
-                                sort ) >= "2020-03-01" )[1:duration]
+                                sort ) >= "2020-03-01" )[1:(duration+1)]
   
   this_d =
     results_holder %>%
@@ -310,6 +313,14 @@ for ( duration in 1:12) {
   
 }
 
+
+proportion_of_practices_with_postCOVID_pos_break_cumulative = proportion_of_practices_with_postCOVID_pos_break_cumulative %>% 
+  pivot_longer( starts_with( "plus"),
+                names_to = "timetext",
+                values_to = "count" ) %>% 
+  mutate( timenum = str_remove( timetext, ".*_" ) %>% str_remove( "mo" ) %>% as.integer ) %>% 
+  mutate( month = date_mapping[timenum + COVID_start] )
+
 write.csv( proportion_of_practices_with_postCOVID_pos_break_cumulative,
            file=glue("{out_dir}/at-least-one_post-COVID_pos-break_cumulative.csv"))
 
@@ -327,7 +338,13 @@ proportion_of_practices_with_postCOVID_pos_break = results_holder %>%
   ungroup() %>% 
   pivot_wider( names_from = time, 
                 values_from = n ) %>% 
-  select(order(colnames(.)))
+  select(order(colnames(.))) %>% 
+  pivot_longer( starts_with( "mo"),
+                names_to = "timetext",
+                values_to = "count" ) %>%
+  mutate( timenum = str_remove( timetext, "mo0?" ) %>% as.integer ) %>%
+  mutate( count = replace_na( count, 0 ) ) %>% 
+  mutate( month = date_mapping[ timenum ] ) 
   
 write.csv( proportion_of_practices_with_postCOVID_pos_break,
            file=glue("{out_dir}/num-pos-break_permonth.csv"))
@@ -346,7 +363,13 @@ proportion_of_practices_with_negtCOVID_neg_break = results_holder %>%
   ungroup() %>% 
   pivot_wider( names_from = time, 
                values_from = n ) %>% 
-  select(order(colnames(.)))
+  select(order(colnames(.))) %>% 
+  pivot_longer( starts_with( "mo"),
+                names_to = "timetext",
+                values_to = "count" ) %>%
+  mutate( timenum = str_remove( timetext, "mo0?" ) %>% as.integer ) %>%
+  mutate( count = replace_na( count, 0 ) ) %>% 
+  mutate( month = date_mapping[ timenum ] )
 
 write.csv( proportion_of_practices_with_negtCOVID_neg_break,
            file=glue("{out_dir}/num-neg-break_permonth.csv"))

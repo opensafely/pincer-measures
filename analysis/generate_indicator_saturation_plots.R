@@ -105,7 +105,7 @@ ggplot( data = neg_break_permonth.d,
   geom_point( colour = colour_scheme["neg"] ) + 
   geom_line( colour = colour_scheme["neg"] ) +
   scale_x_date( date_labels = "%b %y", breaks = xbreaks ) +
-  labs( title= "Count of negitive breaks per month (from the index date)",
+  labs( title= "Count of negative breaks per month (from the index date)",
         x = "Months relative to index date",
         y = "Number of practices with negative break identified in this month" ) +
   theme_bw() +
@@ -140,7 +140,7 @@ ggplot( data = both_break_permonth.d,
   geom_line() +
   scale_x_date( date_labels = "%b %y", breaks = xbreaks ) +
   scale_colour_manual( values=colour_scheme ) +
-  labs( title= "Count of negitive breaks per month (from the index date)",
+  labs( title= "Count of negative breaks per month (from the index date)",
         x = "Months relative to index date",
         y = "Number of practices with breaks identified in this month" ) +
   theme_bw( ) +

@@ -85,7 +85,7 @@ ggplot( data = pos_break_cumulative.d,
   facet_wrap( ~indicator ) +
   theme( axis.text.x = element_text(angle=90, hjust = 1))
 
-ggsave(  glue("{out_dir}/BREAK-COUNT_line-cumulative.png") )
+ggsave(  glue("{out_dir}/BREAK-COUNT_POS_line-cumulative.png") )
 
 ### As histogram
 ggplot( data = pos_break_cumulative.d,
@@ -105,7 +105,7 @@ ggplot( data = pos_break_cumulative.d,
   facet_wrap( ~indicator ) +
   theme( axis.text.x = element_text(angle=90, hjust = 1))
 
-ggsave(  glue("{out_dir}/BREAK-COUNT_histogram-cumulative.png") )
+ggsave(  glue("{out_dir}/BREAK-COUNT_POS_histogram-cumulative.png") )
 
 ### As stacked bar chart
 ggplot( data = pos_break_cumulative.d,
@@ -123,7 +123,7 @@ ggplot( data = pos_break_cumulative.d,
         y = "Number of positive breaks identified in this month" ) +
   theme_bw() 
 
-ggsave( glue("{out_dir}/BREAK-COUNT_stacked-histogram-cumulative.png") )
+ggsave( glue("{out_dir}/BREAK-COUNT_POS_stacked-histogram-cumulative.png") )
 
 # ### As ribbon chart
 # ggplot( data = pos_break_cumulative.d,
@@ -181,7 +181,7 @@ ggplot( data = pos_break_permonth.d,
   theme( axis.text.x = element_text(angle=90, hjust = 1)) +
   facet_wrap( ~indicator )
 
-ggsave(  glue("{out_dir}/BREAK-COUNT_line-permonth.png") )
+ggsave(  glue("{out_dir}/BREAK-COUNT_POS_line-permonth.png") )
 
 ###
 ### Negative breaks
@@ -219,13 +219,13 @@ ggplot( data = neg_break_permonth.d,
   theme( axis.text.x = element_text(angle=90, hjust = 1)) +
   facet_wrap( ~indicator )
 
-ggsave(  glue("{out_dir}/BREAK-COUNT_line-permonth.png") )
+ggsave(  glue("{out_dir}/BREAK-COUNT_NEG_line-permonth.png") )
 
 ###
 ### Combined plot
 ### 
 
-all_break_permonth.d = pos_break_permonth.d %>%
+both_break_permonth.d = pos_break_permonth.d %>%
   select( indicator, count, timenum ) %>% 
   rename( pos = count ) %>% 
   inner_join( neg_break_permonth.d %>% select( indicator, count, timenum ),
@@ -235,7 +235,7 @@ all_break_permonth.d = pos_break_permonth.d %>%
                 names_to = "direction",
                 values_to = "count" )
 
-ggplot( data = all_break_permonth.d,
+ggplot( data = both_break_permonth.d,
         aes( x = timenum,
              y = count,
              group = direction,
@@ -251,3 +251,8 @@ ggplot( data = all_break_permonth.d,
   theme_bw( ) +
   theme( axis.text.x = element_text(angle=90, hjust = 1)) +
   facet_wrap( ~indicator )
+
+ggsave(  glue("{out_dir}/BREAK-COUNT_BOTH_line-permonth.png") )
+
+
+

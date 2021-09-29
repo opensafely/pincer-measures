@@ -88,7 +88,7 @@ ggplot( data = pos_break_cumulative.d,
   facet_wrap( ~indicator ) +
   theme( axis.text.x = element_text(angle=90, hjust = 1, vjust=0.5))
 
-ggsave(  glue("{out_dir}/BREAK-COUNT_POS_line-cumulative.png") )
+ggsave(glue("{out_dir}/BREAK-COUNT_POS_line-cumulative.png"), width = 12, height = 6)
 
 ### As histogram
 ggplot( data = pos_break_cumulative.d,
@@ -108,7 +108,7 @@ ggplot( data = pos_break_cumulative.d,
   facet_wrap( ~indicator ) +
   theme( axis.text.x = element_text(angle=90, hjust = 1, vjust=0.5))
 
-ggsave(  glue("{out_dir}/BREAK-COUNT_POS_histogram-cumulative.png") )
+ggsave(glue("{out_dir}/BREAK-COUNT_POS_histogram-cumulative.png"), width = 12, height = 6)
 
 ### As stacked bar chart
 ggplot( data = pos_break_cumulative.d,
@@ -184,7 +184,7 @@ ggplot( data = pos_break_permonth.d,
   theme( axis.text.x = element_text(angle=90, hjust = 1, vjust=0.5)) +
   facet_wrap( ~indicator )
 
-ggsave(  glue("{out_dir}/BREAK-COUNT_POS_line-permonth.png") )
+ggsave(glue("{out_dir}/BREAK-COUNT_POS_line-permonth.png"), width = 12, height = 6)
 
 ###
 ### Negative breaks
@@ -221,7 +221,7 @@ ggplot( data = neg_break_permonth.d,
   theme( axis.text.x = element_text(angle=90, hjust = 1, vjust=0.5)) +
   facet_wrap( ~indicator )
 
-ggsave(  glue("{out_dir}/BREAK-COUNT_NEG_line-permonth.png") )
+ggsave(glue("{out_dir}/BREAK-COUNT_NEG_line-permonth.png"), width = 12, height = 6)
 
 ###
 ### Combined plot
@@ -258,7 +258,7 @@ ggplot( data = both_break_permonth.d,
   theme( axis.text.x = element_text(angle=90, hjust = 1, vjust=0.5)) +
   facet_wrap( ~indicator )
 
-ggsave(  glue("{out_dir}/BREAK-COUNT_BOTH_line-permonth.png") )
+ggsave(glue("{out_dir}/BREAK-COUNT_BOTH_line-permonth.png"), width = 12, height = 6)
 
 
 

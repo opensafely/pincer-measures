@@ -8,6 +8,7 @@ library(ggplot2)
 library(lubridate)
 library(readr)
 library(stringr)
+library(RColorBrewer)
 # library(ggstream)
 
 ##### Retrive arguments from Python command

@@ -332,6 +332,26 @@ proportion_of_practices_with_postCOVID_pos_break = results_holder %>%
 write.csv( proportion_of_practices_with_postCOVID_pos_break,
            file=glue("{out_dir}/num-pos-break_permonth.csv"))
 
+### For each indicator, the number of negative breaks in each datapoint
+
+proportion_of_practices_with_negtCOVID_neg_break = results_holder %>%
+  filter( direction == "up" ) %>% 
+  select( indicator, name, breaks.loc.neg ) %>% 
+  unnest( cols = "breaks.loc.neg" ) %>% 
+  filter( !is.na( breaks.loc.neg ) ) %>% 
+  group_by( indicator, breaks.loc.neg ) %>% 
+  summarise( n=n() ) %>%
+  mutate( time = sprintf( "mo%02d", breaks.loc.neg ) ) %>% 
+  select( -breaks.loc.neg ) %>% 
+  ungroup() %>% 
+  pivot_wider( names_from = time, 
+               values_from = n ) %>% 
+  select(order(colnames(.)))
+
+write.csv( proportion_of_practices_with_negtCOVID_neg_break,
+           file=glue("{out_dir}/num-neg-break_permonth.csv"))
+
+
 #####################################################################
 ##################################################################### 
 ### Recording interesting counts ####################################

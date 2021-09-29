@@ -143,8 +143,12 @@ ggsave( glue("{out_dir}/BREAK-COUNT_stacked-histogram-cumulative.png") )
 
 
 #####################################################################
-### STEP 2: READING IN THE CUMULATIVE ANALYSIS OUTPUT AND GENERATING PLOTS
+### STEP 2: READING IN THE PER MONTH OUTPUT AND GENERATING PLOTS
 #####################################################################
+
+###
+### Negative breaks
+###
 
 pos_break_permonth.in = read.csv( glue("{out_dir}/num-pos-break_permonth.csv") )
 
@@ -160,7 +164,6 @@ xbreaks = seq( pos_break_permonth.d %>% pull(timenum) %>% min(na.rm=TRUE),
                pos_break_permonth.d %>% pull(timenum) %>% max(na.rm=TRUE),
                by=1 )
 
-### As line plot
 ggplot( data = pos_break_permonth.d,
         aes( x = timenum,
              y = count,
@@ -172,7 +175,7 @@ ggplot( data = pos_break_permonth.d,
   labs( title= "Count of positive breaks per month (from the index date)",
         subtitle = glue("{length(removed_indicators)} indicators \\
                         ({paste(removed_indicators,collapse=',')}) removed due to no counts" ),
-        x = "Months relative to 03/20",
+        x = "Months relative to index date",
         y = "Number of positive breaks identified in this month" ) +
   theme_bw() +
   theme( axis.text.x = element_text(angle=90, hjust = 1)) +
@@ -180,3 +183,71 @@ ggplot( data = pos_break_permonth.d,
 
 ggsave(  glue("{out_dir}/BREAK-COUNT_line-permonth.png") )
 
+###
+### Negative breaks
+###
+
+neg_break_permonth.in = read.csv( glue("{out_dir}/num-neg-break_permonth.csv") )
+
+neg_break_permonth.d = neg_break_permonth.in[,c(-1)] %>% 
+  pivot_longer( starts_with( "mo"),
+                names_to = "timetext",
+                values_to = "count" ) %>% 
+  mutate( timenum = str_remove( timetext, "mo0?" ) %>% as.integer ) %>% 
+  mutate( count = replace_na( count, 0 ) ) %>% 
+  filter( ! indicator %in% removed_indicators ) 
+
+xbreaks = seq( neg_break_permonth.d %>% pull(timenum) %>% min(na.rm=TRUE),
+               neg_break_permonth.d %>% pull(timenum) %>% max(na.rm=TRUE),
+               by=1 )
+
+### As line plot
+ggplot( data = neg_break_permonth.d,
+        aes( x = timenum,
+             y = count,
+             group = indicator,
+             col = indicator ) ) +
+  geom_point() + 
+  geom_line() +
+  scale_x_continuous( breaks = xbreaks) +
+  labs( title= "Count of negitive breaks per month (from the index date)",
+        subtitle = glue("{length(removed_indicators)} indicators \\
+                        ({paste(removed_indicators,collapse=',')}) removed due to no counts" ),
+        x = "Months relative to index date",
+        y = "Number of negitive breaks identified in this month" ) +
+  theme_bw() +
+  theme( axis.text.x = element_text(angle=90, hjust = 1)) +
+  facet_wrap( ~indicator )
+
+ggsave(  glue("{out_dir}/BREAK-COUNT_line-permonth.png") )
+
+###
+### Combined plot
+### 
+
+all_break_permonth.d = pos_break_permonth.d %>%
+  select( indicator, count, timenum ) %>% 
+  rename( pos = count ) %>% 
+  inner_join( neg_break_permonth.d %>% select( indicator, count, timenum ),
+              by=c("indicator","timenum")) %>% 
+  rename( neg = count ) %>% 
+  pivot_longer( c(pos, neg),
+                names_to = "direction",
+                values_to = "count" )
+
+ggplot( data = all_break_permonth.d,
+        aes( x = timenum,
+             y = count,
+             group = direction,
+             col = direction ) ) +
+  geom_point() + 
+  geom_line() +
+  scale_x_continuous( breaks = xbreaks) +
+  labs( title= "Count of negitive breaks per month (from the index date)",
+        subtitle = glue("{length(removed_indicators)} indicators \\
+                        ({paste(removed_indicators,collapse=',')}) removed due to no counts" ),
+        x = "Months relative to index date",
+        y = "Number of breaks identified in this month" ) +
+  theme_bw( ) +
+  theme( axis.text.x = element_text(angle=90, hjust = 1)) +
+  facet_wrap( ~indicator )

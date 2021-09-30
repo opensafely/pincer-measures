@@ -18,13 +18,27 @@ for file in OUTPUT_DIR.iterdir():
     if match_input_files(file.name):
 
         df = pd.read_feather(OUTPUT_DIR / file.name)
-        
+        date = get_date_input_file(file.name)
         practice_list.extend(np.unique(df['practice']))
 
 
         for indicator in indicators_list:
-            df_subset = df[df[f'indicator_{indicator}_numerator']==1]
-            # get unique patients
+            
+            if indicator in ["e", "f"]:
+                df_e_f = pd.read_feather(OUTPUT_DIR / f'indicator_e_f_{date}.feather')
+                
+                df_subset = df_e_f[df_e_f[f'indicator_{indicator}_numerator']==1]
+            
+            elif indicator == "li":
+                df_li = pd.read_feather(OUTPUT_DIR / f'input_lithium_{date}.feather')
+                
+                df_subset = df_li[df_li[f'indicator_{indicator}_numerator']==1]
+
+            else:
+                df_subset = df[df[f'indicator_{indicator}_numerator']==1]
+                # get unique patients
+            
+            
             patients = list(df_subset['patient_id'])
 
             if indicator not in patient_dict:
@@ -58,7 +72,6 @@ counts_dict = {}
 for indicator in indicators_list:
     counts_dict[indicator] = {}
     df = pd.read_csv(OUTPUT_DIR / f'measure_indicator_{indicator}_rate.csv')
-    
     percentage_practices = get_percentage_practices(df)
     num_events = get_number_events(df, indicator)
     num_patients = get_number_patients(indicator)

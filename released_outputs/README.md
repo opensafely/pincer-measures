@@ -20,4 +20,7 @@
     * [output/figures/plot_me_no_lft.jpeg](output/figures/plot_me_no_lft.jpeg)
     * [output/figures/plot_monitoring_composite.jpeg](output/figures/plot_monitoring_composite.jpeg)
     * [output/figures/plot_other_prescribing_composite.jpeg](output/figures/plot_other_prescribing_composite.jpeg)
+  * output/indicator_saturation
+    * output/indicator_saturation/combined
+      * [output/indicator_saturation/combined/BREAK-COUNT_BOTH_line-permonth.png](output/indicator_saturation/combined/BREAK-COUNT_BOTH_line-permonth.png)
   * [output/report.html](output/report.html)

@@ -89,7 +89,7 @@ actions:
   
   generate_summary_counts:
     run: python:latest python analysis/summary_statistics.py
-    needs: [join_ethnicity_region, generate_measures, generate_measures_demographics]
+    needs: [join_ethnicity_region, generate_measures, generate_measures_demographics, calculate_numerators]
     outputs:
       highly_sensitive:
         patient_count: output/patient_count.json

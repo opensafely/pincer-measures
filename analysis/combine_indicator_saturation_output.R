@@ -286,17 +286,21 @@ per_indicator_per_practice_pos_breaks = results_holder %>%
   filter( direction == "up" ) %>% 
   select( indicator, name, breaks.loc.pos ) %>% 
   unnest( cols = "breaks.loc.pos" ) %>% 
-  filter( !is.na( breaks.loc.pos ) ) %>% 
+  # filter( !is.na( breaks.loc.pos ) ) %>% 
   group_by( indicator, name ) %>% 
-  summarise( pos_count = length(unique(breaks.loc.pos)) )
+  summarise( neg_count = ifelse(is.na(breaks.loc.pos),
+                                0,
+                                length(unique(breaks.loc.pos)) ) )
 
 per_indicator_per_practice_neg_breaks = results_holder %>%
   filter( direction == "up" ) %>% 
   select( indicator, name, breaks.loc.neg ) %>% 
   unnest( cols = "breaks.loc.neg" ) %>% 
-  filter( !is.na( breaks.loc.neg ) ) %>% 
+  # filter( !is.na( breaks.loc.neg ) ) %>% 
   group_by( indicator, name ) %>% 
-  summarise( neg_count = length(unique(breaks.loc.neg)) )
+  summarise( neg_count = ifelse(is.na(breaks.loc.neg),
+                                0,
+                                length(unique(breaks.loc.neg)) ) )
 
 per_indicator_per_practice_breaks = per_indicator_per_practice_pos_breaks %>% 
   full_join( per_indicator_per_practice_neg_breaks,

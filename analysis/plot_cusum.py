@@ -48,9 +48,8 @@ if not (OUTPUT_DIR / 'cusum/alerts').exists():
 with open(OUTPUT_DIR / 'cusum/cusum_results.json') as file:
     # Load its content and make a new dictionary
     data = json.load(file)
-
+    
     for indicator_key, indicator_value in data.items():
-        print(indicator_key)
         
        
         for practice_key, practice_value in indicator_value.items():
@@ -75,3 +74,27 @@ with open(OUTPUT_DIR / 'cusum/cusum_results.json') as file:
                 plot_median(percentile_array, practice_value, f'alerts_indicator_{indicator_key}_{practice_key}.jpeg')
                 break
         
+
+fig, axs = plt.subplots(7, 2)
+x = np.arange(0, 7, 1)
+y = np.arange(0, 2, 1)
+axs_list = [(i, j) for i in x for j in y]
+fig, axs = plt.subplots(7, 2, figsize=(30,20), sharex='col')
+
+z=0
+with open(OUTPUT_DIR / 'cusum/cusum_alerts_by_date.json') as file:
+    data = json.load(file)
+    
+    
+    for indicator_key, indicator_value in data.items():
+        print(z)
+        df = pd.DataFrame.from_dict(data[indicator_key], orient='index', columns=['count']).reset_index()
+    
+        df = df.sort_values(['index'])
+        axs[axs_list[z]].plot(df['index'], df['count'])
+        axs[axs_list[z]].set_title(f'Indicator {indicator_key}', size=20)
+        axs[axs_list[z]].set_ylabel('Count', size=14)
+        z+=1
+        
+plt.gcf().autofmt_xdate(rotation=90)
+fig.savefig('output/a.png')

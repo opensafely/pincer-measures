@@ -156,6 +156,9 @@ results_holder = data.frame()
 
 expand_list_from_character = function(c) {
   l = list(eval(parse(text=c)))
+  if ( length(l) == 0 ){
+    l=NA
+  }
   return(l)
 }
 

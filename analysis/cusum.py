@@ -253,10 +253,10 @@ for i in indicators_list:
             for alert in results['alert']:
                 date = dates[alert]
                 
-                if results['alert_percentile_pos'][alert] == np.nan:
+                if results['alert_percentile_pos'][alert]:
                     alerts_by_date['positive'][i][date] +=1
                 
-                elif results['alert_percentile_neg'][alert] != np.nan:
+                elif results['alert_percentile_neg'][alert]:
                     alerts_by_date['negative'][i][date] +=1
                 
                 else:

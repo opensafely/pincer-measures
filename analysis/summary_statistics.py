@@ -72,12 +72,13 @@ counts_dict = {}
 for indicator in indicators_list:
     counts_dict[indicator] = {}
     df = pd.read_csv(OUTPUT_DIR / f'measure_indicator_{indicator}_rate.csv')
-    percentage_practices = get_percentage_practices(df)
+    num_practices, percentage_practices = get_percentage_practices(df)
     num_events = get_number_events(df, indicator)
     num_patients = get_number_patients(indicator)
 
     counts_dict[indicator]['events'] = num_events
     counts_dict[indicator]['patients'] = num_patients
+    counts_dict[indicator]['num_practices'] = num_practices
     counts_dict[indicator]['percent_practice'] = percentage_practices
 
 

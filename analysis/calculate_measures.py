@@ -2,12 +2,15 @@ import pandas as pd
 import numpy as np
 from utilities import OUTPUT_DIR, match_input_files, get_date_input_file, calculate_rate, redact_small_numbers
 from study_definition import indicators_list
+from collections import Counter
 
 #these are not generated in the main generate measures action
 additional_indicators = ["e","f", "li"]
 indicators_list.extend(additional_indicators)
 
-demographics = ["age_band", "sex", "region", "imd", "care_home_type"]
+demographics = ["age_band", "sex", "region", "imd", "care_home_type", "ethnicity"]
+demographics_dict = {}
+
 
 if __name__ == "__main__":
 
@@ -15,6 +18,7 @@ if __name__ == "__main__":
     df_dict_additional = {i:[] for i in additional_indicators}
     for d in demographics:
         df_dict[d] = {}
+        demographics_dict[d]={}
         for i in indicators_list:
             df_dict[d][i] = []
 
@@ -53,7 +57,17 @@ if __name__ == "__main__":
                 df_dict_additional[additional_indicator].append(event)
 
 
+            
+
+
             for d in demographics:
+                
+                #extract demographic information
+                def get_demographics(row):
+                    demographics_dict[d][row['patient_id']] = row[d]
+                    
+                df.apply(lambda row: get_demographics(row) , axis=1)
+                
                 for i in indicators_list:
                     if i in ["me_no_fbc", "me_no_lft"]:
                         denominator = "indicator_me_denominator"
@@ -76,4 +90,16 @@ if __name__ == "__main__":
     for indicator_key, indicator_value in df_dict_additional.items():
         df_combined = pd.concat(indicator_value, axis=0)
         df_combined.to_csv(OUTPUT_DIR / f"measure_indicator_{indicator_key}_rate.csv")
-    
+
+
+
+    d_list = []
+    for d in demographics:
+        counts = Counter(demographics_dict[d].values())
+        row = pd.DataFrame(index =counts.keys(), columns=[d])
+        for key, value in counts.items():
+            row[d][key] = value
+        d_list.append(row)
+
+    demographics_df = pd.concat(d_list, keys=demographics)
+    demographics_df.to_csv(OUTPUT_DIR / "demographics_summary.csv")

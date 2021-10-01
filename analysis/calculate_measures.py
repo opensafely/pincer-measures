@@ -94,13 +94,13 @@ if __name__ == "__main__":
 
 
 
-d_list = []
-for d in demographics:
-    counts = Counter(demographics_dict[d].values())
-    row = pd.DataFrame(index =counts.keys(), columns=[d])
-    for key, value in counts.items():
-        row[d][key] = value
-    d_list.append(row)
+    d_list = []
+    for d in demographics:
+        counts = Counter(demographics_dict[d].values())
+        row = pd.DataFrame(index =counts.keys(), columns=[d])
+        for key, value in counts.items():
+            row[d][key] = value
+        d_list.append(row)
 
-demographics_df = pd.concat(d_list, keys=demographics)
-demographics_df.to_csv(OUTPUT_DIR / "demographics_summary.csv")
+    demographics_df = pd.concat(d_list, keys=demographics)
+    demographics_df.to_csv(OUTPUT_DIR / "demographics_summary.csv")

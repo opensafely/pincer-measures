@@ -571,3 +571,93 @@ def get_number_patients(measure_id):
     with open(OUTPUT_DIR / "patient_count.json") as f:
         d = json.load(f)
     return d["num_patients"][measure_id]
+
+def deciles_chart_subplots(
+    df,
+    period_column=None,
+    column=None,
+    title="",
+    ylabel="",
+    show_outer_percentiles=True,
+    show_legend=True,
+    ax=None,
+):
+    """period_column must be dates / datetimes"""
+    sns.set_style("whitegrid", {"grid.color": ".9"})
+    
+    
+    df = compute_deciles(df, period_column, column, show_outer_percentiles)
+ 
+    linestyles = {
+        "decile": {
+            "line": "b--",
+            "linewidth": 1,
+            "label": "decile",
+        },
+        "median": {
+            "line": "b-",
+            "linewidth": 1.5,
+            "label": "median",
+        },
+        "percentile": {
+            "line": "b:",
+            "linewidth": 0.8,
+            "label": "1st-9th, 91st-99th percentile",
+        },
+    }
+    label_seen = []
+    for percentile in range(1, 100):  # plot each decile line
+        data = df[df["percentile"] == percentile]
+        add_label = False
+
+        if percentile == 50:
+            style = linestyles["median"]
+            add_label = True
+        elif show_outer_percentiles and (percentile < 10 or percentile > 90):
+            style = linestyles["percentile"]
+            if "percentile" not in label_seen:
+                label_seen.append("percentile")
+                add_label = True
+        else:
+            style = linestyles["decile"]
+            if "decile" not in label_seen:
+                label_seen.append("decile")
+                add_label = True
+        if add_label:
+            label = style["label"]
+        else:
+            label = "_nolegend_"
+
+        ax.plot(
+            data[period_column],
+            data[column],
+            style["line"],
+            linewidth=style["linewidth"],
+            label=label,
+        )
+    ax.set_ylabel(ylabel, size=14)
+    if title:
+        ax.set_title(title, size=20)
+    # set ymax across all subplots as largest value across dataset
+    ax.set_ylim([0, df[column].max() * 1.05])
+    ax.tick_params(labelsize=14)
+    ax.set_xlim(
+        [df[period_column].min(), df[period_column].max()]
+    )  # set x axis range as full date range
+    ax.tick_params(axis='x', labelrotation= 90)
+    ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter("%B %Y"))
+    if show_legend:
+        ax.legend(
+            bbox_to_anchor=(1.5, 1),  # arbitrary location in axes
+            #  specified as (x0, y0, w, h)
+            loc=UPPER_RIGHT,  # which part of the bounding box should
+            #  be placed at bbox_to_anchor
+            ncol=1,  # number of columns in the legend
+            fontsize=28,
+            borderaxespad=0.0,
+        )  # padding between the axes and legend
+        #  specified in font-size units
+    # rotates and right aligns the x labels, and moves the bottom of the
+    # axes up to make room for them
+    plt.gcf().autofmt_xdate(rotation=90)
+    return plt

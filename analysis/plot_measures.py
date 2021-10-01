@@ -16,6 +16,36 @@ indicators_list.extend(additional_indicators)
 if not (OUTPUT_DIR / 'figures').exists():
     os.mkdir(OUTPUT_DIR / 'figures')
 
+
+
+#set up plots for combined decile charts
+gi_bleed_x = np.arange(0, 2, 1)
+gi_bleed_y = np.arange(0, 3, 1)
+gi_bleed_axs_list = [(i, j) for i in gi_bleed_x for j in gi_bleed_y]
+gi_bleed_fig, gi_bleed_axs = plt.subplots(2, 3, figsize=(30,20), sharex='col')
+
+gi_bleed_indicators = ["a", "b", "c", "d", "e", "f"]
+
+
+prescribing_y = np.arange(0, 3, 1)
+prescribing_axs_list = [i for i in prescribing_y]
+
+prescribing_fig, prescribing_axs = plt.subplots(1, 3, figsize=(30,10), sharex='col')
+
+prescribing_indicators = ["g", "i", "k"]
+
+monitoring_x = np.arange(0, 2, 1)
+monitoring_y = np.arange(0, 3, 1)
+monitoring_axs_list = [(i, j) for i in monitoring_x for j in monitoring_y]
+monitoring_axs_list.remove((0, 2))
+monitoring_fig, monitoring_axs = plt.subplots(2, 3, figsize=(30,20), sharex='col')
+monitoring_fig.delaxes(monitoring_axs[0, 2])
+
+monitoring_indicators = ["ac", "me_no_fbc", "me_no_lft", "li", "am"]
+
+
+
+
 for i in indicators_list:
     # indicator plots
     df = pd.read_csv(OUTPUT_DIR / f"measure_indicator_{i}_rate.csv", parse_dates=["date"])
@@ -37,7 +67,78 @@ for i in indicators_list:
 
     deciles_chart(df, filename=f"plot_{i}", period_column="date", column="rate", count_column = f"indicator_{i}_numerator",title=f"Decile Chart Indicator {i}", ylabel="Proportion")
 
+    #gi bleed
+    if i in gi_bleed_indicators:
+        ind = gi_bleed_indicators.index(i)
+
+        if gi_bleed_axs_list[ind] == (0, 2):
+            show_legend = True
+        
+        else:
+            show_legend=False
+            
+            
+        
+        deciles_chart_subplots(df,
+            period_column='date',
+            column='rate',
+            title=f'Indicator {i}',
+            ylabel="Proportion",
+            show_outer_percentiles=False,
+            show_legend=show_legend,
+            ax=gi_bleed_axs[gi_bleed_axs_list[ind]])
     
+    #prescribing
+
+    if i in prescribing_indicators:
+        ind = prescribing_indicators.index(i)
+        print(ind)
+
+        if prescribing_axs_list[ind] == 2:
+            show_legend = True
+        
+        else:
+            show_legend=False
+            
+    
+        
+        deciles_chart_subplots(df,
+            period_column='date',
+            column='rate',
+            title=f'Indicator {i}',
+            ylabel="Proportion",
+            show_outer_percentiles=False,
+            show_legend=show_legend,
+            ax=prescribing_axs[prescribing_axs_list[ind]])
+    
+    #monitoring
+
+    if i in monitoring_indicators:
+        ind = monitoring_indicators.index(i)
+
+        if monitoring_axs_list[ind] == (0, 1):
+            show_legend = True
+        
+        else:
+            show_legend=False
+            
+            
+        
+        deciles_chart_subplots(df,
+            period_column='date',
+            column='rate',
+            title=f'Indicator {i}',
+            ylabel="Proportion",
+            show_outer_percentiles=False,
+            show_legend=show_legend,
+            ax=monitoring_axs[monitoring_axs_list[ind]])
+    
+    
+    
+
+
+
+
 
     # demographic plots
     for d in demographics:
@@ -108,3 +209,11 @@ for i in composite_indicators:
     df["rate"] = (df["count"] / df["denominator"])
     plot_measures(df = df, filename=f"plot_{i}_composite", title=f"{i} composite indicator",  column_to_plot = "rate", y_label = 'Proportion', as_bar=False, category = "num_indicators")
 
+
+
+
+gi_bleed_fig.savefig('output/figures/combined_plot_gi_bleed.png')
+plt.clf()
+prescribing_fig.savefig('output/figures/combined_plot_prescribing.png')
+plt.clf()
+monitoring_fig.savefig('output/figures/combined_plot_monitoring.png')

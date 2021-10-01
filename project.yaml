@@ -103,6 +103,7 @@ actions:
     outputs:
       moderately_sensitive:
         counts: output/figures/plot_*.jpeg
+        combined: output/figures/combined_plot_*.png
 
   cusum:
     run: python:latest python analysis/cusum.py

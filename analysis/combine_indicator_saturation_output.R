@@ -155,10 +155,15 @@ results_files = data.frame(
 results_holder = data.frame()
 
 expand_list_from_character = function(c) {
-  l = list(eval(parse(text=c)))
-  if ( length(l) == 0 ){
-    l=NA
+  l = 0
+  
+  if ( !is.na(l) ) {
+    l = list(eval(parse(text=c)))
+    if ( length(l) == 0 ){
+      l=0
+    }
   }
+  
   return(l)
 }
 

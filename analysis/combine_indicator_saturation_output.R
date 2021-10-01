@@ -282,15 +282,19 @@ write.csv( proportion_of_practices_with_neg_breaks,
 
 ### For each practice, how many positive and negative breaks
 
+count_breaks = function( b ) {
+  total = 0
+  if ( ! any( is.na(b) )) total = length(unique(b))
+  return( total )
+}
+
 per_indicator_per_practice_pos_breaks = results_holder %>%
   filter( direction == "up" ) %>% 
   select( indicator, name, breaks.loc.pos ) %>% 
   unnest( cols = "breaks.loc.pos" ) %>% 
   # filter( !is.na( breaks.loc.pos ) ) %>% 
-  group_by( indicator, name ) %>% 
-  summarise( neg_count = ifelse(is.na(breaks.loc.pos),
-                                0,
-                                length(unique(breaks.loc.pos)) ) )
+  group_by( indicator, name ) %>%
+  summarise( pos_count = count_breaks(breaks.loc.pos) )
 
 per_indicator_per_practice_neg_breaks = results_holder %>%
   filter( direction == "up" ) %>% 
@@ -298,9 +302,8 @@ per_indicator_per_practice_neg_breaks = results_holder %>%
   unnest( cols = "breaks.loc.neg" ) %>% 
   # filter( !is.na( breaks.loc.neg ) ) %>% 
   group_by( indicator, name ) %>% 
-  summarise( neg_count = ifelse(is.na(breaks.loc.neg),
-                                0,
-                                length(unique(breaks.loc.neg)) ) )
+  summarise( neg_count = count_breaks(breaks.loc.neg) )
+
 
 per_indicator_per_practice_breaks = per_indicator_per_practice_pos_breaks %>% 
   full_join( per_indicator_per_practice_neg_breaks,

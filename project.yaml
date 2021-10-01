@@ -112,6 +112,7 @@ actions:
       moderately_sensitive:
         cusum: output/cusum/cusum_results.json
         alerts: output/cusum/cusum_alerts_summary.json
+        by_date: output/cusum/cusum_alerts_by_date.json
   
   plot_cusum:
     run: python:latest python analysis/plot_cusum.py
@@ -120,6 +121,7 @@ actions:
       moderately_sensitive:
         cusum: output/cusum/cusum/cusum_indicator_*.jpeg
         alert: output/cusum/alerts/alerts_indicator_*.jpeg
+        combined_cusum: output/cusum/combined_cusum_count.png
   
   generate_notebook:
     run: jupyter:latest jupyter nbconvert /workspace/analysis/report.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input

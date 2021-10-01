@@ -156,6 +156,9 @@ results_holder = data.frame()
 
 expand_list_from_character = function(c) {
   l = list(eval(parse(text=c)))
+  if ( length(l) == 0 ){
+    l=NA
+  }
   return(l)
 }
 
@@ -307,7 +310,9 @@ per_indicator_per_practice_neg_breaks = results_holder %>%
 
 per_indicator_per_practice_breaks = per_indicator_per_practice_pos_breaks %>% 
   full_join( per_indicator_per_practice_neg_breaks,
-             by=c( "indicator", "name" ) )
+             by=c( "indicator", "name" ) ) %>% 
+  mutate( pos_count = replace_na( pos_count, 0 )) %>% 
+  mutate( pos_count = replace_na( pos_count, 0 ))
 
 write.csv( per_indicator_per_practice_breaks,
            file=glue("{out_dir}/BREAK-COUNT_per_indicator_per_practice.csv"))

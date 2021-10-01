@@ -156,7 +156,13 @@ ggsave(glue("{out_dir}/BREAK-COUNT_BOTH_line-permonth.png"), width = 12, height 
 
 break_matrix.d_in = read.csv( glue("{out_dir}/BREAK-COUNT_per_indicator_per_practice.csv") )
 
+### The as.integer() and replace_na() functions here handle those instances
+### where the count should be zero due to no breaks.
 break_matrix.d = break_matrix.d_in %>% 
+  mutate( pos_count = suppressWarnings(as.integer(pos_count)) ) %>% 
+  mutate( neg_count = suppressWarnings(as.integer(neg_count)) ) %>% 
+  mutate( pos_count = replace_na(pos_count,0) ) %>% 
+  mutate( neg_count = replace_na(neg_count,0) ) %>% 
   group_by( indicator, pos_count, neg_count ) %>% 
   summarise( n=n() )
 
@@ -205,8 +211,6 @@ for ( this_indicator in break_matrix.d_in %>% pull( indicator ) %>% unique ) {
   
 }
   
-
-
 
 ###
 ### Generating a selection of indicator_saturation_plots 

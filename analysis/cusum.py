@@ -204,6 +204,7 @@ indicators_list.extend(additional_indicators)
 
 num_alerts = {}
 
+
 for i in indicators_list:
     num_alerts[i] = {}
     num_alerts[i]['positive'] = 0
@@ -211,6 +212,10 @@ for i in indicators_list:
     num_alerts[i]['any'] = 0
 
     df = pd.read_csv(OUTPUT_DIR / f'measure_indicator_{i}_rate.csv')
+    dates = df['date'].unique()
+    for date in dates:
+        num_alerts[i][date] = 0
+
     df = df.replace(np.inf, np.nan)
     
     df = df[df['value'].notnull()]
@@ -234,6 +239,12 @@ for i in indicators_list:
         results = cs.work()
 
         alert=False
+
+        if len(results['alert']) >0:
+            for alert in results['alert']:
+                date = dates[alert]
+                num_alerts[i][date] +=1
+
 
         # if there is a value in positive alerts add 1 to count and positive count
         if not all(i is None for i in results['alert_percentile_pos']):

@@ -9,6 +9,7 @@ library(lubridate)
 library(readr)
 library(stringr)
 library(RColorBrewer)
+library(viridis)
 # library(ggstream)
 
 ##### Retrive arguments from Python command
@@ -149,5 +150,87 @@ ggplot( data = both_break_permonth.d,
 
 ggsave(glue("{out_dir}/BREAK-COUNT_BOTH_line-permonth.png"), width = 12, height = 6)
 
+###
+### Generating a count of pos v neg heatmap
+###
+
+break_matrix.d_in = read.csv( glue("{out_dir}/BREAK-COUNT_per_indicator_per_practice.csv") )
+
+break_matrix.d = break_matrix.d_in %>% 
+  group_by( indicator, pos_count, neg_count ) %>% 
+  summarise( n=n() )
+
+num_timepoints = pos_break_permonth.d %>% pull(month) %>% unique() %>% length
+
+max_count = max(break_matrix.d %>% pull(pos_count) %>% max,
+                break_matrix.d %>% pull(neg_count) %>% max )
+
+matrix_breaks = c( 0, max_count )
+
+break_expansion = data.frame(expand.grid(0:max_count,0:max_count))
+colnames(break_expansion) = c( "pos_count", "neg_count" )
+
+for ( this_indicator in break_matrix.d_in %>% pull( indicator ) %>% unique ) { 
+
+  num_practices = break_matrix.d_in %>% 
+    filter( indicator == this_indicator ) %>%
+    pull( name ) %>% unique %>% length
+  
+  this_break_matrix.d = break_matrix.d %>%
+    filter( indicator == this_indicator ) %>% 
+    full_join( break_expansion, by = c("pos_count", "neg_count") ) %>% 
+    as_tibble() %>% 
+    fill( indicator ) %>% 
+    mutate( n = replace_na( n, 0 )) %>% 
+    mutate( label = ifelse( n == 0,
+                              NA_character_,
+                              n ) )
+  
+  ggplot( this_break_matrix.d ,
+          aes( x=pos_count, y=neg_count, fill=n, label=label ) ) +
+    geom_tile( col="white", size=1 ) +
+    geom_label( data=this_break_matrix.d %>% filter( !is.na(label) ),
+                fill="white") +
+    theme_bw() +
+    theme( legend.position = "bottom") +
+    labs( title = glue( "Pos/neg break counts for {this_indicator} \\
+                        ({num_practices} practices, {num_timepoints} timepoints)" ),
+          x = "# pos counts",
+          y = "# neg counts" ) +
+    scale_fill_viridis( ) +
+    scale_x_continuous(breaks=0:max_count) +
+    scale_y_continuous(breaks=0:max_count)
+  
+  ggsave(glue("{out_dir}/BREAK-COUNT_matrix_{this_indicator}.png"), width = 6, height = 6)
+  
+}
+  
+
+
+
+###
+### Generating a selection of indicator_saturation_plots 
+###
+# 
+# results_toplot = results_holder %>% 
+#   filter( is.nbreak > 0 )
+# 
+# for ( plot_i in 1:nrow( results_toplot ) ) {
+#   this_indicator = ( results_toplot %>% pull(indicator) )[plot_i]
+#   this_direction = ( results_toplot %>% pull(direction) )[plot_i]
+#   this_code      = ( results_toplot %>% pull(name)      )[plot_i]
+# 
+#   print( glue( "{this_indicator} in {this_code}\n" ) )
+# 
+#   this_d = plotdata_holder %>%
+#     filter( code == this_code,
+#             indicator == this_indicator,
+#             direction == this_direction )
+# 
+#   this_graph_file = glue("{out_dir}/CDPLOT_{this_indicator}_{this_direction}_{this_code}_plot.png")
+# 
+#   ggsave( this_graph_file, plot=draw_change_detection_plot( this_d ) )
+# 
+# }
 
 

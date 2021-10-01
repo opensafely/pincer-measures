@@ -110,6 +110,7 @@ actions:
       moderately_sensitive:
         cusum: output/cusum/cusum_results.json
         alerts: output/cusum/cusum_alerts_summary.json
+        by_date: output/cusum/cusum_alerts_by_date.json
   
   plot_cusum:
     run: python:latest python analysis/plot_cusum.py

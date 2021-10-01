@@ -8,7 +8,7 @@ from collections import Counter
 additional_indicators = ["e","f", "li"]
 indicators_list.extend(additional_indicators)
 
-demographics = ["age_band", "sex", "region", "imd", "care_home_type"]
+demographics = ["age_band", "sex", "region", "imd", "care_home_type", "ethnicity"]
 demographics_dict = {}
 
 

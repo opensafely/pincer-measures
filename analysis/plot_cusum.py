@@ -85,16 +85,19 @@ z=0
 with open(OUTPUT_DIR / 'cusum/cusum_alerts_by_date.json') as file:
     data = json.load(file)
     
+    for indicator_key in data['positive'].keys():
+        
+        df_pos = pd.DataFrame.from_dict(data['positive'][indicator_key], orient='index', columns=['count']).reset_index()
+        df_pos = df_pos.sort_values(['index'])
+        
+        df_neg = pd.DataFrame.from_dict(data['negative'][indicator_key], orient='index', columns=['count']).reset_index()
+        df_neg = df_neg.sort_values(['index'])
     
-    for indicator_key, indicator_value in data.items():
-        print(z)
-        df = pd.DataFrame.from_dict(data[indicator_key], orient='index', columns=['count']).reset_index()
-    
-        df = df.sort_values(['index'])
-        axs[axs_list[z]].plot(df['index'], df['count'])
+        axs[axs_list[z]].plot(df_pos['index'], df_pos['count'], color='cyan')
+        axs[axs_list[z]].plot(df_neg['index'], df_neg['count'], color='red')
         axs[axs_list[z]].set_title(f'Indicator {indicator_key}', size=20)
         axs[axs_list[z]].set_ylabel('Count', size=14)
         z+=1
         
 plt.gcf().autofmt_xdate(rotation=90)
-fig.savefig('output/a.png')
+fig.savefig('output/cusum/combined_cusum_count.png')

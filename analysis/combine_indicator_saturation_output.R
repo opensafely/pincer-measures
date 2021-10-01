@@ -280,6 +280,30 @@ proportion_of_practices_with_neg_breaks =
 write.csv( proportion_of_practices_with_neg_breaks,
            file=glue("{out_dir}/at-least-one_neg-break.csv"))
 
+### For each practice, how many positive and negative breaks
+
+per_indicator_per_practice_pos_breaks = results_holder %>%
+  filter( direction == "up" ) %>% 
+  select( indicator, name, breaks.loc.pos ) %>% 
+  unnest( cols = "breaks.loc.pos" ) %>% 
+  filter( !is.na( breaks.loc.pos ) ) %>% 
+  group_by( indicator, name ) %>% 
+  summarise( pos_count = length(unique(breaks.loc.pos)) )
+
+per_indicator_per_practice_neg_breaks = results_holder %>%
+  filter( direction == "up" ) %>% 
+  select( indicator, name, breaks.loc.neg ) %>% 
+  unnest( cols = "breaks.loc.neg" ) %>% 
+  filter( !is.na( breaks.loc.neg ) ) %>% 
+  group_by( indicator, name ) %>% 
+  summarise( neg_count = length(unique(breaks.loc.neg)) )
+
+per_indicator_per_practice_breaks = per_indicator_per_practice_pos_breaks %>% 
+  full_join( per_indicator_per_practice_neg_breaks,
+             by=c( "indicator", "name" ) )
+
+write.csv( per_indicator_per_practice_breaks,
+           file=glue("{out_dir}/BREAK-COUNT_per_indicator_per_practice.csv"))
 
 ### For each indicator, the number of practices with a positive break at each timepoint
 

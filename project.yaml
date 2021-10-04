@@ -22,14 +22,7 @@ actions:
     outputs:
       highly_sensitive:
         cohort: output/inpu*.feather
-  
 
-  check_EGFR:
-    run: python:latest python analysis/check_EGFR.py
-    needs: [join_ethnicity_region]
-    outputs:
-      moderately_sensitive:
-        counts: output/egfr_tabulation.csv
 
   generate_study_population_ethnicity:
     run: cohortextractor:latest generate_cohort --study-definition study_definition_ethnicity --output-format feather

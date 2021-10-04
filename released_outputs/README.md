@@ -1,6 +1,8 @@
 # Table of contents
 
 * output
+  * output/cusum
+    * [output/cusum/combined_cusum_count.png](output/cusum/combined_cusum_count.png)
   * output/figures
     * [output/figures/plot_a.jpeg](output/figures/plot_a.jpeg)
     * [output/figures/plot_ac.jpeg](output/figures/plot_ac.jpeg)

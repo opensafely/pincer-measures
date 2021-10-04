@@ -304,7 +304,7 @@ actions:
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
       moderately_sensitive:
-        out_csv: output/indicator_saturation_rev/indicator_saturation_f_a/*.csv
+        out_csv: output/indicator_saturation_rev/indicator_saturation_*_f/*.csv
         
   indicator_saturation_g_rev:
     run: r:latest analysis/indicator_saturation_analysis.R -I g -T date -C practice -v -Q -i output -o output/indicator_saturation_rev measure_indicator_g_rate.csv 

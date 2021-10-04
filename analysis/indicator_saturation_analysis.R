@@ -60,6 +60,7 @@ for ( this_direction in c( "up","down" ) ) {
         overwrite = opt$options$overwrite,
         draw_figures = opt$options$figures,
         verbose = opt$options$verbose,
+        reverse = opt$options$reverse,
         test_number = opt$options$test,
         csv_name = opt$args[1]
     )

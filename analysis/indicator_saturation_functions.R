@@ -36,6 +36,7 @@ setClass("ChangeDetection",
              code_tag = 'character',
              min_NA_proportion = 'numeric',
              r_command = 'character',
+             reverse = 'logical',
              change_detection_location = 'character',
              change_detection_script = 'character',
              results_extract_location = 'character',
@@ -66,6 +67,7 @@ setClass("ChangeDetection",
                    code_tag = 'ratio_quantity.',
                    min_NA_proportion = 0.5,
                    r_command = 'Rscript',
+                   reverse = FALSE,
                    change_detection_location = glue("{getwd()}/analysis/change_detection"),
                    change_detection_script = 'change_detection.R',
                    results_extract_location = glue("{getwd()}/analysis/change_detection"),
@@ -332,21 +334,43 @@ run_r_script = function(cd, i, script_name, input_name, output_name, module_fold
     system( cmd, wait=TRUE )
 }
 
+### Function which reverses the timeseries
+reverse_timeseries = function( m ) {
+
+    origin_objects = m %>% unique
+    mapping = vector( mode = "character", length = length(origin_objects) )
+    
+    mapping = rev( origin_objects )
+    names( mapping ) = origin_objects
+
+    return( mapping[as.character(m)] )    
+} 
+
 ### THIS RUNS THE change_detection.R SCRIPT
 r_detect = function( cd ) {
     
     df = shape_dataframe( cd )
     
     df_list = divide_data_frame(cd, df)
-    
+
     ### Launch an R process for each of these split dataframes
-    ## Initiate a seperate R process for each sub-DataFrame
+    ## Initiate a separate R process for each sub-DataFrame
     for ( i in 1:length(df_list) ) {
         
         this_df = df_list[[i]] %>% 
             ungroup() %>% 
             select( -month, -code ) %>% 
             rename( month = index )
+        
+        if ( cd@reverse ) {
+            report_info( cd, "NB. Time series will be reversed" )
+        
+            reversed_months = this_df %>% pull( month ) %>% rev
+            this_df = this_df %>% 
+                mutate( month_original = month ) %>% 
+                mutate( month = reversed_months ) %>% 
+                arrange( month )
+        }
         
         # Using i-1 so as to match the existing Python methodology
         input_file_name = glue("r_input_{i-1}.csv")
@@ -427,16 +451,18 @@ option_list = list(
                 help="number of cores to use [default=%default]", metavar="numeric"),
     make_option(c("-N", "--test"), type="numeric", default=default_values@test_number,
                 help="number of samples to run to test [default=%default]", metavar="numeric"),
+    make_option(c("-Q", "--reverse"), action="store_true", default=default_values@reverse,
+                help="Reverse timeseries [default=%default]" ),
     
     ### Parameters that define the input/output/reporting
     make_option(c("-v", "--verbose"), action="store_true", default=default_values@verbose,
                 help="Print extra output [default]"),
     make_option(c("-i", "--indir"), type="character", default=default_values@indir, 
-                help="output directory name [default= %default]", metavar="character"),
+                help="output directory name [default=%default]", metavar="character"),
     make_option(c("-o", "--outdir"), type="character", default=default_values@outdir, 
-                help="output directory name [default= %default]", metavar="character"),
+                help="output directory name [default=%default]", metavar="character"),
     make_option(c("-x", "--overwrite"), action="store_true", default=default_values@overwrite,
-                help="overwrite existing content? [default= %default]", metavar="character"),
+                help="overwrite existing content? [default=%default]", metavar="character"),
     make_option(c("-f", "--figures"), action="store_true", default=default_values@draw_figures,
                 help="generate figures? [default=%default]", metavar="character")
 )

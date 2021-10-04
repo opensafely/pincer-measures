@@ -72,8 +72,8 @@ ggplot( data = pos_break_permonth.d,
   geom_point( colour = colour_scheme["pos"] ) + 
   geom_line( colour = colour_scheme["pos"] ) +
   scale_x_date( date_labels = "%b %y", breaks = xbreaks ) +
-  labs( title= "Count of positive breaks per month (from the index date)",
-        x = "Months relative to index date",
+  labs( title= "Count of positive breaks per month",
+        x = "Month",
         y = "Number of practices with positive break identified in this month" ) +
   theme_bw() +
   theme( axis.text.x = element_text(angle=90, hjust = 1, vjust=0.5)) +
@@ -106,8 +106,8 @@ ggplot( data = neg_break_permonth.d,
   geom_point( colour = colour_scheme["neg"] ) + 
   geom_line( colour = colour_scheme["neg"] ) +
   scale_x_date( date_labels = "%b %y", breaks = xbreaks ) +
-  labs( title= "Count of negative breaks per month (from the index date)",
-        x = "Months relative to index date",
+  labs( title= "Count of negative breaks per month",
+        x = "Month",
         y = "Number of practices with negative break identified in this month" ) +
   theme_bw() +
   theme( axis.text.x = element_text(angle=90, hjust = 1, vjust=0.5)) +
@@ -141,14 +141,45 @@ ggplot( data = both_break_permonth.d,
   geom_line() +
   scale_x_date( date_labels = "%b %y", breaks = xbreaks ) +
   scale_colour_manual( values=colour_scheme ) +
-  labs( title= "Count of negative breaks per month (from the index date)",
-        x = "Months relative to index date",
+  labs( title= "Count of breaks per month",
+        x = "Months",
         y = "Number of practices with breaks identified in this month" ) +
   theme_bw( ) +
   theme( axis.text.x = element_text(angle=90, hjust = 1, vjust=0.5)) +
   facet_wrap( ~indicator )
 
 ggsave(glue("{out_dir}/BREAK-COUNT_BOTH_line-permonth.png"), width = 12, height = 6)
+
+### 
+### Generating a separate plot for each indicator
+### 
+
+for ( this_indicator in both_break_permonth.d %>% pull( indicator ) %>% unique ) { 
+  
+  
+  ggplot( data = both_break_permonth.d %>% filter( indicator == this_indicator ),
+          aes( x = month,
+               y = n,
+               group = direction,
+               col = direction ) ) +
+    geom_vline( xintercept = ymd("2020-03-01"),
+                colour="orange",
+                linetype="dashed") +
+    geom_point() + 
+    geom_line() +
+    scale_x_date( date_labels = "%b %y", breaks = xbreaks ) +
+    scale_colour_manual( values=colour_scheme ) +
+    labs( title= glue( "Count of breaks per month [indicator {this_indicator}]" ),
+          x = "Month",
+          y = "Number of practices with breaks identified in this month" ) +
+    theme_bw( ) +
+    theme( axis.text.x = element_text(angle=90, hjust = 1, vjust=0.5))
+  
+  
+  ggsave(glue("{out_dir}/BREAK-COUNT_BOTH_{this_indicator}.png"), width = 8, height = 4)
+  
+}
+
 
 ###
 ### Generating a count of pos v neg heatmap
@@ -177,7 +208,7 @@ break_expansion = data.frame(expand.grid(0:max_count,0:max_count))
 colnames(break_expansion) = c( "pos_count", "neg_count" )
 
 for ( this_indicator in break_matrix.d_in %>% pull( indicator ) %>% unique ) { 
-
+  
   num_practices = break_matrix.d_in %>% 
     filter( indicator == this_indicator ) %>%
     pull( name ) %>% unique %>% length
@@ -189,8 +220,8 @@ for ( this_indicator in break_matrix.d_in %>% pull( indicator ) %>% unique ) {
     fill( indicator ) %>% 
     mutate( n = replace_na( n, 0 )) %>% 
     mutate( label = ifelse( n == 0,
-                              NA_character_,
-                              n ) )
+                            NA_character_,
+                            n ) )
   
   ggplot( this_break_matrix.d ,
           aes( x=pos_count, y=neg_count, fill=n, label=label ) ) +
@@ -210,7 +241,7 @@ for ( this_indicator in break_matrix.d_in %>% pull( indicator ) %>% unique ) {
   ggsave(glue("{out_dir}/BREAK-COUNT_matrix_{this_indicator}.png"), width = 6, height = 6)
   
 }
-  
+
 
 ###
 ### Generating a selection of indicator_saturation_plots 

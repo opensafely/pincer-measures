@@ -93,8 +93,9 @@ with open(OUTPUT_DIR / 'cusum/cusum_alerts_by_date.json') as file:
         df_neg = pd.DataFrame.from_dict(data['negative'][indicator_key], orient='index', columns=['count']).reset_index()
         df_neg = df_neg.sort_values(['index'])
     
-        axs[axs_list[z]].plot(df_pos['index'], df_pos['count'], color='cyan')
-        axs[axs_list[z]].plot(df_neg['index'], df_neg['count'], color='red')
+        
+        axs[axs_list[z]].plot(df_pos['index'], df_pos['count'], color='red')
+        axs[axs_list[z]].plot(df_neg['index'], df_neg['count'], color='cyan')
         axs[axs_list[z]].set_title(f'Indicator {indicator_key}', size=20)
         axs[axs_list[z]].set_ylabel('Count', size=14)
         z+=1

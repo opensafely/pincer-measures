@@ -95,10 +95,13 @@ with open(OUTPUT_DIR / 'cusum/cusum_alerts_by_date.json') as file:
     
         
         axs[axs_list[z]].plot(df_pos['index'], df_pos['count'], color='red')
+        
         axs[axs_list[z]].plot(df_neg['index'], df_neg['count'], color='cyan')
         axs[axs_list[z]].set_title(f'Indicator {indicator_key}', size=20)
         axs[axs_list[z]].set_ylabel('Count', size=14)
         z+=1
         
 plt.gcf().autofmt_xdate(rotation=90)
+fig.legend(['Positive', 'Negative'], loc='upper right', bbox_to_anchor=(1.0, 0.8), prop={'size': 20})
+
 fig.savefig('output/cusum/combined_cusum_count.png')

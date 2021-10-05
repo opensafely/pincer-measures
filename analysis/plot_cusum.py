@@ -93,6 +93,7 @@ with open(OUTPUT_DIR / 'cusum/cusum_alerts_by_date.json') as file:
         df_neg = pd.DataFrame.from_dict(data['negative'][indicator_key], orient='index', columns=['count']).reset_index()
         df_neg = df_neg.sort_values(['index'])
         
+        
         df_pos['count'][df_pos['count']<6] = np.nan
         df_neg['count'][df_neg['count']<6] = np.nan
 
@@ -103,7 +104,35 @@ with open(OUTPUT_DIR / 'cusum/cusum_alerts_by_date.json') as file:
         axs[axs_list[z]].set_ylabel('Count', size=14)
         z+=1
         
+        
+        
 plt.gcf().autofmt_xdate(rotation=90)
 fig.legend(['Positive', 'Negative'], loc='upper right', bbox_to_anchor=(1.0, 0.8), prop={'size': 20})
 
 fig.savefig('output/cusum/combined_cusum_count.png')
+
+plt.clf()
+
+
+z=0
+with open(OUTPUT_DIR / 'cusum/cusum_alerts_by_date.json') as file:
+    data = json.load(file)
+    
+    for indicator_key in data['positive'].keys():
+        
+        df_pos = pd.DataFrame.from_dict(data['positive'][indicator_key], orient='index', columns=['count']).reset_index()
+        df_pos = df_pos.sort_values(['index'])
+        
+        df_neg = pd.DataFrame.from_dict(data['negative'][indicator_key], orient='index', columns=['count']).reset_index()
+        df_neg = df_neg.sort_values(['index'])
+        
+        df_pos['count'][df_pos['count']<6] = np.nan
+        df_neg['count'][df_neg['count']<6] = np.nan
+        
+        plt.plot(df_pos['index'], df_pos['count'], color='red')
+        plt.plot(df_neg['index'], df_neg['count'], color='cyan')
+        plt.title(f'Indicator {indicator_key}', size=20)
+        plt.ylabel('Count', size=14)
+        plt.savefig(f"output/cusum/combined_{indicator_key}.png")
+        plt.clf()
+        z+=1

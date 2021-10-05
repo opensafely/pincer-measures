@@ -27,5 +27,6 @@
       * [output/indicator_saturation/combined/BREAK-COUNT_BOTH_a.png](output/indicator_saturation/combined/BREAK-COUNT_BOTH_a.png)
       * [output/indicator_saturation/combined/BREAK-COUNT_BOTH_b.png](output/indicator_saturation/combined/BREAK-COUNT_BOTH_b.png)
       * [output/indicator_saturation/combined/BREAK-COUNT_BOTH_c.png](output/indicator_saturation/combined/BREAK-COUNT_BOTH_c.png)
+      * [output/indicator_saturation/combined/BREAK-COUNT_BOTH_d.png](output/indicator_saturation/combined/BREAK-COUNT_BOTH_d.png)
       * [output/indicator_saturation/combined/BREAK-COUNT_BOTH_line-permonth.png](output/indicator_saturation/combined/BREAK-COUNT_BOTH_line-permonth.png)
   * [output/report.html](output/report.html)

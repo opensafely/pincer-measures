@@ -376,7 +376,7 @@ actions:
 
   combine_indicator_saturation_data_rev:
     run: r:latest analysis/combine_indicator_saturation_output.R output/indicator_saturation_rev output/indicator_saturation_rev/combined
-    needs: [indicator_saturation_a_rev, indicator_saturation_b_rev, indicator_saturation_c_rev, indicator_saturation_d_rev, indicator_saturation_e_rev, indicator_saturation_f, indicator_saturation_g, indicator_saturation_i, indicator_saturation_k, indicator_saturation_ac, indicator_saturation_me_no_fbc, indicator_saturation_me_no_lft, indicator_saturation_li, indicator_saturation_am]
+    needs: [indicator_saturation_a_rev, indicator_saturation_b_rev, indicator_saturation_c_rev, indicator_saturation_d_rev, indicator_saturation_e_rev, indicator_saturation_f_rev, indicator_saturation_g_rev, indicator_saturation_i_rev, indicator_saturation_k_rev, indicator_saturation_ac_rev, indicator_saturation_me_no_fbc_rev, indicator_saturation_me_no_lft_rev, indicator_saturation_li_rev, indicator_saturation_am_rev]
     outputs:
       moderately_sensitive:
         counts: output/indicator_saturation_rev/combined/*.csv

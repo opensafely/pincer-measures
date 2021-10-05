@@ -363,7 +363,7 @@ actions:
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
     outputs:
       moderately_sensitive:
-        out_csv: output/indicator_saturation_revindicator_saturation_*_me_no_fbc/summary_output.csv
+        out_csv: output/indicator_saturation_rev/indicator_saturation_*_me_no_fbc/summary_output.csv
         plot_csv: output/indicator_saturation_rev/indicator_saturation_*_me_no_fbc/plot_data.csv
         
   indicator_saturation_me_no_lft_rev:

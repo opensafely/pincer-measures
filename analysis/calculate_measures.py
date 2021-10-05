@@ -5,7 +5,7 @@ from study_definition import indicators_list
 from collections import Counter
 
 #these are not generated in the main generate measures action
-additional_indicators = ["e","f", "li"]
+additional_indicators = ["e","f"]
 indicators_list.extend(additional_indicators)
 
 demographics = ["age_band", "sex", "region", "imd", "care_home_type", "ethnicity"]
@@ -38,15 +38,7 @@ if __name__ == "__main__":
             
 
 
-            #add lithium numerator and denominator
-            lithium_df = pd.read_feather(OUTPUT_DIR / f'input_lithium_{date}.feather')
-            li_numerator_dict = dict(zip(lithium_df['patient_id'], lithium_df['indicator_li_numerator']))
-            li_denominator_dict = dict(zip(lithium_df['patient_id'], lithium_df['indicator_li_denominator']))
-
-            df['indicator_li_numerator'] = df['patient_id'].map(li_numerator_dict).astype(float)
-            df['indicator_li_denominator'] = df['patient_id'].map(li_denominator_dict).astype(float)
-
-
+    
             for additional_indicator in additional_indicators:
                 
                 event = df.groupby(by=["practice"])[[f"indicator_{additional_indicator}_numerator", f"indicator_{additional_indicator}_denominator"]].sum().reset_index()

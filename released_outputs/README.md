@@ -37,4 +37,5 @@
       * [output/indicator_saturation/combined/BREAK-COUNT_BOTH_k.png](output/indicator_saturation/combined/BREAK-COUNT_BOTH_k.png)
       * [output/indicator_saturation/combined/BREAK-COUNT_BOTH_li.png](output/indicator_saturation/combined/BREAK-COUNT_BOTH_li.png)
       * [output/indicator_saturation/combined/BREAK-COUNT_BOTH_line-permonth.png](output/indicator_saturation/combined/BREAK-COUNT_BOTH_line-permonth.png)
+      * [output/indicator_saturation/combined/BREAK-COUNT_BOTH_me_no_fbc.png](output/indicator_saturation/combined/BREAK-COUNT_BOTH_me_no_fbc.png)
   * [output/report.html](output/report.html)

@@ -2,7 +2,21 @@
 
 * output
   * output/cusum
+    * [output/cusum/combined_a.png](output/cusum/combined_a.png)
+    * [output/cusum/combined_ac.png](output/cusum/combined_ac.png)
+    * [output/cusum/combined_am.png](output/cusum/combined_am.png)
+    * [output/cusum/combined_b.png](output/cusum/combined_b.png)
+    * [output/cusum/combined_c.png](output/cusum/combined_c.png)
     * [output/cusum/combined_cusum_count.png](output/cusum/combined_cusum_count.png)
+    * [output/cusum/combined_d.png](output/cusum/combined_d.png)
+    * [output/cusum/combined_e.png](output/cusum/combined_e.png)
+    * [output/cusum/combined_f.png](output/cusum/combined_f.png)
+    * [output/cusum/combined_g.png](output/cusum/combined_g.png)
+    * [output/cusum/combined_i.png](output/cusum/combined_i.png)
+    * [output/cusum/combined_k.png](output/cusum/combined_k.png)
+    * [output/cusum/combined_li.png](output/cusum/combined_li.png)
+    * [output/cusum/combined_me_no_fbc.png](output/cusum/combined_me_no_fbc.png)
+    * [output/cusum/combined_me_no_lft.png](output/cusum/combined_me_no_lft.png)
   * output/figures
     * [output/figures/plot_a.jpeg](output/figures/plot_a.jpeg)
     * [output/figures/plot_ac.jpeg](output/figures/plot_ac.jpeg)

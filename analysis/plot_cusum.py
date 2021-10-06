@@ -133,6 +133,7 @@ with open(OUTPUT_DIR / 'cusum/cusum_alerts_by_date.json') as file:
         plt.plot(df_neg['index'], df_neg['count'], color='cyan')
         plt.title(f'Indicator {indicator_key}', size=20)
         plt.ylabel('Count', size=14)
+        plt.xticks(df_pos["index"].unique())
         plt.savefig(f"output/cusum/combined_{indicator_key}.png")
         plt.clf()
         z+=1

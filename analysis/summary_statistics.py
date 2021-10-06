@@ -5,7 +5,7 @@ from utilities import *
 from study_definition import indicators_list
 
 #these are not generated in the main generate measures action
-additional_indicators = ["e","f", "li"]
+additional_indicators = ["e","f"]
 indicators_list.extend(additional_indicators)
 
 practice_list = []
@@ -29,11 +29,7 @@ for file in OUTPUT_DIR.iterdir():
                 
                 df_subset = df_e_f[df_e_f[f'indicator_{indicator}_numerator']==1]
             
-            elif indicator == "li":
-                df_li = pd.read_feather(OUTPUT_DIR / f'input_lithium_{date}.feather')
-                
-                df_subset = df_li[df_li[f'indicator_{indicator}_numerator']==1]
-
+           
             else:
                 df_subset = df[df[f'indicator_{indicator}_numerator']==1]
                 # get unique patients

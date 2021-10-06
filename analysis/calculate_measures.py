@@ -84,8 +84,6 @@ if __name__ == "__main__":
         df_combined = pd.concat(indicator_value, axis=0)
         df_combined.to_csv(OUTPUT_DIR / f"measure_indicator_{indicator_key}_rate.csv")
 
-
-
     d_list = []
     for d in demographics:
         counts = Counter(demographics_dict[d].values())
@@ -95,4 +93,24 @@ if __name__ == "__main__":
         d_list.append(row)
 
     demographics_df = pd.concat(d_list, keys=demographics)
-    demographics_df.to_csv(OUTPUT_DIR / "demographics_summary.csv")
+
+    ### Combining all counts into one column and removing the previous columns
+    demographics_df['count'] = demographics_df.apply(
+        lambda x: sum(x.dropna()),
+        axis=1
+    )
+    demographics_df = demographics_df.drop(columns=demographics)
+    demographics_df = demographics_df.reset_index()
+    demographics_df = demographics_df.rename(columns={"level_0": "demographic", "level_1": "level"})
+
+    ### Adding the total for each demographic group
+    demographic_totals = demographics_df.groupby(['demographic']).agg(
+        {'count': 'sum'}).rename(columns={"count": "total"})
+    demographic_table = demographics_df.merge(demographic_totals, left_on="demographic", right_on="demographic")
+
+    # ### Calculating the percentages
+    demographic_table['perc'] = round( 100 * demographic_table['count']/demographic_table['total'], 2)
+    demographic_table = demographic_table.sort_values(by=['demographic', 'level'])
+
+    # ### Save to file
+    demographic_table.to_csv(OUTPUT_DIR / "demographics_summary.csv")

@@ -84,6 +84,3 @@ if __name__ == "__main__":
         df_combined = pd.concat(indicator_value, axis=0)
         df_combined.to_csv(OUTPUT_DIR / f"measure_indicator_{indicator_key}_rate.csv")
 
-
-
-    

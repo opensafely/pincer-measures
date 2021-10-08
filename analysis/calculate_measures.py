@@ -83,9 +83,6 @@ if __name__ == "__main__":
         df_combined = pd.concat(indicator_value, axis=0)
         df_combined.to_csv(OUTPUT_DIR / f"measure_indicator_{indicator_key}_rate.csv")
 
-    
-
-    
     d_list = {}
     for d in demographics:    
         values_array = [value for key, value in demographics_dict[d].items()]
@@ -98,3 +95,4 @@ if __name__ == "__main__":
 
     demographics_df = pd.concat(d_list, axis=0)
     demographics_df.to_csv(OUTPUT_DIR / "demographics_summary.csv")
+

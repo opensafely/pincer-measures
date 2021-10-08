@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 from utilities import OUTPUT_DIR, match_input_files, get_date_input_file, calculate_rate, redact_small_numbers
 from study_definition import indicators_list
-from collections import Counter
 
 #these are not generated in the main generate measures action
 additional_indicators = ["e","f"]
@@ -22,7 +21,7 @@ if __name__ == "__main__":
         for i in indicators_list:
             df_dict[d][i] = []
 
-
+   
     for file in OUTPUT_DIR.iterdir():
         
         if match_input_files(file.name):
@@ -84,6 +83,17 @@ if __name__ == "__main__":
         df_combined = pd.concat(indicator_value, axis=0)
         df_combined.to_csv(OUTPUT_DIR / f"measure_indicator_{indicator_key}_rate.csv")
 
-
+    
 
     
+    d_list = {}
+    for d in demographics:
+        counts = Counter(demographics_dict[d].values())        
+        values_array = [value for key, value in demographics_dict[d].items()]
+        
+        counts = pd.Series(values_array).value_counts()
+        counts_df = pd.concat([counts, pd.Series([(value/np.sum(counts))*100 for value in counts], index=counts.index)], axis=1, keys=['count', '%'], levels=demographics)
+        d_list[d]=counts_df
+
+    demographics_df = pd.concat(d_list, axis=0)
+    demographics_df.to_csv(OUTPUT_DIR / "demographics_summary.csv")

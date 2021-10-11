@@ -9,7 +9,7 @@ additional_indicators = ["e","f"]
 indicators_list.extend(additional_indicators)
 
 demographics = ["age_band", "sex", "region", "imd", "care_home_type", "ethnicity"]
-demographics_dict = {}
+
 demographics_df = pd.DataFrame(columns=['patient_id'] + (demographics))
 
 if __name__ == "__main__":
@@ -81,16 +81,18 @@ if __name__ == "__main__":
         df_combined = pd.concat(indicator_value, axis=0)
         df_combined.to_csv(OUTPUT_DIR / f"measure_indicator_{indicator_key}_rate.csv")
 
-    d_list = {}
-    for d in demographics:    
-        values_array = [value for key, value in demographics_dict[d].items()]
-        
-        counts = pd.Series(values_array).value_counts()
-        counts_df = pd.concat([counts, pd.Series([(value/np.sum(counts))*100 for value in counts], index=counts.index)], axis=1, keys=['count', '%'], levels=demographics)
+    
+    
+    
+    d_list={}
+    for d in demographics: 
+        counts = demographics_df[d].value_counts()
+        counts_df = pd.concat([counts, pd.Series([round((value/np.sum(counts))*100, 2) for value in counts], index=counts.index)], axis=1, keys=['count', '%'], levels=demographics)
         d_list[d]=counts_df
 
  
 
-    demographics_df = pd.concat(d_list, axis=0)
+    demographic_counts_df = pd.concat(d_list, axis=0)
+   
     demographics_df.to_csv(OUTPUT_DIR / "demographics_summary.csv")
 

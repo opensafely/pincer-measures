@@ -87,12 +87,14 @@ if __name__ == "__main__":
     d_list={}
     for d in demographics: 
         counts = demographics_df[d].value_counts()
+        
         counts_df = pd.concat([counts, pd.Series([round((value/np.sum(counts))*100, 2) for value in counts], index=counts.index)], axis=1, keys=['count', '%'], levels=demographics)
         d_list[d]=counts_df
 
+       
  
-
+    
     demographic_counts_df = pd.concat(d_list, axis=0)
    
-    demographics_df.to_csv(OUTPUT_DIR / "demographics_summary.csv")
+    demographic_counts_df.to_csv(OUTPUT_DIR / "demographics_summary.csv")
 

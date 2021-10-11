@@ -662,3 +662,10 @@ def deciles_chart_subplots(
     # axes up to make room for them
     plt.gcf().autofmt_xdate(rotation=90)
     return plt
+
+
+def update_demographics(demographics_df, df):
+    
+    
+    demographics_df = demographics_df.append(df[demographics_df.columns]).drop_duplicates(keep='last')
+    return demographics_df

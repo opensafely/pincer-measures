@@ -307,8 +307,7 @@ def compute_deciles(
         quantiles = np.concatenate(
             [quantiles, np.arange(0.01, 0.1, 0.01), np.arange(0.91, 1, 0.01)]
         )
-    print(measure_table)
-    print(values_col)
+    
 
     percentiles = (
         measure_table.groupby(groupby_col)[values_col]
@@ -363,7 +362,6 @@ def deciles_chart(df, filename, period_column=None, column=None, count_column=No
     )
 
     plt.tight_layout()
-    print((f'output/{filename}.jpeg'))
     plt.savefig(f"output/figures/{filename}.jpeg")
     plt.clf()
 
@@ -507,12 +505,11 @@ def suppress_practice_measures(df, n, numerator, denominator, rate_column):
 
     df_grouped = df.groupby(by=['date'])[[numerator, denominator]].sum().reset_index()
     df_grouped["rate"] = (df_grouped[numerator] / df_grouped[denominator])*1000
-    print(df_grouped)
+  
     df_grouped = redact_small_numbers(df_grouped, 10, numerator, denominator, "rate")
-    print(df_grouped)
-    print(df_grouped.shape) 
+    
     dates_to_drop = df_grouped.loc[(df_grouped[numerator].isnull()) | (df_grouped[denominator].isnull(), 'date')]
-    print(dates_to_drop)
+    
     df['drop'] = df['date'].map(dates_to_drop)
     df.loc[df['drop']==True, [numerator, denominator, rate_column]] = np.nan
     return df

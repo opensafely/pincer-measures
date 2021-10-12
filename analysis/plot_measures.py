@@ -59,7 +59,7 @@ for i in indicators_list:
         denominator = f"indicator_{i}_denominator"
     
     df["rate"] = df[f"value"]
-    print(df.head())
+
     df = df.drop(["value"], axis=1)
 
     # Need this for dummy data
@@ -82,6 +82,7 @@ for i in indicators_list:
         deciles_chart_subplots(df,
             period_column='date',
             column='rate',
+            count_column=f"indicator_{i}_numerator",
             title=f'Indicator {i}',
             ylabel="Proportion",
             show_outer_percentiles=False,
@@ -92,7 +93,7 @@ for i in indicators_list:
 
     if i in prescribing_indicators:
         ind = prescribing_indicators.index(i)
-        print(ind)
+        
 
         if prescribing_axs_list[ind] == 2:
             show_legend = True
@@ -105,6 +106,7 @@ for i in indicators_list:
         deciles_chart_subplots(df,
             period_column='date',
             column='rate',
+            count_column=f"indicator_{i}_numerator",
             title=f'Indicator {i}',
             ylabel="Proportion",
             show_outer_percentiles=False,
@@ -127,6 +129,7 @@ for i in indicators_list:
         deciles_chart_subplots(df,
             period_column='date',
             column='rate',
+            count_column=f"indicator_{i}_numerator",
             title=f'Indicator {i}',
             ylabel="Proportion",
             show_outer_percentiles=False,

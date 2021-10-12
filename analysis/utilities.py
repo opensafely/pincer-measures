@@ -153,6 +153,7 @@ def plot_measures(df, filename: str, title: str, column_to_plot: str, y_label: s
             
             #subset on category column and sort by date
             df_subset = df[df[category] == unique_category].sort_values("date")
+            
 
             plt.plot(df_subset['date'], df_subset[column_to_plot])
     else:
@@ -161,9 +162,12 @@ def plot_measures(df, filename: str, title: str, column_to_plot: str, y_label: s
         else:
             plt.plot(df['date'], df[column_to_plot])
 
+   
+    x_labels = sorted(df['date'].unique())
+    
     plt.ylabel(y_label)
     plt.xlabel('Date')
-    plt.xticks(rotation='vertical')
+    plt.xticks(x_labels, rotation='vertical')
     plt.title(title)
     plt.ylim(bottom=0, top= 1 if df[column_to_plot].isnull().values.all() else df[column_to_plot].max() * 1.05)
     
@@ -194,6 +198,7 @@ def deciles_chart_ebm(
     df,
     period_column=None,
     column=None,
+    count_column=None,
     title="",
     ylabel="",
     show_outer_percentiles=True,
@@ -204,7 +209,9 @@ def deciles_chart_ebm(
     sns.set_style("whitegrid", {"grid.color": ".9"})
     if not ax:
         fig, ax = plt.subplots(1, 1)
-    df = compute_deciles(df, period_column, column, show_outer_percentiles)
+    
+    
+    df = compute_redact_deciles(df, period_column, count_column, column)
     linestyles = {
         "decile": {
             "line": "b--",
@@ -276,9 +283,9 @@ def deciles_chart_ebm(
             borderaxespad=0.0,
         )  # padding between the axes and legend
         #  specified in font-size units
-    # rotates and right aligns the x labels, and moves the bottom of the
-    # axes up to make room for them
-    plt.gcf().autofmt_xdate()
+  
+    plt.xticks(sorted(df[period_column].unique()),rotation=90)
+    
     return plt
 
 
@@ -300,6 +307,8 @@ def compute_deciles(
         quantiles = np.concatenate(
             [quantiles, np.arange(0.01, 0.1, 0.01), np.arange(0.91, 1, 0.01)]
         )
+    print(measure_table)
+    print(values_col)
 
     percentiles = (
         measure_table.groupby(groupby_col)[values_col]
@@ -318,9 +327,10 @@ def get_practice_deciles(measure_table, value_column):
 
 def compute_redact_deciles(df, period_column, count_column, column):
     n_practices = df.groupby(by=['date'])[['practice']].nunique()
-    count_df = compute_deciles(df, period_column, count_column, False)
+  
+    count_df = compute_deciles(measure_table=df, groupby_col=period_column, values_col=count_column, has_outer_percentiles=False)
     quintile_10 = count_df[count_df['percentile']==10][['date', count_column]]
-    df = compute_deciles(df, period_column, column, False).merge(n_practices, on="date").merge(quintile_10, on="date")
+    df = compute_deciles(df, period_column ,column, False).merge(n_practices, on="date").merge(quintile_10, on="date")
 
     # if quintile 10 is 0, make sure at least 5 practices have 0. If >0, make sure more than 5 practices are in this bottom decile
     df['drop'] = (
@@ -346,8 +356,9 @@ def deciles_chart(df, filename, period_column=None, column=None, count_column=No
     deciles_chart_ebm(
         df,
         period_column="date",
+        count_column=count_column,
         column="rate",
-        ylabel="rate per 1000",
+        ylabel=ylabel,
         show_outer_percentiles=False,
     )
 
@@ -577,6 +588,7 @@ def deciles_chart_subplots(
     df,
     period_column=None,
     column=None,
+    count_column=None,
     title="",
     ylabel="",
     show_outer_percentiles=True,
@@ -586,8 +598,8 @@ def deciles_chart_subplots(
     """period_column must be dates / datetimes"""
     sns.set_style("whitegrid", {"grid.color": ".9"})
     
-    
-    df = compute_deciles(df, period_column, column, show_outer_percentiles)
+   
+    df = compute_redact_deciles(df, period_column, count_column, column)
  
     linestyles = {
         "decile": {
@@ -658,10 +670,11 @@ def deciles_chart_subplots(
             borderaxespad=0.0,
         )  # padding between the axes and legend
         #  specified in font-size units
-    # rotates and right aligns the x labels, and moves the bottom of the
-    # axes up to make room for them
-    plt.gcf().autofmt_xdate(rotation=90)
+    
+    plt.xticks(sorted(df[period_column].unique()),rotation=90)
+    plt.tight_layout()
     return plt
+
 
 
 def update_demographics(demographics_df, df):

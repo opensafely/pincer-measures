@@ -100,7 +100,7 @@ def calculate_rate(df, value_col: str, population_col: str, rate_per: int):
     rate = df[value_col] / (df[population_col] / rate_per)
     return rate
 
-def redact_small_numbers(df, n, numerator, denominator, rate_column):
+def redact_small_numbers(df, n, numerator, denominator, rate_column, date_column):
     """
     Takes counts df as input and suppresses low numbers.  Sequentially redacts
     low numbers from numerator and denominator until count of redcted values >=n.
@@ -120,21 +120,34 @@ def redact_small_numbers(df, n, numerator, denominator, rate_column):
             pass
         
         else:
-            df[column.name][df[column.name]<=n] = np.nan
-            
-
+            column[column<=n] = np.nan
+           
             while suppressed_count <=n:
                 suppressed_count += column.min()
-                column.iloc[column.idxmin()] = np.nan   
+                
+                column[column.idxmin()] = np.nan   
         return column
     
     
-    for column in [numerator, denominator]:
-        df[column] = suppress_column(df[column])
+    df_list=[]
     
-    df[rate_column][(df[numerator].isna())| (df[denominator].isna())] = np.nan
+   
+    dates = df[date_column].unique()
     
-    return df  
+
+    for d in dates:
+        df_subset = df.loc[df[date_column]==d, :]
+    
+        
+        for column in [numerator, denominator]:
+            df_subset[column] = suppress_column(df_subset[column])
+     
+        df_subset.loc[(df_subset[numerator].isna())| (df_subset[denominator].isna()), rate_column] = np.nan
+        df_list.append(df_subset)
+        
+
+       
+    return pd.concat(df_list, axis=0)
 
 def plot_measures(df, filename: str, title: str, column_to_plot: str, y_label: str, as_bar: bool=False, category: str=None):
     """Produce time series plot from measures table.  One line is plotted for each sub

@@ -118,6 +118,13 @@ actions:
       moderately_sensitive:
         notebook: output/report.html
 
+  generate_dem_notebook:
+    run: jupyter:latest jupyter nbconvert /workspace/analysis/demographic_report.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
+    needs: [generate_plots]
+    outputs:
+      moderately_sensitive:
+        notebook: output/demographic_report.html
+
   indicator_saturation_a:
     run: r:latest analysis/indicator_saturation_analysis.R -I a -T date -C practice -v -i output -o output/indicator_saturation measure_indicator_a_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]

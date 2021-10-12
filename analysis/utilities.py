@@ -153,6 +153,7 @@ def plot_measures(df, filename: str, title: str, column_to_plot: str, y_label: s
             
             #subset on category column and sort by date
             df_subset = df[df[category] == unique_category].sort_values("date")
+            
 
             plt.plot(df_subset['date'], df_subset[column_to_plot])
     else:
@@ -161,9 +162,12 @@ def plot_measures(df, filename: str, title: str, column_to_plot: str, y_label: s
         else:
             plt.plot(df['date'], df[column_to_plot])
 
+   
+    x_labels = sorted(df['date'].unique())
+    
     plt.ylabel(y_label)
     plt.xlabel('Date')
-    plt.xticks(rotation='vertical')
+    plt.xticks(x_labels, rotation='vertical')
     plt.title(title)
     plt.ylim(bottom=0, top= 1 if df[column_to_plot].isnull().values.all() else df[column_to_plot].max() * 1.05)
     

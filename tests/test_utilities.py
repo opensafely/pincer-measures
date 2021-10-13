@@ -73,18 +73,6 @@ def measure_table():
     return mt
 
 @pytest.fixture
-def count_table():
-    counts = pd.DataFrame(
-        {
-            "practice": pd.Series( [1, 2, 3, 4, 5] ),
-            "count": pd.Series( [10, 5, 100, 35, 20] ),
-            "population": pd.Series( [20, 10, 1000, 40, 100] )
-        }
-    )
-    counts["rate"] = utilities.calculate_rate(counts,"count","population",1000)
-    return counts
-
-@pytest.fixture
 def multiple_indicator_list():
     # Answers should be 1, 2, 3, 1, 3
     return( [
@@ -169,16 +157,39 @@ def test_join_ethnicity_region(tmp_path, input_file, input_file_ethnicity):
         testing.assert_series_equal(merged_df['region'], pd.Series(['East of England', 'East of England', 'East of England', 'North West', 'North West'], name='region'))
         
 
-@pytest.mark.parametrize( "redact_threshold", [ -1, 0, 10, 100 ] )
+@pytest.fixture
+def counts_table():
+   
+    ct = pd.DataFrame(
+        {
+            "practice": pd.Series([1, 2, 3, 1, 2]),
+            "numerator": pd.Series([0, 5, 3, 10, 15]),
+            "denominator": pd.Series([20, 20, 20, 20, 20]),
+            "date": pd.Series(["2019-01-01", "2019-01-01", "2019-01-01", "2019-02-01","2019-02-01"]),
+        }
+    )
+    ct["date"] = pd.to_datetime(ct["date"])
+    return ct
 
-def test_redact_small_numbers( count_table, redact_threshold ):
-    #print( count_table.head() )
-    count_table_redacted = utilities.redact_small_numbers(count_table, redact_threshold, "count", "population", "rate")
-    #print(count_table_redacted.head())
-    minimum_value = count_table_redacted[[
-        "count", "population", "rate"]].min(axis=1).min(axis=0)
-    #print(minimum_value)
-    assert (minimum_value > redact_threshold) == True
+def test_redact_small_numbers(counts_table):
+    
+    counts_table['rate'] = utilities.calculate_rate(counts_table, 'numerator', 'denominator', 1)
+    
+    counts_table_redacted = utilities.redact_small_numbers(counts_table, 5, "numerator", "denominator", "rate", "date")
+    
+    exp = pd.DataFrame(
+        {
+            "practice": pd.Series([1, 2, 3, 1, 2]),
+            "numerator": pd.Series([np.nan, np.nan, np.nan, 10, 15]),
+            "denominator": pd.Series([20, 20, 20, 20, 20]),
+            "date": pd.Series(["2019-01-01", "2019-01-01", "2019-01-01", "2019-02-01","2019-02-01"]),
+            "rate": pd.Series([np.nan, np.nan, np.nan, 0.5, 0.75]),
+        }
+    )
+    exp["date"] = pd.to_datetime(exp["date"])
+    
+   
+    testing.assert_frame_equal(counts_table_redacted, exp)
 
 def test_calculate_rate():
     mt = pd.DataFrame(

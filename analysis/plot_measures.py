@@ -71,11 +71,7 @@ for i in indicators_list:
     if i in gi_bleed_indicators:
         ind = gi_bleed_indicators.index(i)
 
-        if gi_bleed_axs_list[ind] == (0, 2):
-            show_legend = True
-        
-        else:
-            show_legend=False
+    
             
             
         
@@ -95,11 +91,7 @@ for i in indicators_list:
         ind = prescribing_indicators.index(i)
         
 
-        if prescribing_axs_list[ind] == 2:
-            show_legend = True
-        
-        else:
-            show_legend=False
+      
             
     
         
@@ -118,12 +110,7 @@ for i in indicators_list:
     if i in monitoring_indicators:
         ind = monitoring_indicators.index(i)
 
-        if monitoring_axs_list[ind] == (0, 1):
-            show_legend = True
         
-        else:
-            show_legend=False
-            
             
         
         deciles_chart_subplots(df,
@@ -165,10 +152,7 @@ for i in indicators_list:
                 df = df[df['age_band'].isin(['70-79', '80+'])]
         
         df = redact_small_numbers(df, 10, f"indicator_{i}_numerator", denominator, "rate", "date")  
-
-        #map imd
-        df[d] = df[d].replace({"0": "Missing", "1": "Most deprived", "5": "Least deprived"})
-        
+    
         plot_measures(df = df, filename=f"plot_{i}_{d}", title=f"Indicator {i} by {d}",  column_to_plot = "rate", y_label = 'Proportion', as_bar=False, category = d)
 
 # plot composite measures

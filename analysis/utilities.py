@@ -737,6 +737,7 @@ def deciles_chart_subplots(
     )  # set x axis range as full date range
     ax.tick_params(axis='x', labelrotation= 90)
     ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter("%B %Y"))
+    ax.set_xticks(sorted(df[period_column].unique()))
     if show_legend:
         ax.legend(
             bbox_to_anchor=(1.5, 1),  # arbitrary location in axes
@@ -749,8 +750,7 @@ def deciles_chart_subplots(
         )  # padding between the axes and legend
         #  specified in font-size units
     
-    plt.xticks(sorted(df[period_column].unique()),rotation=90)
-    plt.tight_layout()
+    
     return plt
 
 

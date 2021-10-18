@@ -75,6 +75,7 @@ actions:
         counts: output/indicator_measure_*.csv
         measure_csv: output/measure*_rate.csv
         demographics: output/demographics_summary.csv
+        age: output/ages_summary.json
   
   generate_summary_counts:
     run: python:latest python analysis/summary_statistics.py

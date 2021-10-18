@@ -1,4 +1,5 @@
 import pandas as pd
+import json
 import numpy as np
 from utilities import OUTPUT_DIR, match_input_files, get_date_input_file, calculate_rate, redact_small_numbers, update_demographics
 from study_definition import indicators_list
@@ -11,6 +12,7 @@ indicators_list.extend(additional_indicators)
 demographics = ["age_band", "sex", "region", "imd", "care_home_type", "ethnicity"]
 
 demographics_df = pd.DataFrame(columns=['patient_id'] + (demographics))
+ages_df = pd.DataFrame(columns=['patient_id', 'age'])
 
 if __name__ == "__main__":
 
@@ -28,6 +30,11 @@ if __name__ == "__main__":
         if match_input_files(file.name):
             
             df = pd.read_feather(OUTPUT_DIR / file.name)
+
+            #check age
+            ages = df.loc[df['age_band']=='missing', ['patient_id', 'age']]
+            ages_df = ages_df.append(ages).drop_duplicates(keep='last')
+
             date = get_date_input_file(file.name)
 
             indicator_e_f = pd.read_feather(OUTPUT_DIR / f'indicator_e_f_{date}.feather')
@@ -97,4 +104,7 @@ if __name__ == "__main__":
     demographic_counts_df = pd.concat(d_list, axis=0)
    
     demographic_counts_df.to_csv(OUTPUT_DIR / "demographics_summary.csv")
-
+    
+    with open(OUTPUT_DIR / 'ages_summary.json', 'w') as f:
+        json.dump(ages_df['age'].mean(), f)
+   

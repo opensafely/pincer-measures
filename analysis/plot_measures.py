@@ -82,7 +82,7 @@ for i in indicators_list:
             title=f'Indicator {i}',
             ylabel="Proportion",
             show_outer_percentiles=False,
-            show_legend=show_legend,
+            show_legend=False,
             ax=gi_bleed_axs[gi_bleed_axs_list[ind]])
     
     #prescribing
@@ -102,7 +102,7 @@ for i in indicators_list:
             title=f'Indicator {i}',
             ylabel="Proportion",
             show_outer_percentiles=False,
-            show_legend=show_legend,
+            show_legend=False,
             ax=prescribing_axs[prescribing_axs_list[ind]])
     
     #monitoring
@@ -120,7 +120,7 @@ for i in indicators_list:
             title=f'Indicator {i}',
             ylabel="Proportion",
             show_outer_percentiles=False,
-            show_legend=show_legend,
+            show_legend=False,
             ax=monitoring_axs[monitoring_axs_list[ind]])
     
     

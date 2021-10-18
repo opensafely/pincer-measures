@@ -93,6 +93,11 @@ if __name__ == "__main__":
     
     d_list={}
     for d in demographics: 
+
+        #map imd
+        df[d] = df[d].replace({"0": "Missing", "1": "Most deprived", "5": "Least deprived"})
+        
+
         counts = demographics_df[d].value_counts()
         
         counts_df = pd.concat([counts, pd.Series([round((value/np.sum(counts))*100, 2) for value in counts], index=counts.index)], axis=1, keys=['count', '%'], levels=demographics)

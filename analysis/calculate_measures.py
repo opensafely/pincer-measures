@@ -94,9 +94,10 @@ if __name__ == "__main__":
     d_list={}
     for d in demographics: 
 
-        #map imd
-        df[d] = df[d].replace({"0": "Missing", "1": "Most deprived", "5": "Least deprived"})
-        
+        if d == 'imd':
+            #map imd
+            df.loc[d] = df.loc[d].replace({"0": "Missing", "1": "Most deprived", "5": "Least deprived"})
+            
 
         counts = demographics_df[d].value_counts()
         

@@ -90,9 +90,9 @@ actions:
     needs: [join_ethnicity_region, generate_measures, generate_measures_demographics, calculate_numerators]
     outputs:
       highly_sensitive:
-        patient_count: output/patient_count.json
-        practice_count: output/practice_count.json
-        summary: output/indicator_summary_statistics.json
+        patient_count: output/patient_count_*.json
+        practice_count: output/practice_count_*.json
+        summary: output/indicator_summary_statistics_*.json
   
   generate_plots:
     run: python:latest python analysis/plot_measures.py

@@ -13,7 +13,7 @@ indicators_list.extend(additional_indicators)
 demographics = ["age_band", "sex", "region", "imd", "ethnicity"]
 
 demographics_df = pd.DataFrame(columns=['patient_id'] + (demographics))
-ages_df = pd.DataFrame(columns=['patient_id', 'age'])
+
 
 if __name__ == "__main__":
 
@@ -32,9 +32,7 @@ if __name__ == "__main__":
             
             df = pd.read_feather(OUTPUT_DIR / file.name)
 
-            #check age
-            ages = df.loc[df['age_band']=='missing', ['patient_id', 'age']]
-            ages_df = ages_df.append(ages).drop_duplicates(keep='last')
+            
 
             date = get_date_input_file(file.name)
 
@@ -112,6 +110,4 @@ if __name__ == "__main__":
    
     demographic_counts_df.to_csv(OUTPUT_DIR / f"demographics_summary_{backend}.csv")
     
-    with open(OUTPUT_DIR / f'ages_summary_{backend}.json', 'w') as f:
-        json.dump(ages_df['age'].mean(), f)
-   
+    

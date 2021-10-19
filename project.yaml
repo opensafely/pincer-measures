@@ -75,7 +75,7 @@ actions:
         counts: output/indicator_measure_*.csv
         measure_csv: output/measure*_rate.csv
         demographics: output/demographics_summary_*.csv
-        age: output/ages_summary_*.json
+        
   
   practice_proportions:
     run: python:latest python analysis/extract_rates.py

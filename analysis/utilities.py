@@ -1,5 +1,6 @@
 import re
 import json
+import os
 from pathlib import Path
 import pandas as pd
 import numpy as np
@@ -8,7 +9,9 @@ import matplotlib
 import seaborn as sns
 from collections import Counter
 from datetime import timedelta as td
-from study_definition import backend
+
+backend =  os.getenv("OPENSAFELY_BACKEND", "expectations")
+
 
 BASE_DIR = Path(__file__).parents[1]
 OUTPUT_DIR = BASE_DIR / "output"

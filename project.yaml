@@ -74,9 +74,17 @@ actions:
       moderately_sensitive:
         counts: output/indicator_measure_*.csv
         measure_csv: output/measure*_rate.csv
-        demographics: output/demographics_summary.csv
-        age: output/ages_summary.json
+        demographics: output/demographics_summary_*.csv
+        age: output/ages_summary_*.json
   
+  practice_proportions:
+    run: python:latest python analysis/extract_rates.py
+    needs: [generate_measures, generate_measures_demographics]
+    outputs:
+      moderately_sensitive:
+        measure_csv: output/measure_cleaned_*.csv
+        
+
   generate_summary_counts:
     run: python:latest python analysis/summary_statistics.py
     needs: [join_ethnicity_region, generate_measures, generate_measures_demographics, calculate_numerators]

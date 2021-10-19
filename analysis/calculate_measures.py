@@ -1,11 +1,10 @@
 import pandas as pd
 import json
-import os
 import numpy as np
 from utilities import OUTPUT_DIR, match_input_files, get_date_input_file, calculate_rate, redact_small_numbers, update_demographics
-from study_definition import indicators_list
+from study_definition import indicators_list, backend
 
-backend =  os.getenv("OPENSAFELY_BACKEND", "expectations")
+
 
 #these are not generated in the main generate measures action
 additional_indicators = ["e","f"]
@@ -88,7 +87,7 @@ if __name__ == "__main__":
     
     for indicator_key, indicator_value in df_dict_additional.items():
         df_combined = pd.concat(indicator_value, axis=0)
-        df_combined.to_csv(OUTPUT_DIR / f"measure_indicator_{indicator_key}_rate_{backend}.csv")
+        df_combined.to_csv(OUTPUT_DIR / f"measure_indicator_{indicator_key}_rate.csv")
 
     
     

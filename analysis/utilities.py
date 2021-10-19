@@ -8,6 +8,7 @@ import matplotlib
 import seaborn as sns
 from collections import Counter
 from datetime import timedelta as td
+from study_definition import backend
 
 BASE_DIR = Path(__file__).parents[1]
 OUTPUT_DIR = BASE_DIR / "output"
@@ -636,7 +637,7 @@ def get_percentage_practices(measure_table):
     Args:
         measure_table: A measure table.
     """
-    with open(OUTPUT_DIR / "practice_count.json") as f:
+    with open(OUTPUT_DIR / f"practice_count_{backend}.json") as f:
         num_practices = json.load(f)["num_practices"]
 
     num_practices_in_study = get_number_practices(measure_table)
@@ -658,7 +659,7 @@ def get_number_patients(measure_id):
     Args:
         measure_id: The measure ID.
     """
-    with open(OUTPUT_DIR / "patient_count.json") as f:
+    with open(OUTPUT_DIR / f"patient_count_{backend}.json") as f:
         d = json.load(f)
     return d["num_patients"][measure_id]
 

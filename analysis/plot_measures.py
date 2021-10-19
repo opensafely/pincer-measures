@@ -71,11 +71,7 @@ for i in indicators_list:
     if i in gi_bleed_indicators:
         ind = gi_bleed_indicators.index(i)
 
-        if gi_bleed_axs_list[ind] == (0, 2):
-            show_legend = True
-        
-        else:
-            show_legend=False
+    
             
             
         
@@ -86,7 +82,7 @@ for i in indicators_list:
             title=f'Indicator {i}',
             ylabel="Proportion",
             show_outer_percentiles=False,
-            show_legend=show_legend,
+            show_legend=False,
             ax=gi_bleed_axs[gi_bleed_axs_list[ind]])
     
     #prescribing
@@ -95,11 +91,7 @@ for i in indicators_list:
         ind = prescribing_indicators.index(i)
         
 
-        if prescribing_axs_list[ind] == 2:
-            show_legend = True
-        
-        else:
-            show_legend=False
+      
             
     
         
@@ -110,7 +102,7 @@ for i in indicators_list:
             title=f'Indicator {i}',
             ylabel="Proportion",
             show_outer_percentiles=False,
-            show_legend=show_legend,
+            show_legend=False,
             ax=prescribing_axs[prescribing_axs_list[ind]])
     
     #monitoring
@@ -118,12 +110,7 @@ for i in indicators_list:
     if i in monitoring_indicators:
         ind = monitoring_indicators.index(i)
 
-        if monitoring_axs_list[ind] == (0, 1):
-            show_legend = True
         
-        else:
-            show_legend=False
-            
             
         
         deciles_chart_subplots(df,
@@ -133,7 +120,7 @@ for i in indicators_list:
             title=f'Indicator {i}',
             ylabel="Proportion",
             show_outer_percentiles=False,
-            show_legend=show_legend,
+            show_legend=False,
             ax=monitoring_axs[monitoring_axs_list[ind]])
     
     

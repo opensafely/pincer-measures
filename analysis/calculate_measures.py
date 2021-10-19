@@ -9,7 +9,7 @@ from study_definition import indicators_list
 additional_indicators = ["e","f"]
 indicators_list.extend(additional_indicators)
 
-demographics = ["age_band", "sex", "region", "imd", "care_home_type", "ethnicity"]
+demographics = ["age_band", "sex", "region", "imd", "ethnicity"]
 
 demographics_df = pd.DataFrame(columns=['patient_id'] + (demographics))
 ages_df = pd.DataFrame(columns=['patient_id', 'age'])

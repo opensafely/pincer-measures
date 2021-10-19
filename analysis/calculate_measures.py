@@ -81,7 +81,7 @@ if __name__ == "__main__":
     for demographic_key, demographic_value in df_dict.items():
         for indicator_key, indicator_value in df_dict[demographic_key].items():
             df_combined = pd.concat(indicator_value, axis=0)
-            df_combined.to_csv(OUTPUT_DIR / f"indicator_measure_{indicator_key}_{demographic_key}_{backend}.csv")
+            df_combined.to_csv(OUTPUT_DIR / f"indicator_measure_{indicator_key}_{demographic_key}.csv")
     
     for indicator_key, indicator_value in df_dict_additional.items():
         df_combined = pd.concat(indicator_value, axis=0)

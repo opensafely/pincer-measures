@@ -1,9 +1,11 @@
 import pandas as pd
 import json
+import os
 import numpy as np
 from utilities import OUTPUT_DIR, match_input_files, get_date_input_file, calculate_rate, redact_small_numbers, update_demographics
 from study_definition import indicators_list
 
+backend =  os.getenv("OPENSAFELY_BACKEND", "expectations")
 
 #these are not generated in the main generate measures action
 additional_indicators = ["e","f"]
@@ -82,11 +84,11 @@ if __name__ == "__main__":
     for demographic_key, demographic_value in df_dict.items():
         for indicator_key, indicator_value in df_dict[demographic_key].items():
             df_combined = pd.concat(indicator_value, axis=0)
-            df_combined.to_csv(OUTPUT_DIR / f"indicator_measure_{indicator_key}_{demographic_key}.csv")
+            df_combined.to_csv(OUTPUT_DIR / f"indicator_measure_{indicator_key}_{demographic_key}_{backend}.csv")
     
     for indicator_key, indicator_value in df_dict_additional.items():
         df_combined = pd.concat(indicator_value, axis=0)
-        df_combined.to_csv(OUTPUT_DIR / f"measure_indicator_{indicator_key}_rate.csv")
+        df_combined.to_csv(OUTPUT_DIR / f"measure_indicator_{indicator_key}_rate_{backend}.csv")
 
     
     
@@ -109,8 +111,8 @@ if __name__ == "__main__":
     
     demographic_counts_df = pd.concat(d_list, axis=0)
    
-    demographic_counts_df.to_csv(OUTPUT_DIR / "demographics_summary.csv")
+    demographic_counts_df.to_csv(OUTPUT_DIR / f"demographics_summary_{backend}.csv")
     
-    with open(OUTPUT_DIR / 'ages_summary.json', 'w') as f:
+    with open(OUTPUT_DIR / f'ages_summary_{backend}.json', 'w') as f:
         json.dump(ages_df['age'].mean(), f)
    

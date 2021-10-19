@@ -113,4 +113,6 @@ if __name__ == "__main__":
     demographic_table = demographic_table.sort_values(by=['demographic', 'level'])
 
     # ### Save to file
-    demographic_table.to_csv(OUTPUT_DIR / "demographics_summary.csv")
+    demographic_table.to_csv(OUTPUT_DIR / "demographics_summary.csv",
+                             index=False,
+                             header=True )

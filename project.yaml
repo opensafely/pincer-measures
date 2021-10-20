@@ -75,6 +75,7 @@ actions:
         counts: output/indicator_measure_*.csv
         measure_csv: output/measure*_rate.csv
         demographics: output/demographics_summary.csv
+        age: output/ages_summary.json
   
   generate_summary_counts:
     run: python:latest python analysis/summary_statistics.py
@@ -124,6 +125,13 @@ actions:
     outputs:
       moderately_sensitive:
         notebook: output/publication_tables.html
+
+  generate_dem_notebook:
+    run: jupyter:latest jupyter nbconvert /workspace/analysis/demographic_report.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
+    needs: [generate_plots]
+    outputs:
+      moderately_sensitive:
+        notebook: output/demographic_report.html
 
   indicator_saturation_a:
     run: r:latest analysis/indicator_saturation_analysis.R -I a -T date -C practice -v -i output -o output/indicator_saturation measure_indicator_a_rate.csv 
@@ -253,11 +261,7 @@ actions:
     outputs:
       moderately_sensitive:
         plots: output/indicator_saturation/combined/BREAK-COUNT_*.png
-  
-###
-### REVERSED ANALYSIS
-###
-
+ 
   indicator_saturation_a_rev:
     run: r:latest analysis/indicator_saturation_analysis.R -I a -T date -C practice -v -Q -i output -o output/indicator_saturation_rev measure_indicator_a_rate.csv 
     needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
@@ -385,8 +389,6 @@ actions:
     outputs:
       moderately_sensitive:
         plots: output/indicator_saturation_rev/combined/BREAK-COUNT_*.png
-
-
 
   run_tests:
     run: python:latest python -m pytest --junit-xml=output/pytest.xml --verbose

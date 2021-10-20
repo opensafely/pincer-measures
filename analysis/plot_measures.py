@@ -59,7 +59,7 @@ for i in indicators_list:
         denominator = f"indicator_{i}_denominator"
     
     df["rate"] = df[f"value"]
-    print(df.head())
+
     df = df.drop(["value"], axis=1)
 
     # Need this for dummy data
@@ -71,44 +71,38 @@ for i in indicators_list:
     if i in gi_bleed_indicators:
         ind = gi_bleed_indicators.index(i)
 
-        if gi_bleed_axs_list[ind] == (0, 2):
-            show_legend = True
-        
-        else:
-            show_legend=False
+    
             
             
         
         deciles_chart_subplots(df,
             period_column='date',
             column='rate',
+            count_column=f"indicator_{i}_numerator",
             title=f'Indicator {i}',
             ylabel="Proportion",
             show_outer_percentiles=False,
-            show_legend=show_legend,
+            show_legend=False,
             ax=gi_bleed_axs[gi_bleed_axs_list[ind]])
     
     #prescribing
 
     if i in prescribing_indicators:
         ind = prescribing_indicators.index(i)
-        print(ind)
-
-        if prescribing_axs_list[ind] == 2:
-            show_legend = True
         
-        else:
-            show_legend=False
+
+      
             
     
         
         deciles_chart_subplots(df,
             period_column='date',
             column='rate',
+            count_column=f"indicator_{i}_numerator",
             title=f'Indicator {i}',
             ylabel="Proportion",
             show_outer_percentiles=False,
-            show_legend=show_legend,
+            show_legend=False,
             ax=prescribing_axs[prescribing_axs_list[ind]])
     
     #monitoring
@@ -116,21 +110,17 @@ for i in indicators_list:
     if i in monitoring_indicators:
         ind = monitoring_indicators.index(i)
 
-        if monitoring_axs_list[ind] == (0, 1):
-            show_legend = True
         
-        else:
-            show_legend=False
-            
             
         
         deciles_chart_subplots(df,
             period_column='date',
             column='rate',
+            count_column=f"indicator_{i}_numerator",
             title=f'Indicator {i}',
             ylabel="Proportion",
             show_outer_percentiles=False,
-            show_legend=show_legend,
+            show_legend=False,
             ax=monitoring_axs[monitoring_axs_list[ind]])
     
     
@@ -161,7 +151,7 @@ for i in indicators_list:
                 #remove bands < 75
                 df = df[df['age_band'].isin(['70-79', '80+'])]
         
-        df = redact_small_numbers(df, 10, f"indicator_{i}_numerator", denominator, "rate")  
+        df = redact_small_numbers(df, 10, f"indicator_{i}_numerator", denominator, "rate", "date")  
     
         plot_measures(df = df, filename=f"plot_{i}_{d}", title=f"Indicator {i} by {d}",  column_to_plot = "rate", y_label = 'Proportion', as_bar=False, category = d)
 

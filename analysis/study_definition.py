@@ -23,7 +23,8 @@ study = StudyDefinition(
        """
        registered AND
        NOT died AND
-       (age >=18 AND age <=120) AND
+       (age >=18 AND age <=120) AND 
+       (sex = 'M' OR sex = 'F') AND
        (
            (age >=65 AND ppi) OR
            (methotrexate_6_3_months AND methotrexate_3_months) OR
@@ -73,7 +74,7 @@ study = StudyDefinition(
             "50-59": """ age >=  50 AND age < 60""",
             "60-69": """ age >=  60 AND age < 70""",
             "70-79": """ age >=  70 AND age < 80""",
-            "80+": """ age >=  80 AND age < 120""",
+            "80+": """ age >=  80 AND age <= 120""",
         },
         return_expectations={
             "rate": "universal",
@@ -104,7 +105,7 @@ study = StudyDefinition(
     sex=patients.sex(
         return_expectations={
             "rate": "universal",
-            "category": {"ratios": {"M": 0.49, "F": 0.5, "U": 0.01}},
+            "category": {"ratios": {"M": 0.5, "F": 0.5}},
         }
     ),
 

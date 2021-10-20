@@ -100,7 +100,7 @@ def calculate_rate(df, value_col: str, population_col: str, rate_per: int):
     rate = df[value_col] / (df[population_col] / rate_per)
     return rate
 
-def redact_small_numbers(df, n, numerator, denominator, rate_column):
+def redact_small_numbers(df, n, numerator, denominator, rate_column, date_column):
     """
     Takes counts df as input and suppresses low numbers.  Sequentially redacts
     low numbers from numerator and denominator until count of redcted values >=n.
@@ -120,21 +120,34 @@ def redact_small_numbers(df, n, numerator, denominator, rate_column):
             pass
         
         else:
-            df[column.name][df[column.name]<=n] = np.nan
-            
-
+            column[column<=n] = np.nan
+           
             while suppressed_count <=n:
                 suppressed_count += column.min()
-                column.iloc[column.idxmin()] = np.nan   
+                
+                column[column.idxmin()] = np.nan   
         return column
     
     
-    for column in [numerator, denominator]:
-        df[column] = suppress_column(df[column])
+    df_list=[]
     
-    df[rate_column][(df[numerator].isna())| (df[denominator].isna())] = np.nan
+   
+    dates = df[date_column].unique()
     
-    return df  
+
+    for d in dates:
+        df_subset = df.loc[df[date_column]==d, :]
+    
+        
+        for column in [numerator, denominator]:
+            df_subset[column] = suppress_column(df_subset[column])
+     
+        df_subset.loc[(df_subset[numerator].isna())| (df_subset[denominator].isna()), rate_column] = np.nan
+        df_list.append(df_subset)
+        
+
+       
+    return pd.concat(df_list, axis=0)
 
 def plot_measures(df, filename: str, title: str, column_to_plot: str, y_label: str, as_bar: bool=False, category: str=None):
     """Produce time series plot from measures table.  One line is plotted for each sub
@@ -153,6 +166,7 @@ def plot_measures(df, filename: str, title: str, column_to_plot: str, y_label: s
             
             #subset on category column and sort by date
             df_subset = df[df[category] == unique_category].sort_values("date")
+            
 
             plt.plot(df_subset['date'], df_subset[column_to_plot])
     else:
@@ -161,9 +175,12 @@ def plot_measures(df, filename: str, title: str, column_to_plot: str, y_label: s
         else:
             plt.plot(df['date'], df[column_to_plot])
 
+   
+    x_labels = sorted(df['date'].unique())
+    
     plt.ylabel(y_label)
     plt.xlabel('Date')
-    plt.xticks(rotation='vertical')
+    plt.xticks(x_labels, rotation='vertical')
     plt.title(title)
     plt.ylim(bottom=0, top= 1 if df[column_to_plot].isnull().values.all() else df[column_to_plot].max() * 1.05)
     
@@ -194,6 +211,7 @@ def deciles_chart_ebm(
     df,
     period_column=None,
     column=None,
+    count_column=None,
     title="",
     ylabel="",
     show_outer_percentiles=True,
@@ -204,7 +222,9 @@ def deciles_chart_ebm(
     sns.set_style("whitegrid", {"grid.color": ".9"})
     if not ax:
         fig, ax = plt.subplots(1, 1)
-    df = compute_deciles(df, period_column, column, show_outer_percentiles)
+    
+    
+    df = compute_redact_deciles(df, period_column, count_column, column)
     linestyles = {
         "decile": {
             "line": "b--",
@@ -276,9 +296,9 @@ def deciles_chart_ebm(
             borderaxespad=0.0,
         )  # padding between the axes and legend
         #  specified in font-size units
-    # rotates and right aligns the x labels, and moves the bottom of the
-    # axes up to make room for them
-    plt.gcf().autofmt_xdate()
+  
+    plt.xticks(sorted(df[period_column].unique()),rotation=90)
+    
     return plt
 
 
@@ -300,6 +320,7 @@ def compute_deciles(
         quantiles = np.concatenate(
             [quantiles, np.arange(0.01, 0.1, 0.01), np.arange(0.91, 1, 0.01)]
         )
+    
 
     percentiles = (
         measure_table.groupby(groupby_col)[values_col]
@@ -318,9 +339,10 @@ def get_practice_deciles(measure_table, value_column):
 
 def compute_redact_deciles(df, period_column, count_column, column):
     n_practices = df.groupby(by=['date'])[['practice']].nunique()
-    count_df = compute_deciles(df, period_column, count_column, False)
+  
+    count_df = compute_deciles(measure_table=df, groupby_col=period_column, values_col=count_column, has_outer_percentiles=False)
     quintile_10 = count_df[count_df['percentile']==10][['date', count_column]]
-    df = compute_deciles(df, period_column, column, False).merge(n_practices, on="date").merge(quintile_10, on="date")
+    df = compute_deciles(df, period_column ,column, False).merge(n_practices, on="date").merge(quintile_10, on="date")
 
     # if quintile 10 is 0, make sure at least 5 practices have 0. If >0, make sure more than 5 practices are in this bottom decile
     df['drop'] = (
@@ -342,17 +364,85 @@ def deciles_chart(df, filename, period_column=None, column=None, count_column=No
 
     df = compute_redact_deciles(df, period_column, count_column, column)
     
-   
-    deciles_chart_ebm(
-        df,
-        period_column="date",
-        column="rate",
-        ylabel="rate per 1000",
-        show_outer_percentiles=False,
-    )
+    """period_column must be dates / datetimes"""
+    sns.set_style("whitegrid", {"grid.color": ".9"})
+    
+    fig, ax = plt.subplots(1, 1)
+    
+    
+    
+    linestyles = {
+        "decile": {
+            "line": "b--",
+            "linewidth": 1,
+            "label": "decile",
+        },
+        "median": {
+            "line": "b-",
+            "linewidth": 1.5,
+            "label": "median",
+        },
+        "percentile": {
+            "line": "b:",
+            "linewidth": 0.8,
+            "label": "1st-9th, 91st-99th percentile",
+        },
+    }
+    label_seen = []
+    for percentile in range(1, 100):  # plot each decile line
+        data = df[df["percentile"] == percentile]
+        add_label = False
+
+        if percentile == 50:
+            style = linestyles["median"]
+            add_label = True
+        
+        else:
+            style = linestyles["decile"]
+            if "decile" not in label_seen:
+                label_seen.append("decile")
+                add_label = True
+        if add_label:
+            label = style["label"]
+        else:
+            label = "_nolegend_"
+
+        ax.plot(
+            data[period_column],
+            data[column],
+            style["line"],
+            linewidth=style["linewidth"],
+            label=label,
+        )
+    ax.set_ylabel(ylabel, size=15, alpha=0.6)
+    if title:
+        ax.set_title(title, size=18)
+    # set ymax across all subplots as largest value across dataset
+    
+    ax.set_ylim([0, 1 if df[column].isnull().values.all() else df[column].max() * 1.05])
+    ax.tick_params(labelsize=12)
+    ax.set_xlim(
+        [df[period_column].min(), df[period_column].max()]
+    )  # set x axis range as full date range
+
+    plt.setp(ax.xaxis.get_majorticklabels(), rotation=90)
+    ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter("%B %Y"))
+  
+    ax.legend(
+        bbox_to_anchor=(1.1, 0.8),  # arbitrary location in axes
+        #  specified as (x0, y0, w, h)
+        loc=CENTER_LEFT,  # which part of the bounding box should
+        #  be placed at bbox_to_anchor
+        ncol=1,  # number of columns in the legend
+        fontsize=12,
+        borderaxespad=0.0,
+    )  # padding between the axes and legend
+        #  specified in font-size units
+  
+    plt.xticks(sorted(df[period_column].unique()),rotation=90)
+    
 
     plt.tight_layout()
-    print((f'output/{filename}.jpeg'))
     plt.savefig(f"output/figures/{filename}.jpeg")
     plt.clf()
 
@@ -496,12 +586,11 @@ def suppress_practice_measures(df, n, numerator, denominator, rate_column):
 
     df_grouped = df.groupby(by=['date'])[[numerator, denominator]].sum().reset_index()
     df_grouped["rate"] = (df_grouped[numerator] / df_grouped[denominator])*1000
-    print(df_grouped)
+  
     df_grouped = redact_small_numbers(df_grouped, 10, numerator, denominator, "rate")
-    print(df_grouped)
-    print(df_grouped.shape) 
+    
     dates_to_drop = df_grouped.loc[(df_grouped[numerator].isnull()) | (df_grouped[denominator].isnull(), 'date')]
-    print(dates_to_drop)
+    
     df['drop'] = df['date'].map(dates_to_drop)
     df.loc[df['drop']==True, [numerator, denominator, rate_column]] = np.nan
     return df
@@ -577,6 +666,7 @@ def deciles_chart_subplots(
     df,
     period_column=None,
     column=None,
+    count_column=None,
     title="",
     ylabel="",
     show_outer_percentiles=True,
@@ -586,8 +676,8 @@ def deciles_chart_subplots(
     """period_column must be dates / datetimes"""
     sns.set_style("whitegrid", {"grid.color": ".9"})
     
-    
-    df = compute_deciles(df, period_column, column, show_outer_percentiles)
+   
+    df = compute_redact_deciles(df, period_column, count_column, column)
  
     linestyles = {
         "decile": {
@@ -647,6 +737,7 @@ def deciles_chart_subplots(
     )  # set x axis range as full date range
     ax.tick_params(axis='x', labelrotation= 90)
     ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter("%B %Y"))
+    ax.set_xticks(sorted(df[period_column].unique()))
     if show_legend:
         ax.legend(
             bbox_to_anchor=(1.5, 1),  # arbitrary location in axes
@@ -658,7 +749,14 @@ def deciles_chart_subplots(
             borderaxespad=0.0,
         )  # padding between the axes and legend
         #  specified in font-size units
-    # rotates and right aligns the x labels, and moves the bottom of the
-    # axes up to make room for them
-    plt.gcf().autofmt_xdate(rotation=90)
+    
+    
     return plt
+
+
+
+def update_demographics(demographics_df, df):
+    """Updates demographics_df with values from df.
+    """
+    demographics_df = demographics_df.append(df[demographics_df.columns]).drop_duplicates(keep='last')
+    return demographics_df

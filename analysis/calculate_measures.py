@@ -87,9 +87,7 @@ if __name__ == "__main__":
     for indicator_key, indicator_value in df_dict_additional.items():
         df_combined = pd.concat(indicator_value, axis=0)
         df_combined.to_csv(OUTPUT_DIR / f"measure_indicator_{indicator_key}_rate.csv")
-
-    
-    
+ 
     
     d_list={}
     for d in demographics: 
@@ -104,12 +102,13 @@ if __name__ == "__main__":
         counts_df = pd.concat([counts, pd.Series([round((value/np.sum(counts))*100, 2) for value in counts], index=counts.index)], axis=1, keys=['count', '%'], levels=demographics)
         d_list[d]=counts_df
 
-       
  
     
     demographic_counts_df = pd.concat(d_list, axis=0)
+    demographic_counts_df = demographic_counts_df.reset_index()
+    demographic_counts_df.columns = ['demographic', 'level', 'count', 'perc']
    
-    demographic_counts_df.to_csv(OUTPUT_DIR / "demographics_summary.csv")
+    demographic_counts_df.to_csv(OUTPUT_DIR / "demographics_summary.csv", index=False )
     
     with open(OUTPUT_DIR / 'ages_summary.json', 'w') as f:
         json.dump(ages_df['age'].mean(), f)

@@ -105,8 +105,10 @@ if __name__ == "__main__":
  
     
     demographic_counts_df = pd.concat(d_list, axis=0)
+    demographic_counts_df = demographic_counts_df.reset_index()
+    demographic_counts_df.columns = ['demographic', 'level', 'count', 'perc']
    
-    demographic_counts_df.to_csv(OUTPUT_DIR / "demographics_summary.csv")
+    demographic_counts_df.to_csv(OUTPUT_DIR / "demographics_summary.csv", index=False )
     
     with open(OUTPUT_DIR / 'ages_summary.json', 'w') as f:
         json.dump(ages_df['age'].mean(), f)

@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import json
 from utilities import *
-from study_definition import indicators_list
+from study_definition import indicators_list, backend
 
 #these are not generated in the main generate measures action
 additional_indicators = ["e","f"]
@@ -47,7 +47,7 @@ for file in OUTPUT_DIR.iterdir():
 
 num_practices = len(np.unique(practice_list))
 
-with open('output/practice_count.json', 'w') as f:
+with open(f'output/practice_count_{backend}.json', 'w') as f:
     json.dump({"num_practices": num_practices}, f)
 
 
@@ -59,7 +59,7 @@ for (key, value) in patient_dict.items():
     #add to dictionary as num(mil)
     patient_counts_dict[key] = (unique_patients)
       
-with open('output/patient_count.json', 'w') as f:
+with open(f'output/patient_count_{backend}.json', 'w') as f:
     json.dump({"num_patients": patient_counts_dict}, f)
 
 
@@ -78,6 +78,6 @@ for indicator in indicators_list:
     counts_dict[indicator]['percent_practice'] = percentage_practices
 
 
-with open('output/indicator_summary_statistics.json', 'w') as f:
+with open(f'output/indicator_summary_statistics_{backend}.json', 'w') as f:
     json.dump({"summary": counts_dict}, f) 
     

@@ -2,17 +2,18 @@ import pandas as pd
 import json
 import numpy as np
 from utilities import OUTPUT_DIR, match_input_files, get_date_input_file, calculate_rate, redact_small_numbers, update_demographics
-from study_definition import indicators_list
+from study_definition import indicators_list, backend
+
 
 
 #these are not generated in the main generate measures action
 additional_indicators = ["e","f"]
 indicators_list.extend(additional_indicators)
 
-demographics = ["age_band", "sex", "region", "imd", "care_home_type", "ethnicity"]
+demographics = ["age_band", "sex", "region", "imd", "ethnicity"]
 
 demographics_df = pd.DataFrame(columns=['patient_id'] + (demographics))
-ages_df = pd.DataFrame(columns=['patient_id', 'age'])
+
 
 if __name__ == "__main__":
 
@@ -31,9 +32,7 @@ if __name__ == "__main__":
             
             df = pd.read_feather(OUTPUT_DIR / file.name)
 
-            #check age
-            ages = df.loc[df['age_band']=='missing', ['patient_id', 'age']]
-            ages_df = ages_df.append(ages).drop_duplicates(keep='last')
+            
 
             date = get_date_input_file(file.name)
 
@@ -107,9 +106,7 @@ if __name__ == "__main__":
     demographic_counts_df = pd.concat(d_list, axis=0)
     demographic_counts_df = demographic_counts_df.reset_index()
     demographic_counts_df.columns = ['demographic', 'level', 'count', 'perc']
-   
-    demographic_counts_df.to_csv(OUTPUT_DIR / "demographics_summary.csv", index=False )
+ 
+    demographic_counts_df.to_csv(OUTPUT_DIR / f"demographics_summary_{backend}.csv", index=False )
+
     
-    with open(OUTPUT_DIR / 'ages_summary.json', 'w') as f:
-        json.dump(ages_df['age'].mean(), f)
-   

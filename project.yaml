@@ -74,17 +74,25 @@ actions:
       moderately_sensitive:
         counts: output/indicator_measure_*.csv
         measure_csv: output/measure*_rate.csv
-        demographics: output/demographics_summary.csv
-        age: output/ages_summary.json
+        demographics: output/demographics_summary_*.csv
+        
   
+  practice_proportions:
+    run: python:latest python analysis/extract_rates.py
+    needs: [generate_measures, generate_measures_demographics]
+    outputs:
+      moderately_sensitive:
+        measure_csv: output/measure_cleaned_*.csv
+        
+
   generate_summary_counts:
     run: python:latest python analysis/summary_statistics.py
     needs: [join_ethnicity_region, generate_measures, generate_measures_demographics, calculate_numerators]
     outputs:
       highly_sensitive:
-        patient_count: output/patient_count.json
-        practice_count: output/practice_count.json
-        summary: output/indicator_summary_statistics.json
+        patient_count: output/patient_count_*.json
+        practice_count: output/practice_count_*.json
+        summary: output/indicator_summary_statistics_*.json
   
   generate_plots:
     run: python:latest python analysis/plot_measures.py
@@ -112,26 +120,29 @@ actions:
         alert: output/cusum/alerts/alerts_indicator_*.jpeg
         combined_cusum: output/cusum/combined_*.png
   
-  generate_notebook:
-    run: jupyter:latest jupyter nbconvert /workspace/analysis/report.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
-    needs: [generate_plots, generate_summary_counts]
-    outputs:
-      moderately_sensitive:
-        notebook: output/report.html
+  # generate_notebook:
+  #   run: jupyter:latest jupyter nbconvert /workspace/analysis/report.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
+  #   needs: [generate_plots, generate_summary_counts]
+  #   outputs:
+  #     moderately_sensitive:
+  #       notebook: output/report.html
 
-  generate_publication_tables:
-    run: jupyter:latest jupyter nbconvert /workspace/analysis/publication_tables.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
-    needs: [generate_measures_demographics, generate_summary_counts]
-    outputs:
-      moderately_sensitive:
-        notebook: output/publication_tables.html
 
-  generate_dem_notebook:
-    run: jupyter:latest jupyter nbconvert /workspace/analysis/demographic_report.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
-    needs: [generate_plots]
-    outputs:
-      moderately_sensitive:
-        notebook: output/demographic_report.html
+  # generate_dem_notebook:
+  #   run: jupyter:latest jupyter nbconvert /workspace/analysis/demographic_report.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
+  #   needs: [generate_plots]
+  #   outputs:
+  #     moderately_sensitive:
+  #       notebook: output/demographic_report.html
+
+#   generate_publication_tables:
+#     run: jupyter:latest jupyter nbconvert /workspace/analysis/publication_tables.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
+#     needs: [generate_measures_demographics, generate_summary_counts]
+#     outputs:
+#       moderately_sensitive:
+#         notebook: output/publication_tables.html
+
+
 
   indicator_saturation_a:
     run: r:latest analysis/indicator_saturation_analysis.R -I a -T date -C practice -v -i output -o output/indicator_saturation measure_indicator_a_rate.csv 

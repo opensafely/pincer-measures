@@ -4,8 +4,12 @@ from cohortextractor import (
     Measure
 )
 
+import os
+
 from codelists import *
 from co_prescribing_variables import create_co_prescribing_variables
+
+backend =  os.getenv("OPENSAFELY_BACKEND", "expectations")
 
 start_date = "2019-09-01"
 end_date = "2021-07-01"
@@ -159,27 +163,7 @@ study = StudyDefinition(
         },
     ),
 
-    care_home_type=patients.care_home_status_as_of(
-        "index_date",
-        categorised_as={
-            "PC": """
-              IsPotentialCareHome
-              AND LocationDoesNotRequireNursing='Y'
-              AND LocationRequiresNursing='N'
-            """,
-            "PN": """
-              IsPotentialCareHome
-              AND LocationDoesNotRequireNursing='N'
-              AND LocationRequiresNursing='Y'
-            """,
-            "PS": "IsPotentialCareHome",
-            "U": "DEFAULT",
-        },
-        return_expectations={
-            "rate": "universal",
-            "category": {"ratios": {"PC": 0.05, "PN": 0.05, "PS": 0.05, "U": 0.85,},},
-        },
-    ),
+    
 
     ###
     # CO-PRESCRIBING-VARS

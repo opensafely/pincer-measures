@@ -363,7 +363,7 @@ def compute_redact_deciles(df, period_column, count_column, column):
     return df
 
 
-def deciles_chart(df, filename, period_column=None, column=None, count_column=None, title="", ylabel=""):
+def deciles_chart(df, filename, period_column=None, column=None, count_column=None, title="", ylabel="", time_window=""):
     """period_column must be dates / datetimes"""
 
     df = compute_redact_deciles(df, period_column, count_column, column)
@@ -379,12 +379,12 @@ def deciles_chart(df, filename, period_column=None, column=None, count_column=No
         "decile": {
             "line": "b--",
             "linewidth": 1,
-            "label": "decile",
+            "label": "Decile",
         },
         "median": {
             "line": "b-",
             "linewidth": 1.5,
-            "label": "median",
+            "label": "Median",
         },
         "percentile": {
             "line": "b:",
@@ -432,20 +432,27 @@ def deciles_chart(df, filename, period_column=None, column=None, count_column=No
     plt.setp(ax.xaxis.get_majorticklabels(), rotation=90)
     ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter("%B %Y"))
   
+    
+    plt.xticks(sorted(df[period_column].unique()),rotation=90)
+    
+    plt.vlines(x=[pd.to_datetime("2020-03-01")], ymin=0, ymax=1, colors='orange', ls='--', label='National Lockdown')
+    
+    if not time_window=="":
+
+        plt.vlines(x=[pd.to_datetime(time_window)],ymin=0, ymax=1, colors='green', ls='--', label='Date of expected impact')
+    
     ax.legend(
         bbox_to_anchor=(1.1, 0.8),  # arbitrary location in axes
         #  specified as (x0, y0, w, h)
         loc=CENTER_LEFT,  # which part of the bounding box should
         #  be placed at bbox_to_anchor
         ncol=1,  # number of columns in the legend
-        fontsize=12,
+        fontsize=8,
         borderaxespad=0.0,
     )  # padding between the axes and legend
         #  specified in font-size units
   
-    plt.xticks(sorted(df[period_column].unique()),rotation=90)
     
-
     plt.tight_layout()
     plt.savefig(f"output/figures/{filename}.jpeg")
     plt.clf()
@@ -676,6 +683,7 @@ def deciles_chart_subplots(
     show_outer_percentiles=True,
     show_legend=True,
     ax=None,
+    time_window="",
 ):
     """period_column must be dates / datetimes"""
     sns.set_style("whitegrid", {"grid.color": ".9"})
@@ -687,12 +695,12 @@ def deciles_chart_subplots(
         "decile": {
             "line": "b--",
             "linewidth": 1,
-            "label": "decile",
+            "label": "Decile",
         },
         "median": {
             "line": "b-",
             "linewidth": 1.5,
-            "label": "median",
+            "label": "Median",
         },
         "percentile": {
             "line": "b:",
@@ -730,6 +738,11 @@ def deciles_chart_subplots(
             linewidth=style["linewidth"],
             label=label,
         )
+    ax.vlines(x=[pd.to_datetime("2020-03-01")], ymin=0, ymax=1, colors='orange', ls='--', label='National Lockdown')
+    
+    if not time_window == "":
+        ax.vlines(x=[pd.to_datetime(time_window)],ymin=0, ymax=1, colors='green', ls='--', label='Date of expected maximum impact')
+    
     ax.set_ylabel(ylabel, size=14)
     if title:
         ax.set_title(title, size=20)

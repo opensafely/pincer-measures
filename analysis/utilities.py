@@ -432,7 +432,10 @@ def deciles_chart(df, filename, period_column=None, column=None, count_column=No
     plt.xticks(sorted(df[period_column].unique()),rotation=90)
     
     plt.vlines(x=[pd.to_datetime("2020-03-01")], ymin=0, ymax=1, colors='orange', ls='--', label='National Lockdown')
-    plt.vlines(x=[pd.to_datetime(time_window) if not time_window=="" else time_window],ymin=0, ymax=1, colors='green', ls='--', label='Date of expected impact')
+    
+    if not time_window=="":
+
+        plt.vlines(x=[pd.to_datetime(time_window)],ymin=0, ymax=1, colors='green', ls='--', label='Date of expected impact')
     
     ax.legend(
         bbox_to_anchor=(1.1, 0.8),  # arbitrary location in axes
@@ -732,7 +735,9 @@ def deciles_chart_subplots(
             label=label,
         )
     ax.vlines(x=[pd.to_datetime("2020-03-01")], ymin=0, ymax=1, colors='orange', ls='--', label='National Lockdown')
-    ax.vlines(x=[pd.to_datetime(time_window) if not time_window=="" else time_window],ymin=0, ymax=1, colors='green', ls='--', label='Date of expected maximum impact')
+    
+    if not time_window == "":
+        ax.vlines(x=[pd.to_datetime(time_window)],ymin=0, ymax=1, colors='green', ls='--', label='Date of expected maximum impact')
     
     ax.set_ylabel(ylabel, size=14)
     if title:

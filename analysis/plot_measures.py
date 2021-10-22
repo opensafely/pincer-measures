@@ -12,6 +12,8 @@ import matplotlib.pyplot as plt
 additional_indicators = ["e","f", "li"]
 indicators_list.extend(additional_indicators)
 
+time_period_mapping = {"a": "2020-06-01", "b":"2020-06-01", "c": "2020-06-01", "d":"2020-06-01", "e": "2020-06-01", "f":"2020-06-01", "g": "2020-06-01", "i": "2020-06-01", "k": "2020-06-01", "ac": "2021-05-01", "me_no_fbc": "2020-06-01", "me_no_lft": "2020-06-01", "li": "2020-06-01", "am": "2020-09-01"}
+
 
 if not (OUTPUT_DIR / 'figures').exists():
     os.mkdir(OUTPUT_DIR / 'figures')
@@ -65,7 +67,7 @@ for i in indicators_list:
     # Need this for dummy data
     df = df.replace(np.inf, np.nan) 
 
-    deciles_chart(df, filename=f"plot_{i}", period_column="date", column="rate", count_column = f"indicator_{i}_numerator",title=f"Decile Chart Indicator {i}", ylabel="Proportion")
+    deciles_chart(df, filename=f"plot_{i}", period_column="date", column="rate", count_column = f"indicator_{i}_numerator",title=f"Decile Chart Indicator {i}", ylabel="Proportion", time_window=time_period_mapping[i])
 
     #gi bleed
     if i in gi_bleed_indicators:
@@ -83,7 +85,8 @@ for i in indicators_list:
             ylabel="Proportion",
             show_outer_percentiles=False,
             show_legend=False,
-            ax=gi_bleed_axs[gi_bleed_axs_list[ind]])
+            ax=gi_bleed_axs[gi_bleed_axs_list[ind]], 
+            time_window=time_period_mapping[i])
     
     #prescribing
 
@@ -103,7 +106,8 @@ for i in indicators_list:
             ylabel="Proportion",
             show_outer_percentiles=False,
             show_legend=False,
-            ax=prescribing_axs[prescribing_axs_list[ind]])
+            ax=prescribing_axs[prescribing_axs_list[ind]],
+            time_window=time_period_mapping[i])
     
     #monitoring
 
@@ -121,7 +125,8 @@ for i in indicators_list:
             ylabel="Proportion",
             show_outer_percentiles=False,
             show_legend=False,
-            ax=monitoring_axs[monitoring_axs_list[ind]])
+            ax=monitoring_axs[monitoring_axs_list[ind]],
+            time_window=time_period_mapping[i])
     
     
     

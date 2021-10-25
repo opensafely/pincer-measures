@@ -120,20 +120,20 @@ actions:
         alert: output/cusum/alerts/alerts_indicator_*.jpeg
         combined_cusum: output/cusum/combined_*.png
   
-  # generate_notebook:
-  #   run: jupyter:latest jupyter nbconvert /workspace/analysis/report.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
-  #   needs: [generate_plots, generate_summary_counts]
-  #   outputs:
-  #     moderately_sensitive:
-  #       notebook: output/report.html
+  generate_notebook:
+    run: jupyter:latest jupyter nbconvert /workspace/analysis/report.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
+    needs: [generate_plots, generate_summary_counts]
+    outputs:
+      moderately_sensitive:
+        notebook: output/report.html
 
 
-  # generate_dem_notebook:
-  #   run: jupyter:latest jupyter nbconvert /workspace/analysis/demographic_report.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
-  #   needs: [generate_plots]
-  #   outputs:
-  #     moderately_sensitive:
-  #       notebook: output/demographic_report.html
+  generate_dem_notebook:
+    run: jupyter:latest jupyter nbconvert /workspace/analysis/demographic_report.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
+    needs: [generate_plots]
+    outputs:
+      moderately_sensitive:
+        notebook: output/demographic_report.html
 
 #   generate_publication_tables:
 #     run: jupyter:latest jupyter nbconvert /workspace/analysis/publication_tables.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input

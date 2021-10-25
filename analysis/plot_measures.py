@@ -138,13 +138,14 @@ for i in indicators_list:
     # demographic plots
     for d in demographics:
         df = pd.read_csv(OUTPUT_DIR / f"indicator_measure_{i}_{d}.csv", parse_dates=["date"])
+        df['rate'] = df['rate'].round(2)
 
         if d == 'sex':
             df = df[df['sex'].isin(['M', 'F'])]
         
         elif d == 'imd':
             df = df[df['imd'] != 0]
-        
+            
         elif d == 'age_band':
             df = df[df['age_band'] !='missing']
 

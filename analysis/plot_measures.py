@@ -45,6 +45,7 @@ monitoring_fig.delaxes(monitoring_axs[0, 2])
 
 monitoring_indicators = ["ac", "me_no_fbc", "me_no_lft", "li", "am"]
 
+title_mapping = {"a": "NSAID_PPI_65", "b": "NSAID_PPI_ulcer", "c": "AP_PPI_ulcer", "d": "DOAC_NSAID", "e": "DOAC_AP_PPI", "f": "ASP_AP_PPI", "g": "BB_asthma", "i": "NSAID_HF", "k": "NSAID_CKD", "ac": "ACEi_RF+E", "me_no_fbc": "MTX_FBC", "me_no_lft": "MTX_LFT", "li": "LITHIUM", "am": "AM_TFT"}
 
 
 
@@ -73,7 +74,7 @@ for i in indicators_list:
     if i in gi_bleed_indicators:
         ind = gi_bleed_indicators.index(i)
 
-    
+        
             
             
         
@@ -102,7 +103,7 @@ for i in indicators_list:
             period_column='date',
             column='rate',
             count_column=f"indicator_{i}_numerator",
-            title=f'Indicator {i}',
+            title=title_mapping[i],
             ylabel="Proportion",
             show_outer_percentiles=False,
             show_legend=False,

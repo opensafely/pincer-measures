@@ -743,16 +743,16 @@ def deciles_chart_subplots(
     if not time_window == "":
         ax.vlines(x=[pd.to_datetime(time_window)],ymin=0, ymax=1, colors='green', ls='--', label='Date of expected maximum impact')
     
-    ax.set_ylabel(ylabel, size=14)
+    ax.set_ylabel(ylabel, size=24)
     if title:
-        ax.set_title(title, size=20)
+        ax.set_title(title, size=30)
     # set ymax across all subplots as largest value across dataset
-    ax.set_ylim([0, df[column].max() * 1.05])
+    ax.set_ylim([0, df[column].max() * 1.05 if (df[column].max() * 1.05) < 1.0 else 1.0 ])
     ax.tick_params(labelsize=14)
     ax.set_xlim(
         [df[period_column].min(), df[period_column].max()]
     )  # set x axis range as full date range
-    ax.tick_params(axis='x', labelrotation= 90)
+    ax.tick_params(axis='x', labelrotation= 90, size=15, labelsize=24)
     ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter("%B %Y"))
     ax.set_xticks(sorted(df[period_column].unique()))
     if show_legend:

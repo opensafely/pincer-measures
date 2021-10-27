@@ -26,6 +26,7 @@ gi_bleed_y = np.arange(0, 3, 1)
 gi_bleed_axs_list = [(i, j) for i in gi_bleed_x for j in gi_bleed_y]
 gi_bleed_fig, gi_bleed_axs = plt.subplots(2, 3, figsize=(30,20), sharex='col')
 
+
 gi_bleed_indicators = ["a", "b", "c", "d", "e", "f"]
 
 
@@ -33,6 +34,7 @@ prescribing_y = np.arange(0, 3, 1)
 prescribing_axs_list = [i for i in prescribing_y]
 
 prescribing_fig, prescribing_axs = plt.subplots(1, 3, figsize=(30,10), sharex='col')
+
 
 prescribing_indicators = ["g", "i", "k"]
 
@@ -43,8 +45,11 @@ monitoring_axs_list.remove((0, 2))
 monitoring_fig, monitoring_axs = plt.subplots(2, 3, figsize=(30,20), sharex='col')
 monitoring_fig.delaxes(monitoring_axs[0, 2])
 
+
+
 monitoring_indicators = ["ac", "me_no_fbc", "me_no_lft", "li", "am"]
 
+title_mapping = {"a": "NSAID_PPI_65", "b": "NSAID_PPI_ulcer", "c": "AP_PPI_ulcer", "d": "DOAC_NSAID", "e": "DOAC_AP_PPI", "f": "ASP_AP_PPI", "g": "BB_asthma", "i": "NSAID_HF", "k": "NSAID_CKD", "ac": "ACEi_RF+E", "me_no_fbc": "MTX_FBC", "me_no_lft": "MTX_LFT", "li": "LITHIUM", "am": "AM_TFT"}
 
 
 
@@ -73,7 +78,7 @@ for i in indicators_list:
     if i in gi_bleed_indicators:
         ind = gi_bleed_indicators.index(i)
 
-    
+        
             
             
         
@@ -81,7 +86,7 @@ for i in indicators_list:
             period_column='date',
             column='rate',
             count_column=f"indicator_{i}_numerator",
-            title=f'Indicator {i}',
+            title=title_mapping[i],
             ylabel="Proportion",
             show_outer_percentiles=False,
             show_legend=False,
@@ -102,7 +107,7 @@ for i in indicators_list:
             period_column='date',
             column='rate',
             count_column=f"indicator_{i}_numerator",
-            title=f'Indicator {i}',
+            title=title_mapping[i],
             ylabel="Proportion",
             show_outer_percentiles=False,
             show_legend=False,
@@ -121,7 +126,7 @@ for i in indicators_list:
             period_column='date',
             column='rate',
             count_column=f"indicator_{i}_numerator",
-            title=f'Indicator {i}',
+            title=title_mapping[i],
             ylabel="Proportion",
             show_outer_percentiles=False,
             show_legend=False,
@@ -208,8 +213,8 @@ for i in composite_indicators:
 
 
 
-gi_bleed_fig.savefig('output/figures/combined_plot_gi_bleed.png')
+gi_bleed_fig.savefig('output/figures/combined_plot_gi_bleed.png', bbox_inches = "tight")
 plt.clf()
-prescribing_fig.savefig('output/figures/combined_plot_prescribing.png')
+prescribing_fig.savefig('output/figures/combined_plot_prescribing.png', bbox_inches = "tight")
 plt.clf()
-monitoring_fig.savefig('output/figures/combined_plot_monitoring.png')
+monitoring_fig.savefig('output/figures/combined_plot_monitoring.png', bbox_inches = "tight")

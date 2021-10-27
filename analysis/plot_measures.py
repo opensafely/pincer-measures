@@ -26,6 +26,7 @@ gi_bleed_y = np.arange(0, 3, 1)
 gi_bleed_axs_list = [(i, j) for i in gi_bleed_x for j in gi_bleed_y]
 gi_bleed_fig, gi_bleed_axs = plt.subplots(2, 3, figsize=(30,20), sharex='col')
 
+
 gi_bleed_indicators = ["a", "b", "c", "d", "e", "f"]
 
 
@@ -33,6 +34,7 @@ prescribing_y = np.arange(0, 3, 1)
 prescribing_axs_list = [i for i in prescribing_y]
 
 prescribing_fig, prescribing_axs = plt.subplots(1, 3, figsize=(30,10), sharex='col')
+
 
 prescribing_indicators = ["g", "i", "k"]
 
@@ -42,6 +44,8 @@ monitoring_axs_list = [(i, j) for i in monitoring_x for j in monitoring_y]
 monitoring_axs_list.remove((0, 2))
 monitoring_fig, monitoring_axs = plt.subplots(2, 3, figsize=(30,20), sharex='col')
 monitoring_fig.delaxes(monitoring_axs[0, 2])
+
+
 
 monitoring_indicators = ["ac", "me_no_fbc", "me_no_lft", "li", "am"]
 
@@ -209,8 +213,8 @@ for i in composite_indicators:
 
 
 
-gi_bleed_fig.savefig('output/figures/combined_plot_gi_bleed.png')
+gi_bleed_fig.savefig('output/figures/combined_plot_gi_bleed.png', bbox_inches = "tight")
 plt.clf()
-prescribing_fig.savefig('output/figures/combined_plot_prescribing.png')
+prescribing_fig.savefig('output/figures/combined_plot_prescribing.png', bbox_inches = "tight")
 plt.clf()
-monitoring_fig.savefig('output/figures/combined_plot_monitoring.png')
+monitoring_fig.savefig('output/figures/combined_plot_monitoring.png', bbox_inches = "tight")

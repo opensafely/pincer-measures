@@ -648,6 +648,7 @@ def get_number_practices(df):
 
     practices_with_value = df.loc[df[f'indicator_{indicator}_numerator']>0, 'practice']
     
+
     return len(practices_with_value.unique())
 
 def get_percentage_practices(measure_table):
@@ -659,8 +660,8 @@ def get_percentage_practices(measure_table):
         num_practices = json.load(f)["num_practices"]
 
     num_practices_in_study = get_number_practices(measure_table)
-
-    return num_practices, np.round((num_practices_in_study / num_practices) * 100, 2)
+    
+    return num_practices_in_study, np.round((num_practices_in_study / num_practices) * 100, 2)
 
 
 def get_number_events(measure_table, measure_id):

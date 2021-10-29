@@ -640,7 +640,15 @@ def get_number_practices(df):
     Args:
         df: A measure table.
     """
-    return len(df.practice.unique())
+    indicator=''
+    for column in df.columns:
+        if re.match(r'indicator_(.*)_numerator', column):
+            indicator = re.search(r'indicator_(.*)_numerator', column).group(1)
+    
+
+    practices_with_value = df.loc[df[f'indicator_{indicator}_numerator']>0, 'practice']
+    
+    return len(practices_with_value.unique())
 
 def get_percentage_practices(measure_table):
     """Gets the percentage of practices in the given measure table.

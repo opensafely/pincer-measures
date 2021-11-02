@@ -438,7 +438,20 @@ study = StudyDefinition(
     ),
 
     # https://docs.opensafely.org/study-def-variables/#cohortextractor.patients.comparator_from
-    egfr_comparator=patients.comparator_from("egfr"),
+    egfr_comparator=patients.comparator_from("egfr",
+                                             return_expectations={
+                                                 "rate": "universal",
+                                                 "category": {
+                                                     "ratios": {  # ~, =, >= , > , < , <=
+                                                         "~": 0.05,
+                                                         "=": 0.75,
+                                                         ">=": 0.05,
+                                                         ">": 0.05,
+                                                         "<": 0.05,
+                                                         "<=": 0.05}
+                                                 },
+                                             },
+    ),
 
     egfr_less_than_45 = patients.categorised_as(
         {

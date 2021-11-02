@@ -437,6 +437,9 @@ study = StudyDefinition(
         },
     ),
 
+    # https://docs.opensafely.org/study-def-variables/#cohortextractor.patients.comparator_from
+    egfr_comparator=patients.comparator_from("egfr"),
+    # AttributeError: module 'cohortextractor.patients' has no attribute 'comparator_from'
 
     egfr_less_than_45 = patients.categorised_as(
         {

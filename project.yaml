@@ -23,6 +23,11 @@ actions:
       highly_sensitive:
         cohort: output/inpu*.feather
 
+  generate_study_population_egfr:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_egfr --index-date-range "2021-08-01 to 2021-09-01 by month" --output-format feather
+    outputs:
+      highly_sensitive:
+        cohort: output/input_egfr_*.feather
 
   generate_study_population_ethnicity:
     run: cohortextractor:latest generate_cohort --study-definition study_definition_ethnicity --output-format feather
@@ -37,6 +42,12 @@ actions:
       highly_sensitive:
         cohort: output/inp*.feather
 
+  count_egfr_comparators:
+    run: python:latest python analysis/count_comparator_value_pairs.py
+    needs: [generate_study_population_egfr]
+    outputs:
+      moderately_sensitive:
+        cohort: output/EGFR_comparator-value_counts.csv
   
   calculate_numerators:
     run: python:latest python analysis/calculate_numerators.py

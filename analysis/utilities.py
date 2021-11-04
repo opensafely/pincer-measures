@@ -35,6 +35,11 @@ def match_input_files(file: str) -> bool:
     return True if re.match(pattern, file) else False
 
 
+def match_egfr_files(file: str) -> bool:
+    """Checks if file name has format outputted by cohort extractor for egfr data"""
+    pattern = r'^input_egfr_20\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\.feather'
+    return True if re.match(pattern, file) else False
+
 
 def match_measure_files( file: str ) -> bool:
     """Checks if file name has format outputted by cohort extractor (generate_measures action)"""
@@ -86,7 +91,27 @@ def join_ethnicity_region(directory: str) -> None:
             df.to_feather(dirpath / file.name)
 
             
+def count_comparator_value_pairs(directory: str) -> None:
+    """Finds 'input_XX-XX-XX.feather' in directory extracts counts of the egfr value/comparator data."""
 
+    dirpath = Path(directory)
+    validate_directory(dirpath)
+    filelist = dirpath.iterdir()
+
+    comparator_value_list = []
+
+    for file in filelist:
+        if match_egfr_files(file.name):
+            df = pd.read_feather(dirpath / file.name)
+
+            cv_pairs = [''.join(i) for i in zip(df["egfr_comparator"], df["egfr"].map(round).map(str))]
+
+            comparator_value_list = comparator_value_list + cv_pairs
+
+    comparator_value_df = pd.DataFrame.from_dict(Counter(comparator_value_list), orient='index').reset_index()
+    comparator_value_df.columns = ["cv_pair", "count"]
+    comparator_value_df_filtered = comparator_value_df.query('count > 5')
+    comparator_value_df_filtered.to_csv(dirpath / "EGFR_comparator-value_counts.csv", index=False )
 
 
 def calculate_rate(df, value_col: str, population_col: str, rate_per: int): 

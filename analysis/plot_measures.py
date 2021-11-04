@@ -52,6 +52,9 @@ monitoring_indicators = ["ac", "me_no_fbc", "me_no_lft", "li", "am"]
 title_mapping = {"a": "NSAID_PPI_65", "b": "NSAID_PPI_ulcer", "c": "AP_PPI_ulcer", "d": "DOAC_NSAID", "e": "DOAC_AP_PPI", "f": "ASP_AP_PPI", "g": "BB_asthma", "i": "NSAID_HF", "k": "NSAID_CKD", "ac": "ACEi_RF+E", "me_no_fbc": "MTX_FBC", "me_no_lft": "MTX_LFT", "li": "LITHIUM", "am": "AM_TFT"}
 
 
+# Dataframe for demographic aggregates
+demographic_aggregate_df = pd.DataFrame(columns=['demographic', 'group', 'pre_mean', 'post_mean'])
+
 
 for i in indicators_list:
     # indicator plots
@@ -162,8 +165,20 @@ for i in indicators_list:
                 #remove bands < 75
                 df = df[df['age_band'].isin(['70-79', '80+'])]
         
+        
         df = redact_small_numbers(df, 10, f"indicator_{i}_numerator", denominator, "rate", "date")  
-    
+
+        #SELECT DATES FOR AGGREGATE DEMOGRAPHIC VALUES
+        pre_q1 = ["2020-01-01", "2020-02-01", "2020-03-01"]
+        post_q1 = ["2021-01-01", "2021-02-01", "2021-03-01"]
+
+        pre_df = df.loc[df['date'].isin(pre_q1),:]
+        mean_pre = pre_df.groupby(by=[d])['rate'].mean()
+
+        post_df = df.loc[df['date'].isin(post_q1),:]
+        mean_post = post_df.groupby(by=[d])['rate'].mean()
+
+
         plot_measures(df = df, filename=f"plot_{i}_{d}", title=f"Indicator {i} by {d}",  column_to_plot = "rate", y_label = 'Proportion', as_bar=False, category = d)
 
 # plot composite measures

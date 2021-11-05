@@ -54,7 +54,7 @@ study = StudyDefinition(
     egfr_between_1_and_45 = patients.categorised_as(
         {
             "0": "DEFAULT",
-            "1": """ (egfr>=1) AND (egfr < 45)"""
+            "1": """ (egfr>=1) AND (egfr < 45) AND ( NOT egfr_comparator = '>') AND ( NOT egfr_comparator = '~') """
         },
         return_expectations = {
             "rate": "universal",

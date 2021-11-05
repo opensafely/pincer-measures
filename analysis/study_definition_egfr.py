@@ -39,13 +39,15 @@ study = StudyDefinition(
                                                  "rate": "universal",
                                                  "category": {
                                                      "ratios": {  # ~, =, >= , > , < , <=
+                                                        None: 0.10,
                                                          "~": 0.05,
-                                                         "=": 0.75,
+                                                         "=": 0.65,
                                                          ">=": 0.05,
                                                          ">": 0.05,
                                                          "<": 0.05,
                                                          "<=": 0.05}
                                                  },
+                                                 "incidence": 0.80,
                                              },
     ),
 

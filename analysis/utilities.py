@@ -101,11 +101,11 @@ def count_comparator_value_pairs(directory: str) -> None:
     comparator_value_list = []
 
     for file in filelist:
-        if match_egfr_files(file.name):
+        if match_input_files(file.name):
             df = pd.read_feather(dirpath / file.name)
 
             df['egfr_comparator'] = df['egfr_comparator'].astype('string')
-            df.fillna({'egfr_comparator': "", 'egfr': -10}, inplace=True)
+            df.fillna({'egfr_comparator': "", 'egfr': -1}, inplace=True)
 
             cv_pairs = [''.join( i ) for i in zip(df["egfr_comparator"], df["egfr"].map(round).map(str))]
 

@@ -39,7 +39,7 @@ study = StudyDefinition(
            (aspirin AND (NOT ppi)) OR
            ((asthma AND (NOT asthma_resolved)) OR (asthma_resolved_date <= asthma_date)) OR
            (heart_failure) OR
-           (egfr_less_than_45) OR
+           (egfr_between_1_and_45) OR
            (age >= 75 AND acei AND acei_recent) OR
            (age >=75 AND loop_diuretic AND loop_diuretic_recent)
        )
@@ -438,10 +438,29 @@ study = StudyDefinition(
     ),
 
 
-    egfr_less_than_45 = patients.categorised_as(
+    # https://docs.opensafely.org/study-def-variables/#cohortextractor.patients.comparator_from
+    egfr_comparator=patients.comparator_from("egfr",
+                                             return_expectations={
+                                                 "rate": "universal",
+                                                 "category": {
+                                                     "ratios": {  # ~, =, >= , > , < , <=
+                                                         None: 0.10,
+                                                         "~": 0.05,
+                                                         "=": 0.65,
+                                                         ">=": 0.05,
+                                                         ">": 0.05,
+                                                         "<": 0.05,
+                                                         "<=": 0.05}
+                                                 },
+                                                 "incidence": 0.80,
+                                             },
+                                             ),
+
+
+    egfr_between_1_and_45 = patients.categorised_as(
         {
             "0": "DEFAULT",
-            "1": """ (egfr>=0) AND (egfr < 45)"""
+            "1": """ (egfr>=1) AND (egfr < 45) AND ( NOT egfr_comparator = '>' ) AND ( NOT egfr_comparator = '~' ) AND ( NOT ( egfr = 1  AND egfr_comparator='<') ) """
         },
         return_expectations = {
             "rate": "universal",
@@ -456,13 +475,13 @@ study = StudyDefinition(
 
     indicator_k_denominator = patients.satisfying(
         """
-        egfr_less_than_45
+        egfr_between_1_and_45
         """,
     ),
 
     indicator_k_numerator = patients.satisfying(
         """
-        egfr_less_than_45 AND
+        egfr_between_1_and_45 AND
         oral_nsaid
         """,
     ),

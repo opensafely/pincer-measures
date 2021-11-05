@@ -4,6 +4,7 @@ import os
 from study_definition import indicators_list
 from calculate_measures import demographics
 import re
+from collections import OrderedDict
 
 from utilities import *
 import numpy as np
@@ -51,6 +52,10 @@ monitoring_indicators = ["ac", "me_no_fbc", "me_no_lft", "li", "am"]
 
 title_mapping = {"a": "NSAID_PPI_65", "b": "NSAID_PPI_ulcer", "c": "AP_PPI_ulcer", "d": "DOAC_NSAID", "e": "DOAC_AP_PPI", "f": "ASP_AP_PPI", "g": "BB_asthma", "i": "NSAID_HF", "k": "NSAID_CKD", "ac": "ACEi_RF+E", "me_no_fbc": "MTX_FBC", "me_no_lft": "MTX_LFT", "li": "LITHIUM", "am": "AM_TFT"}
 
+
+# Dataframe for demographic aggregates
+
+demographic_aggregate_df = pd.DataFrame(columns=['indicator','demographic', 'group', 'pre_mean', 'post_mean'])
 
 
 for i in indicators_list:
@@ -162,9 +167,38 @@ for i in indicators_list:
                 #remove bands < 75
                 df = df[df['age_band'].isin(['70-79', '80+'])]
         
+        
         df = redact_small_numbers(df, 10, f"indicator_{i}_numerator", denominator, "rate", "date")  
-    
+
+        #SELECT DATES FOR AGGREGATE DEMOGRAPHIC VALUES
+        pre_q1 = ["2020-01-01", "2020-02-01", "2020-03-01"]
+        post_q1 = ["2021-01-01", "2021-02-01", "2021-03-01"]
+
+        pre_df = df.loc[df['date'].isin(pre_q1),:]
+        mean_pre = pre_df.groupby(by=[d])['rate'].mean().rename('pre')
+
+        post_df = df.loc[df['date'].isin(post_q1),:]
+        mean_post = post_df.groupby(by=[d])['rate'].mean().rename('post')
+
+        mean_values = pd.concat([mean_pre, mean_post], axis=1)
+        
+        for index, row in mean_values.iterrows():
+            
+            demographic_aggregate_row = OrderedDict()
+            demographic_aggregate_row["indicator"] = i
+            demographic_aggregate_row["demographic"] = d
+            demographic_aggregate_row["group"] = index
+            demographic_aggregate_row["pre_mean"] = row['pre']
+            demographic_aggregate_row["post_mean"] = row['post']
+
+        
+        
+
+            demographic_aggregate_df = demographic_aggregate_df.append(pd.DataFrame(demographic_aggregate_row, index=[0]))
+
+
         plot_measures(df = df, filename=f"plot_{i}_{d}", title=f"Indicator {i} by {d}",  column_to_plot = "rate", y_label = 'Proportion', as_bar=False, category = d)
+
 
 # plot composite measures
 
@@ -211,6 +245,7 @@ for i in composite_indicators:
     plot_measures(df = df, filename=f"plot_{i}_composite", title=f"{i} composite indicator",  column_to_plot = "rate", y_label = 'Proportion', as_bar=False, category = "num_indicators")
 
 
+demographic_aggregate_df.to_csv('output/demographic_aggregates.csv')
 
 
 gi_bleed_fig.savefig('output/figures/combined_plot_gi_bleed.png', bbox_inches = "tight")

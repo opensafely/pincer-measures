@@ -102,7 +102,11 @@ def count_comparator_value_pairs(directory: str) -> None:
 
     for file in filelist:
         if match_input_files(file.name):
+            print( f"Reading file [{dirpath}/{file.name}]" )
             df = pd.read_feather(dirpath / file.name)
+
+            match_counts = df.groupby(["egfr_less_than_45", "egfr_between_1_and_45"]).size().reset_index(name="count")
+            print( match_counts )
 
             df['egfr_comparator'] = df['egfr_comparator'].astype('string')
             df.fillna({'egfr_comparator': "", 'egfr': -1}, inplace=True)

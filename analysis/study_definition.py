@@ -456,6 +456,21 @@ study = StudyDefinition(
                                              },
                                              ),
 
+    egfr_less_than_45=patients.categorised_as(
+        {
+            "0": "DEFAULT",
+            "1": """ (egfr>=0) AND (egfr < 45)"""
+        },
+        return_expectations={
+            "rate": "universal",
+            "category": {
+                "ratios": {
+                    "0": 0.94,
+                    "1": 0.06,
+                }
+            },
+        },
+    ),
 
     egfr_between_1_and_45 = patients.categorised_as(
         {

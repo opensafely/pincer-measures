@@ -118,7 +118,7 @@ def count_comparator_value_pairs(directory: str) -> None:
     comparator_value_df = pd.DataFrame.from_dict(Counter(comparator_value_list), orient='index').reset_index()
     comparator_value_df.columns = ["cv_pair", "count"]
     comparator_value_df_filtered = comparator_value_df.query('count > 5')
-    comparator_value_df_filtered.to_csv(dirpath / "EGFR_comparator-value_counts.csv", index=False )
+    comparator_value_df_filtered.to_csv(dirpath / "EGFR_comparator-value_counts_new-method.csv", index=False )
 
 
 def calculate_rate(df, value_col: str, population_col: str, rate_per: int): 

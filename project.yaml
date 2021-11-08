@@ -51,7 +51,6 @@ actions:
     outputs:
         moderately_sensitive:
           measure_csv: output/measure_*_rate.csv
-
   
   check_asthma:
     run: python:latest python analysis/check_asthma.py

@@ -1,7 +1,7 @@
 from utilities import *
 import pandas as pd
 import os
-from study_definition import indicators_list
+from config import indicators_list
 from calculate_measures import demographics
 import re
 

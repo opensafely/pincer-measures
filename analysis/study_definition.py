@@ -4,12 +4,11 @@ from cohortextractor import (
     Measure
 )
 
-import os
+from config import indicators_list, backend
 
 from codelists import *
 from co_prescribing_variables import create_co_prescribing_variables
 
-backend =  os.getenv("OPENSAFELY_BACKEND", "expectations")
 
 start_date = "2019-09-01"
 end_date = "2021-07-01"
@@ -764,8 +763,6 @@ measures = [
         group_by=["practice"]
     )
 ]
-
-indicators_list = ["a", "b", "c", "d", "g", "i", "k", "ac", "me_no_fbc", "me_no_lft", "am", "li"]
 
 for indicator in indicators_list:
 

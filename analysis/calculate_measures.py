@@ -2,12 +2,13 @@ import pandas as pd
 import json
 import numpy as np
 from utilities import OUTPUT_DIR, match_input_files, get_date_input_file, calculate_rate, redact_small_numbers, update_demographics
-from study_definition import indicators_list, backend
+from config import indicators_list, backend
 
 
 
 #these are not generated in the main generate measures action
 additional_indicators = ["e","f"]
+
 indicators_list.extend(additional_indicators)
 
 demographics = ["age_band", "sex", "region", "imd", "ethnicity"]

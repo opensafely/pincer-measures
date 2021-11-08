@@ -4,12 +4,11 @@ from cohortextractor import (
     Measure
 )
 
-import os
+from config import indicators_list, backend
 
 from codelists import *
 from co_prescribing_variables import create_co_prescribing_variables
 
-backend =  os.getenv("OPENSAFELY_BACKEND", "expectations")
 
 start_date = "2019-09-01"
 end_date = "2021-07-01"
@@ -39,7 +38,7 @@ study = StudyDefinition(
            (aspirin AND (NOT ppi)) OR
            ((asthma AND (NOT asthma_resolved)) OR (asthma_resolved_date <= asthma_date)) OR
            (heart_failure) OR
-           (egfr_less_than_45) OR
+           (egfr_between_1_and_45) OR
            (age >= 75 AND acei AND acei_recent) OR
            (age >=75 AND loop_diuretic AND loop_diuretic_recent)
        )
@@ -438,10 +437,44 @@ study = StudyDefinition(
     ),
 
 
-    egfr_less_than_45 = patients.categorised_as(
+    # https://docs.opensafely.org/study-def-variables/#cohortextractor.patients.comparator_from
+    egfr_comparator=patients.comparator_from("egfr",
+                                             return_expectations={
+                                                 "rate": "universal",
+                                                 "category": {
+                                                     "ratios": {  # ~, =, >= , > , < , <=
+                                                         None: 0.10,
+                                                         "~": 0.05,
+                                                         "=": 0.65,
+                                                         ">=": 0.05,
+                                                         ">": 0.05,
+                                                         "<": 0.05,
+                                                         "<=": 0.05}
+                                                 },
+                                                 "incidence": 0.80,
+                                             },
+                                             ),
+
+    egfr_less_than_45=patients.categorised_as(
         {
             "0": "DEFAULT",
             "1": """ (egfr>=0) AND (egfr < 45)"""
+        },
+        return_expectations={
+            "rate": "universal",
+            "category": {
+                "ratios": {
+                    "0": 0.94,
+                    "1": 0.06,
+                }
+            },
+        },
+    ),
+
+    egfr_between_1_and_45 = patients.categorised_as(
+        {
+            "0": "DEFAULT",
+            "1": """ (egfr>=1) AND (egfr < 45) AND ( NOT egfr_comparator = '>' ) AND ( NOT egfr_comparator = '~' ) AND ( NOT ( egfr = 1  AND egfr_comparator='<') ) """
         },
         return_expectations = {
             "rate": "universal",
@@ -456,13 +489,13 @@ study = StudyDefinition(
 
     indicator_k_denominator = patients.satisfying(
         """
-        egfr_less_than_45
+        egfr_between_1_and_45
         """,
     ),
 
     indicator_k_numerator = patients.satisfying(
         """
-        egfr_less_than_45 AND
+        egfr_between_1_and_45 AND
         oral_nsaid
         """,
     ),
@@ -730,8 +763,6 @@ measures = [
         group_by=["practice"]
     )
 ]
-
-indicators_list = ["a", "b", "c", "d", "g", "i", "k", "ac", "me_no_fbc", "me_no_lft", "am", "li"]
 
 for indicator in indicators_list:
 

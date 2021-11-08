@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import json
 from utilities import OUTPUT_DIR, drop_irrelevant_practices
-from study_definition import indicators_list
+from config import indicators_list
 import os
 
 if not (OUTPUT_DIR / 'cusum').exists():

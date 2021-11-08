@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import json
 from utilities import *
-from study_definition import indicators_list, backend
+from config import indicators_list, backend
 
 #these are not generated in the main generate measures action
 additional_indicators = ["e","f"]

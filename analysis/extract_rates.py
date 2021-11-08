@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from utilities import OUTPUT_DIR, drop_irrelevant_practices
-from study_definition import indicators_list, backend
+from config import indicators_list, backend
 
 #these are not generated in the main generate measures action
 additional_indicators = ["e","f"]

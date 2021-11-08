@@ -101,11 +101,15 @@ def count_comparator_value_pairs(directory: str) -> None:
     comparator_value_list = []
 
     for file in filelist:
-        if match_egfr_files(file.name):
+        if match_input_files(file.name):
+            print( f"Reading file [{dirpath}/{file.name}]" )
             df = pd.read_feather(dirpath / file.name)
 
+            match_counts = df.groupby(["egfr_less_than_45", "egfr_between_1_and_45"]).size().reset_index(name="count")
+            print( match_counts )
+
             df['egfr_comparator'] = df['egfr_comparator'].astype('string')
-            df.fillna({'egfr_comparator': "", 'egfr': -10}, inplace=True)
+            df.fillna({'egfr_comparator': "", 'egfr': -1}, inplace=True)
 
             cv_pairs = [''.join( i ) for i in zip(df["egfr_comparator"], df["egfr"].map(round).map(str))]
 
@@ -114,7 +118,7 @@ def count_comparator_value_pairs(directory: str) -> None:
     comparator_value_df = pd.DataFrame.from_dict(Counter(comparator_value_list), orient='index').reset_index()
     comparator_value_df.columns = ["cv_pair", "count"]
     comparator_value_df_filtered = comparator_value_df.query('count > 5')
-    comparator_value_df_filtered.to_csv(dirpath / "EGFR_comparator-value_counts.csv", index=False )
+    comparator_value_df_filtered.to_csv(dirpath / "EGFR_comparator-value_counts_new-method.csv", index=False )
 
 
 def calculate_rate(df, value_col: str, population_col: str, rate_per: int): 

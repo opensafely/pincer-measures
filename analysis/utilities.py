@@ -9,7 +9,7 @@ import matplotlib
 import seaborn as sns
 from collections import Counter
 from datetime import timedelta as td
-from config import backend
+from analysis.config import backend
 
 
 BASE_DIR = Path(__file__).parents[1]

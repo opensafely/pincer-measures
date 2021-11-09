@@ -33,13 +33,6 @@ def match_input_files(file: str) -> bool:
     pattern = r'^input_20\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\.feather' 
     return True if re.match(pattern, file) else False
 
-
-def match_egfr_files(file: str) -> bool:
-    """Checks if file name has format outputted by cohort extractor for egfr data"""
-    pattern = r'^input_egfr_20\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\.feather'
-    return True if re.match(pattern, file) else False
-
-
 def match_measure_files( file: str ) -> bool:
     """Checks if file name has format outputted by cohort extractor (generate_measures action)"""
     pattern = r'^measure_.*_rate\.csv'

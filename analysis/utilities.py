@@ -9,8 +9,7 @@ import matplotlib
 import seaborn as sns
 from collections import Counter
 from datetime import timedelta as td
-
-backend =  os.getenv("OPENSAFELY_BACKEND", "expectations")
+from config import backend
 
 
 BASE_DIR = Path(__file__).parents[1]

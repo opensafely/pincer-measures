@@ -91,7 +91,8 @@ def count_comparator_value_pairs(directory: str) -> None:
     filelist = dirpath.iterdir()
 
     comparator_value_list = []
-
+    flagged_comparator_value_list = []
+    
     for file in filelist:
         if match_input_files(file.name):
             print( f"Reading file [{dirpath}/{file.name}]" )
@@ -104,14 +105,19 @@ def count_comparator_value_pairs(directory: str) -> None:
             df.fillna({'egfr_comparator': "", 'egfr': -1}, inplace=True)
 
             cv_pairs = [''.join( i ) for i in zip(df["egfr_comparator"], df["egfr"].map(round).map(str))]
-
             comparator_value_list = comparator_value_list + cv_pairs
+
+            df_flagged = df.query( "egfr_between_1_and_45 == '1'" )
+            cv_pairs_flagged = [''.join(i) for i in zip(df_flagged["egfr_comparator"], df_flagged["egfr"].map(round).map(str))]
+            flagged_comparator_value_list = flagged_comparator_value_list + cv_pairs_flagged
 
     comparator_value_df = pd.DataFrame.from_dict(Counter(comparator_value_list), orient='index').reset_index()
     comparator_value_df.columns = ["cv_pair", "count"]
     comparator_value_df_filtered = comparator_value_df.query('count > 5')
     comparator_value_df_filtered.to_csv(dirpath / "EGFR_comparator-value_counts_new-method.csv", index=False )
 
+    flagged_comparator_value_df = pd.DataFrame(sorted(set(flagged_comparator_value_list)), columns=["colummn"])
+    flagged_comparator_value_df.to_csv(dirpath / 'EGFR_flagged_comparator-value_counts_new-method.csv', index=False)
 
 def calculate_rate(df, value_col: str, population_col: str, rate_per: int): 
     """Calculates the rate of events for given number of the population.

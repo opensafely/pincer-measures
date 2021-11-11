@@ -9,6 +9,7 @@ additional_indicators = ["e","f"]
 indicators_list.extend(additional_indicators)
 
 practice_list = []
+practice_list_event = []
 patient_counts_dict = {"numerator": {}, "denominator": {}}
 patient_dict = {"numerator": {}, "denominator": {}}
 
@@ -39,6 +40,9 @@ for file in OUTPUT_DIR.iterdir():
                 df_subset_denominator = df[df[f'indicator_me_denominator']==1]
             else:
                 df_subset_denominator = df[df[f'indicator_{indicator}_denominator']==1]
+            
+            # get all practices that experience an event
+            practice_list_event.extend(np.unique(df_subset_numerator['practice']))
 
             patients_numerator = list(df_subset_numerator['patient_id'])
             patients_denominator = list(df_subset_denominator['patient_id'])
@@ -52,11 +56,12 @@ for file in OUTPUT_DIR.iterdir():
                 patient_dict["numerator"][indicator].extend(patients_numerator)
                 patient_dict["denominator"][indicator].extend(patients_denominator)
 
-
+        
 num_practices = len(np.unique(practice_list))
+num_practices_event = len(np.unique(practice_list_event))
 
 with open(f'output/practice_count_{backend}.json', 'w') as f:
-    json.dump({"num_practices": num_practices}, f)
+    json.dump({"num_practices": num_practices, "num_practices_event": num_practices_event}, f)
 
 
 

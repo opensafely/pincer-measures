@@ -705,14 +705,15 @@ def get_number_events(measure_table, measure_id):
     return measure_table[f'indicator_{measure_id}_numerator'].sum()
 
 
-def get_number_patients(measure_id):
+def get_number_patients(measure_id, denominator_or_numerator):
     """Gets the number of patients.
     Args:
         measure_id: The measure ID.
+        denominator_or_numerator: String dictating if number of patients in numerator or denominator is returned
     """
     with open(OUTPUT_DIR / f"patient_count_{backend}.json") as f:
         d = json.load(f)
-    return d["num_patients"][measure_id]
+    return d["num_patients"][denominator_or_numerator][measure_id]
 
 def deciles_chart_subplots(
     df,

@@ -17,6 +17,6 @@ for file in OUTPUT_DIR.iterdir():
         df['indicator_f_numerator'] = (df["aspirin"] == 1) & (df["ppi"] == 0) & (df["co_prescribed_aspirin_antiplatelet_excluding_aspirin"] == 1)
     
         
-        df.loc[:, ['patient_id','indicator_e_numerator', 'indicator_f_numerator']].to_feather(OUTPUT_DIR / f'indicator_e_f_{date}.feather')
+        df.loc[:, ['patient_id','indicator_e_numerator', 'indicator_f_numerator', 'practice']].to_feather(OUTPUT_DIR / f'indicator_e_f_{date}.feather')
 
 

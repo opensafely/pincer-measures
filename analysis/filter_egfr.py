@@ -6,5 +6,5 @@ for file in OUTPUT_DIR.iterdir():
         df = pd.read_feather(OUTPUT_DIR / file.name)
         
         
-        df_filtered = df.loc[(df['egfr'] >=1) & (df['egfr'] <45) & (~df['egfr_comparator'].isin(['>', '>=', '~'])) & ~((df['egfr'] == 1) & (df['egfr_comparator'] == '<'))]
+        df_filtered = df.loc[(df['egfr'] >=1) & (df['egfr'] <45) & (~df['egfr_comparator'].isin(['>', '>=', '~'])) & ~((df['egfr'] == 1) & (df['egfr_comparator'] == '<'))].reset_index()
         df_filtered.to_feather(OUTPUT_DIR / file.name)

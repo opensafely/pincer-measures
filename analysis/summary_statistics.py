@@ -12,7 +12,7 @@ practice_list = []
 practice_list_event = []
 patient_counts_dict = {"numerator": {}, "denominator": {}}
 patient_dict = {"numerator": {}, "denominator": {}}
-
+num_events_total = 0
 
 for file in OUTPUT_DIR.iterdir():
     
@@ -35,6 +35,10 @@ for file in OUTPUT_DIR.iterdir():
                 df_subset_numerator = df[df[f'indicator_{indicator}_numerator']==1]
                 # get unique patients
             
+            #keep running count of total events
+            num_events_total += df_subset_numerator[f'indicator_{indicator}_numerator'].sum()
+
+
             # the same denominator is used for both mtx measures
             if indicator in ["me_no_fbc", "me_no_lft"]:
                 df_subset_denominator = df[df[f'indicator_me_denominator']==1]
@@ -57,17 +61,21 @@ for file in OUTPUT_DIR.iterdir():
                 patient_dict["denominator"][indicator].extend(patients_denominator)
 
         
-num_practices = len(np.unique(practice_list))
-num_practices_event = len(np.unique(practice_list_event))
+num_practices = int(len(np.unique(practice_list)))
+num_practices_event = int(len(np.unique(practice_list_event)))
+
 
 with open(f'output/practice_count_{backend}.json', 'w') as f:
     json.dump({"num_practices": num_practices, "num_practices_event": num_practices_event}, f)
 
 
+unique_patients_total = []
+unique_patients_total_denominator = []
 
 for (key, value) in patient_dict["numerator"].items():
     #get unique patients
     unique_patients_numerator = len(np.unique(patient_dict["numerator"][key]))
+    unique_patients_total.extend(np.unique(patient_dict["numerator"][key]))
 
     #add to dictionary as num(mil)
     patient_counts_dict["numerator"][key] = (unique_patients_numerator)
@@ -75,6 +83,7 @@ for (key, value) in patient_dict["numerator"].items():
 for (key, value) in patient_dict["denominator"].items():
     #get unique patients
     unique_patients_denominator = len(np.unique(patient_dict["denominator"][key]))
+    unique_patients_total_denominator.extend(np.unique(patient_dict["denominator"][key]))
 
     #add to dictionary as num(mil)
     patient_counts_dict["denominator"][key] = (unique_patients_denominator)
@@ -100,6 +109,9 @@ for indicator in indicators_list:
     counts_dict[indicator]['num_practices'] = num_practices
     counts_dict[indicator]['percent_practice'] = percentage_practices
 
+counts_dict["total_patients"] = len(np.unique(unique_patients_total))
+counts_dict["total_patients_denominator"] = len(np.unique(unique_patients_total_denominator))
+counts_dict["total_events"] = float(num_events_total)
 
 with open(f'output/indicator_summary_statistics_{backend}.json', 'w') as f:
     json.dump({"summary": counts_dict}, f) 

@@ -310,7 +310,7 @@ def deciles_chart_ebm(
         )
     ax.set_ylabel(ylabel, size=15, alpha=0.6)
     if title:
-        ax.set_title(title, size=18)
+        ax.set_title(title, size=14, wrap=True)
     # set ymax across all subplots as largest value across dataset
     
     ax.set_ylim([0, 1 if df[column].isnull().values.all() else df[column].max() * 1.05])
@@ -452,7 +452,7 @@ def deciles_chart(df, filename, period_column=None, column=None, count_column=No
         )
     ax.set_ylabel(ylabel, size=15, alpha=0.6)
     if title:
-        ax.set_title(title, size=18)
+        ax.set_title(title, size=14, wrap=True)
     # set ymax across all subplots as largest value across dataset
     
     ax.set_ylim([0, 1 if df[column].isnull().values.all() else df[column].max() * 1.05])
@@ -786,8 +786,11 @@ def deciles_chart_subplots(
         ax.vlines(x=[pd.to_datetime(time_window)],ymin=0, ymax=1, colors='green', ls='--', label='Date of expected maximum impact')
     
     ax.set_ylabel(ylabel, size=24)
-    if title:
-        ax.set_title(title, size=30)
+    
+    ax.set_title(title, size=30, wrap=True)._get_wrap_line_width = lambda : 700.
+
+
+
     # set ymax across all subplots as largest value across dataset
     ax.set_ylim([0, df[column].max() * 1.05 if (df[column].max() * 1.05) < 1.0 else 1.0 ])
     ax.tick_params(labelsize=14)

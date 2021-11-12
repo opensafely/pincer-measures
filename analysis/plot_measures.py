@@ -50,7 +50,7 @@ monitoring_fig.delaxes(monitoring_axs[0, 2])
 
 monitoring_indicators = ["ac", "me_no_fbc", "me_no_lft", "li", "am"]
 
-title_mapping = {"a": "NSAID_PPI_65", "b": "NSAID_PPI_ulcer", "c": "AP_PPI_ulcer", "d": "DOAC_NSAID", "e": "DOAC_AP_PPI", "f": "ASP_AP_PPI", "g": "BB_asthma", "i": "NSAID_HF", "k": "NSAID_CKD", "ac": "ACEi_RF+E", "me_no_fbc": "MTX_FBC", "me_no_lft": "MTX_LFT", "li": "LITHIUM", "am": "AM_TFT"}
+title_mapping = {"a": "NSAID without gastroprotection, age >=65", "b": "NSAID without gastroprotection, H/O peptic ulcer", "c": "Antiplatelet without gastroprotection, H/O peptic ulcer", "d": "DOAC with warfarin", "e": "Anticoagulation and antiplatelet, no gastroprotection", "f": "Aspirin and antiplatelet, no gastroprotection", "g": "Asthma and non-selective beta-blocker", "i": "Heart failure and NSAID", "k": "Chronic renal impairment and NSAID", "ac": "ACE inhibitor or loop diuretic without renal function/electrolyte test", "me_no_fbc": "Methotrexate without full blood count", "me_no_lft": "Methotrexate without liver function test", "li": "Lithium without lithium concentration test", "am": "Amiodarone without thyroid function test"}
 
 
 # Dataframe for demographic aggregates
@@ -77,7 +77,7 @@ for i in indicators_list:
     # Need this for dummy data
     df = df.replace(np.inf, np.nan) 
 
-    deciles_chart(df, filename=f"plot_{i}", period_column="date", column="rate", count_column = f"indicator_{i}_numerator",title=f"Decile Chart Indicator {i}", ylabel="Proportion", time_window=time_period_mapping.get(i, ""))
+    deciles_chart(df, filename=f"plot_{i}", period_column="date", column="rate", count_column = f"indicator_{i}_numerator",title=title_mapping[i], ylabel="Proportion", time_window=time_period_mapping.get(i, ""))
 
     #gi bleed
     if i in gi_bleed_indicators:
@@ -247,9 +247,11 @@ for i in composite_indicators:
 
 demographic_aggregate_df.to_csv('output/demographic_aggregates.csv')
 
-
-gi_bleed_fig.savefig('output/figures/combined_plot_gi_bleed.png', bbox_inches = "tight")
+gi_bleed_fig.subplots_adjust(bottom=0.15)
+gi_bleed_fig.savefig('output/figures/combined_plot_gi_bleed.png')
 plt.clf()
-prescribing_fig.savefig('output/figures/combined_plot_prescribing.png', bbox_inches = "tight")
+prescribing_fig.subplots_adjust(bottom=0.3)
+prescribing_fig.savefig('output/figures/combined_plot_prescribing.png')
 plt.clf()
-monitoring_fig.savefig('output/figures/combined_plot_monitoring.png', bbox_inches = "tight")
+monitoring_fig.subplots_adjust(bottom=0.15)
+monitoring_fig.savefig('output/figures/combined_plot_monitoring.png')

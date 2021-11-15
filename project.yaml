@@ -5,11 +5,23 @@ expectations:
 
 actions:
 
-  generate_study_population:
-    run: cohortextractor:latest generate_cohort --study-definition study_definition --index-date-range "2019-09-01 to 2021-09-01 by month" --output-format feather
+  generate_study_population_1:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition --index-date-range "2019-09-01 to 2020-05-01 by month" --output-format feather
     outputs:
       highly_sensitive:
         cohort: output/input_*.feather
+
+  generate_study_population_2:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition --index-date-range "2020-06-01 to 2021-02-01 by month" --output-format feather
+    outputs:
+      highly_sensitive:
+        cohort: output/input*.feather
+
+  generate_study_population_3:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition --index-date-range "2021-03-01 to 2021-09-01 by month" --output-format feather
+    outputs:
+      highly_sensitive:
+        cohort: output/inpu*.feather
 
   generate_study_population_ethnicity:
     run: cohortextractor:latest generate_cohort --study-definition study_definition_ethnicity --output-format feather
@@ -19,21 +31,14 @@ actions:
       
   join_ethnicity_region:
     run: python:latest python analysis/join_ethnicity_region.py
-    needs: [generate_study_population, generate_study_population_ethnicity]
+    needs: [generate_study_population_1, generate_study_population_2, generate_study_population_3, generate_study_population_ethnicity]
     outputs:
       highly_sensitive:
         cohort: output/inp*.feather
   
-  filter_egfr:
-    run: python:latest python analysis/filter_egfr.py
-    needs: [join_ethnicity_region]
-    outputs:
-      highly_sensitive:
-        cohort: output/in*.feather
-  
   count_egfr_comparators:
     run: python:latest python analysis/count_comparator_value_pairs.py
-    needs: [filter_egfr]
+    needs: [join_ethnicity_region]
     outputs:
       moderately_sensitive:
         cohort: output/EGFR_*.csv
@@ -41,21 +46,21 @@ actions:
   
   calculate_numerators:
     run: python:latest python analysis/calculate_numerators.py
-    needs: [filter_egfr]
+    needs: [join_ethnicity_region]
     outputs:
       highly_sensitive:
         cohort: output/indicator_e_f_*.feather
 
   calculate_composite_indicators:
     run: python:latest python analysis/composite_indicators.py
-    needs: [calculate_numerators, filter_egfr]
+    needs: [calculate_numerators, join_ethnicity_region]
     outputs:
       moderately_sensitive:
         counts: output/*_composite_measure.csv
 
   generate_measures:
     run: cohortextractor:latest generate_measures --study-definition study_definition --output-dir=output
-    needs: [filter_egfr]
+    needs: [join_ethnicity_region]
     outputs:
         moderately_sensitive:
           measure_csv: output/measure_*_rate.csv
@@ -69,7 +74,7 @@ actions:
   
   generate_measures_demographics:
     run: python:latest python analysis/calculate_measures.py
-    needs: [calculate_numerators, filter_egfr]
+    needs: [calculate_numerators, join_ethnicity_region]
     outputs:
       moderately_sensitive:
         counts: output/indicator_measure_*.csv
@@ -87,7 +92,7 @@ actions:
 
   generate_summary_counts:
     run: python:latest python analysis/summary_statistics.py
-    needs: [filter_egfr, generate_measures, generate_measures_demographics, calculate_numerators]
+    needs: [join_ethnicity_region, generate_measures, generate_measures_demographics, calculate_numerators]
     outputs:
       highly_sensitive:
         patient_count: output/patient_count_*.json

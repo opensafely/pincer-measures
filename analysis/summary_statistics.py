@@ -51,13 +51,19 @@ for file in OUTPUT_DIR.iterdir():
             patients_numerator = list(df_subset_numerator['patient_id'])
             patients_denominator = list(df_subset_denominator['patient_id'])
 
-            if indicator not in patient_dict:
+            if indicator not in patient_dict["numerator"]:
                 #create key
                 patient_dict["numerator"][indicator] = patients_numerator
-                patient_dict["denominator"][indicator] = patients_denominator
 
             else:
                 patient_dict["numerator"][indicator].extend(patients_numerator)
+
+
+            if indicator not in patient_dict["denominator"]:
+                #create key
+                patient_dict["denominator"][indicator] = patients_denominator
+
+            else:
                 patient_dict["denominator"][indicator].extend(patients_denominator)
 
         

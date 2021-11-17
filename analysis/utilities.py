@@ -103,6 +103,9 @@ def count_comparator_value_pairs(directory: str) -> None:
             match_counts = df.groupby(["egfr_less_than_45", "egfr_between_1_and_45"]).size().reset_index(name="count")
             print( match_counts )
 
+            denominator_counts = df.groupby(["indicator_k_denominator", "egfr_between_1_and_45"]).size().reset_index(name="count")
+            print( denominator_counts )
+
             df['egfr_comparator'] = df['egfr_comparator'].astype('string')
             df.fillna({'egfr_comparator': "", 'egfr': -1}, inplace=True)
 

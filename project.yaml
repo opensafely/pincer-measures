@@ -94,7 +94,7 @@ actions:
     run: python:latest python analysis/summary_statistics.py
     needs: [join_ethnicity_region, generate_measures, generate_measures_demographics, calculate_numerators]
     outputs:
-      highly_sensitive:
+      moderately_sensitive:
         patient_count: output/patient_count_*.json
         practice_count: output/practice_count_*.json
         summary: output/indicator_summary_statistics_*.json

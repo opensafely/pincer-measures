@@ -35,6 +35,11 @@ def match_input_files(file: str) -> bool:
     pattern = r'^input_20\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\.feather' 
     return True if re.match(pattern, file) else False
 
+def match_egfr_files(file: str) -> bool:
+    """Checks if file name has format outputted by cohort extractor"""
+    pattern = r'^input_egfr.*\.feather' 
+    return True if re.match(pattern, file) else False
+
 def match_measure_files( file: str ) -> bool:
     """Checks if file name has format outputted by cohort extractor (generate_measures action)"""
     pattern = r'^measure_.*_rate\.csv'
@@ -49,6 +54,16 @@ def get_date_input_file(file: str) -> str:
     
     else:
         date = result = re.search(r'input_(.*)\.feather', file)
+        return date.group(1)
+
+def get_date_egfr_file(file: str) -> str:
+    """Gets the date in format YYYY-MM-DD from input file name string"""
+    # check format
+    if not match_egfr_files(file):
+        raise Exception('Not valid input file format')
+    
+    else:
+        date = result = re.search(r'input_egfr(.*)\.feather', file)
         return date.group(1)
 
 def validate_directory(dirpath):
@@ -123,6 +138,30 @@ def count_comparator_value_pairs(directory: str) -> None:
 
     flagged_comparator_value_df = pd.DataFrame(sorted(set(flagged_comparator_value_list)), columns=["colummn"])
     flagged_comparator_value_df.to_csv(dirpath / 'EGFR_flagged_comparator-value_counts_new-method.csv', index=False)
+
+def check_indicator_k_denominator(directory: str) -> None:
+    """Finds 'input_egfr.*.feather' in directory extracts counts of the egfr value/comparator data."""
+
+    dirpath = Path(directory)
+    validate_directory(dirpath)
+    filelist = dirpath.iterdir()
+
+    all_counts = pd.DataFrame()
+    
+    for file in filelist:
+        if match_egfr_files(file.name):
+            print( f"Reading file [{dirpath}/{file.name}]" )
+            df = pd.read_feather(dirpath / file.name)
+            date = get_date_egfr_file(file.name)
+            if ( date == "" ):
+                date = "ALL"
+
+            denominator_counts = df.groupby(["indicator_k_denominator", "egfr_between_1_and_45"]).size().reset_index(name="count")
+            denominator_counts["date"] = date
+            print( denominator_counts )
+            all_counts = all_counts.append( denominator_counts )
+
+    all_counts.to_csv(dirpath / "new-indicator-k_denominator-check.csv", index=False )
 
 def calculate_rate(df, value_col: str, population_col: str, rate_per: int): 
     """Calculates the rate of events for given number of the population.

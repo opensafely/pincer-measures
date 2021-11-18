@@ -99,7 +99,42 @@ def join_ethnicity_region(directory: str) -> None:
             df['region'] = df['msoa'].map(msoa_dict)
             df.to_feather(dirpath / file.name)
 
-            
+
+def compare_indicator_k_columns(directory: str) -> None:
+    """Finds 'input_egfr.feather' in directory and combines with each input file."""
+
+    dirpath = Path(directory)
+    validate_directory(dirpath)
+    filelist = dirpath.iterdir()
+
+    all_denominator_counts = pd.DataFrame()
+
+    print( f"Looking for files in {directory}" )
+
+    #get ethnicity input file
+    new_k_df = pd.read_feather(dirpath / 'input_egfr.feather')
+    new_k_df['indicator_k_denominator_new'] = new_k_df['indicator_k_denominator']
+
+    new_k_dict = dict(zip(new_k_df['patient_id'], new_k_df['indicator_k_denominator_new']))
+
+    for file in filelist:
+        print( f"Reading input file {file.name}")
+        if match_input_files(file.name):
+            df = pd.read_feather(dirpath / file.name)
+            date = get_date_input_file(file.name)
+
+            df['indicator_k_denominator_new'] = df['patient_id'].map(new_k_dict)
+            denominator_match_counts = df.groupby(["indicator_k_denominator", "indicator_k_denominator_new"]).size().reset_index(name="count")
+            denominator_match_counts[ "date" ] = date
+            print( denominator_match_counts )
+
+            all_denominator_counts = all_denominator_counts.append( denominator_match_counts )
+
+            # df.to_feather(dirpath / file.name)
+
+    all_denominator_counts.to_csv(dirpath / "new-indicator-k_denominator-match-counts.csv", index=False)
+
+
 def count_comparator_value_pairs(directory: str) -> None:
     """Finds 'input_XX-XX-XX.feather' in directory extracts counts of the egfr value/comparator data."""
 

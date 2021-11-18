@@ -43,10 +43,11 @@ actions:
   
   check_indicator_k_definition:
     run: python:latest python analysis/check_indicator_k_denominator.py
-    needs: [generate_study_population_egfr]
+    needs: [generate_study_population_1, generate_study_population_2, generate_study_population_3, generate_study_population_egfr]
     outputs:
       moderately_sensitive:
-        cohort: output/new-indicator-k_denominator-check.csv
+        check1: output/new-indicator-k_denominator-check.csv
+        check2: output/new-indicator-k_denominator-match-counts.csv
 
   join_ethnicity_region:
     run: python:latest python analysis/join_ethnicity_region.py
@@ -62,7 +63,7 @@ actions:
       moderately_sensitive:
         cohort: output/EGFR_*.csv
         
-  
+
   calculate_numerators:
     run: python:latest python analysis/calculate_numerators.py
     needs: [join_ethnicity_region]

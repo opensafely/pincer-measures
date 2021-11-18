@@ -34,7 +34,20 @@ actions:
     outputs:
       highly_sensitive:
         cohort: output/input_ethnicity.feather
-      
+ 
+  generate_study_population_egfr:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_egfr --output-format feather
+    outputs:
+      highly_sensitive:
+        cohort: output/input_egfr.feather
+  
+  check_indicator_k_definition:
+    run: python:latest python analysis/check_indicator_k_denominator.py
+    needs: [generate_study_population_egfr]
+    outputs:
+      moderately_sensitive:
+        cohort: output/new-indicator-k_denominator-check.csv
+
   join_ethnicity_region:
     run: python:latest python analysis/join_ethnicity_region.py
     needs: [generate_study_population_1, generate_study_population_2, generate_study_population_3, generate_study_population_ethnicity]

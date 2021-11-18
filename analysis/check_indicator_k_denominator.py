@@ -1,0 +1,3 @@
+from utilities import check_indicator_k_denominator, OUTPUT_DIR
+
+check_indicator_k_denominator(OUTPUT_DIR)

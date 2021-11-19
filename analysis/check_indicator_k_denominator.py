@@ -1,5 +1,0 @@
-from utilities import check_indicator_k_denominator, compare_indicator_k_columns, OUTPUT_DIR
-
-check_indicator_k_denominator(OUTPUT_DIR)
-
-compare_indicator_k_columns(OUTPUT_DIR)

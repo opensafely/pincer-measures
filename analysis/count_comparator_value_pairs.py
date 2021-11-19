@@ -1,3 +1,0 @@
-from utilities import count_comparator_value_pairs, OUTPUT_DIR
-
-count_comparator_value_pairs(OUTPUT_DIR)

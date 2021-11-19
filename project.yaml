@@ -35,14 +35,7 @@ actions:
     outputs:
       highly_sensitive:
         cohort: output/inp*.feather
-  
-  count_egfr_comparators:
-    run: python:latest python analysis/count_comparator_value_pairs.py
-    needs: [join_ethnicity_region]
-    outputs:
-      moderately_sensitive:
-        cohort: output/EGFR_*.csv
-        
+          
 
   calculate_numerators:
     run: python:latest python analysis/calculate_numerators.py

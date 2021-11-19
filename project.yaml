@@ -19,105 +19,105 @@ actions:
         egfr: output/EGFR_*.csv
 
 
-  generate_study_population_1:
-    run: cohortextractor:latest generate_cohort --study-definition study_definition --index-date-range "2019-09-01 to 2020-05-01 by month" --output-format feather
-    outputs:
-      highly_sensitive:
-        cohort: output/input_*.feather
+  # generate_study_population_1:
+  #   run: cohortextractor:latest generate_cohort --study-definition study_definition --index-date-range "2019-09-01 to 2020-05-01 by month" --output-format feather
+  #   outputs:
+  #     highly_sensitive:
+  #       cohort: output/input_*.feather
 
-  generate_study_population_2:
-    run: cohortextractor:latest generate_cohort --study-definition study_definition --index-date-range "2020-06-01 to 2021-02-01 by month" --output-format feather
-    outputs:
-      highly_sensitive:
-        cohort: output/input*.feather
+  # generate_study_population_2:
+  #   run: cohortextractor:latest generate_cohort --study-definition study_definition --index-date-range "2020-06-01 to 2021-02-01 by month" --output-format feather
+  #   outputs:
+  #     highly_sensitive:
+  #       cohort: output/input*.feather
 
-  generate_study_population_3:
-    run: cohortextractor:latest generate_cohort --study-definition study_definition --index-date-range "2021-03-01 to 2021-09-01 by month" --output-format feather
-    outputs:
-      highly_sensitive:
-        cohort: output/inpu*.feather
+  # generate_study_population_3:
+  #   run: cohortextractor:latest generate_cohort --study-definition study_definition --index-date-range "2021-03-01 to 2021-09-01 by month" --output-format feather
+  #   outputs:
+  #     highly_sensitive:
+  #       cohort: output/inpu*.feather
 
-  generate_study_population_ethnicity:
-    run: cohortextractor:latest generate_cohort --study-definition study_definition_ethnicity --output-format feather
-    outputs:
-      highly_sensitive:
-        cohort: output/input_ethnicity.feather
+  # generate_study_population_ethnicity:
+  #   run: cohortextractor:latest generate_cohort --study-definition study_definition_ethnicity --output-format feather
+  #   outputs:
+  #     highly_sensitive:
+  #       cohort: output/input_ethnicity.feather
  
-  join_ethnicity_region:
-    run: python:latest python analysis/join_ethnicity_region.py
-    needs: [generate_study_population_1, generate_study_population_2, generate_study_population_3, generate_study_population_ethnicity]
-    outputs:
-      highly_sensitive:
-        cohort: output/inp*.feather
+  # join_ethnicity_region:
+  #   run: python:latest python analysis/join_ethnicity_region.py
+  #   needs: [generate_study_population_1, generate_study_population_2, generate_study_population_3, generate_study_population_ethnicity]
+  #   outputs:
+  #     highly_sensitive:
+  #       cohort: output/inp*.feather
           
 
-  calculate_numerators:
-    run: python:latest python analysis/calculate_numerators.py
-    needs: [join_ethnicity_region]
-    outputs:
-      highly_sensitive:
-        cohort: output/indicator_e_f_*.feather
+  # calculate_numerators:
+  #   run: python:latest python analysis/calculate_numerators.py
+  #   needs: [join_ethnicity_region]
+  #   outputs:
+  #     highly_sensitive:
+  #       cohort: output/indicator_e_f_*.feather
 
-  calculate_composite_indicators:
-    run: python:latest python analysis/composite_indicators.py
-    needs: [calculate_numerators, join_ethnicity_region]
-    outputs:
-      moderately_sensitive:
-        counts: output/*_composite_measure.csv
+  # calculate_composite_indicators:
+  #   run: python:latest python analysis/composite_indicators.py
+  #   needs: [calculate_numerators, join_ethnicity_region]
+  #   outputs:
+  #     moderately_sensitive:
+  #       counts: output/*_composite_measure.csv
 
-  generate_measures:
-    run: cohortextractor:latest generate_measures --study-definition study_definition --output-dir=output
-    needs: [join_ethnicity_region]
-    outputs:
-        moderately_sensitive:
-          measure_csv: output/measure_*_rate.csv
+  # generate_measures:
+  #   run: cohortextractor:latest generate_measures --study-definition study_definition --output-dir=output
+  #   needs: [join_ethnicity_region]
+  #   outputs:
+  #       moderately_sensitive:
+  #         measure_csv: output/measure_*_rate.csv
 
   
-  generate_measures_demographics:
-    run: python:latest python analysis/calculate_measures.py
-    needs: [calculate_numerators, join_ethnicity_region]
-    outputs:
-      moderately_sensitive:
-        counts: output/indicator_measure_*.csv
-        measure_csv: output/measure*_rate.csv
-        demographics: output/demographics_summary_*.csv
+  # generate_measures_demographics:
+  #   run: python:latest python analysis/calculate_measures.py
+  #   needs: [calculate_numerators, join_ethnicity_region]
+  #   outputs:
+  #     moderately_sensitive:
+  #       counts: output/indicator_measure_*.csv
+  #       measure_csv: output/measure*_rate.csv
+  #       demographics: output/demographics_summary_*.csv
         
 
-  generate_summary_counts:
-    run: python:latest python analysis/summary_statistics.py
-    needs: [join_ethnicity_region, generate_measures, generate_measures_demographics, calculate_numerators]
-    outputs:
-      moderately_sensitive:
-        patient_count: output/patient_count_*.json
-        practice_count: output/practice_count_*.json
-        summary: output/indicator_summary_statistics_*.json
+  # generate_summary_counts:
+  #   run: python:latest python analysis/summary_statistics.py
+  #   needs: [join_ethnicity_region, generate_measures, generate_measures_demographics, calculate_numerators]
+  #   outputs:
+  #     moderately_sensitive:
+  #       patient_count: output/patient_count_*.json
+  #       practice_count: output/practice_count_*.json
+  #       summary: output/indicator_summary_statistics_*.json
   
-  generate_plots:
-    run: python:latest python analysis/plot_measures.py
-    needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
-    outputs:
-      moderately_sensitive:
-        counts: output/figures/plot_*.jpeg
-        combined: output/figures/combined_plot_*.png
-        demographics: output/demographic_aggregates.csv
+  # generate_plots:
+  #   run: python:latest python analysis/plot_measures.py
+  #   needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
+  #   outputs:
+  #     moderately_sensitive:
+  #       counts: output/figures/plot_*.jpeg
+  #       combined: output/figures/combined_plot_*.png
+  #       demographics: output/demographic_aggregates.csv
   
-  generate_notebook:
-    run: jupyter:latest jupyter nbconvert /workspace/analysis/report.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
-    needs: [generate_plots, generate_summary_counts]
-    outputs:
-      moderately_sensitive:
-        notebook: output/report.html
+  # generate_notebook:
+  #   run: jupyter:latest jupyter nbconvert /workspace/analysis/report.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
+  #   needs: [generate_plots, generate_summary_counts]
+  #   outputs:
+  #     moderately_sensitive:
+  #       notebook: output/report.html
 
-  generate_dem_notebook:
-    run: jupyter:latest jupyter nbconvert /workspace/analysis/demographic_report.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
-    needs: [generate_plots]
-    outputs:
-      moderately_sensitive:
-        notebook: output/demographic_report.html
+  # generate_dem_notebook:
+  #   run: jupyter:latest jupyter nbconvert /workspace/analysis/demographic_report.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
+  #   needs: [generate_plots]
+  #   outputs:
+  #     moderately_sensitive:
+  #       notebook: output/demographic_report.html
 
-  run_tests:
-    run: python:latest python -m pytest --junit-xml=output/pytest.xml --verbose
-    outputs:
-      moderately_sensitive:
-        log: output/pytest.xml
+  # run_tests:
+  #   run: python:latest python -m pytest --junit-xml=output/pytest.xml --verbose
+  #   outputs:
+  #     moderately_sensitive:
+  #       log: output/pytest.xml
 

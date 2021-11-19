@@ -101,13 +101,6 @@ actions:
       moderately_sensitive:
         notebook: output/demographic_report.html
 
-#   generate_publication_tables:
-#     run: jupyter:latest jupyter nbconvert /workspace/analysis/publication_tables.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
-#     needs: [generate_measures_demographics, generate_summary_counts]
-#     outputs:
-#       moderately_sensitive:
-#         notebook: output/publication_tables.html
-
   run_tests:
     run: python:latest python -m pytest --junit-xml=output/pytest.xml --verbose
     outputs:

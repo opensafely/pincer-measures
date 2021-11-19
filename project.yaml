@@ -57,13 +57,7 @@ actions:
     outputs:
         moderately_sensitive:
           measure_csv: output/measure_*_rate.csv
-  
-  check_asthma:
-    run: python:latest python analysis/check_asthma.py
-    needs: [generate_measures]
-    outputs:
-      moderately_sensitive:
-        csv: output/asthma_sum.csv
+
   
   generate_measures_demographics:
     run: python:latest python analysis/calculate_measures.py

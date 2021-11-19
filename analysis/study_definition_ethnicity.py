@@ -1,7 +1,4 @@
-from cohortextractor import (
-    StudyDefinition,
-    patients
-)
+from cohortextractor import StudyDefinition, patients
 
 from codelists import *
 
@@ -9,40 +6,37 @@ start_date = "2019-09-01"
 end_date = "2021-09-01"
 
 study = StudyDefinition(
-    index_date = end_date,
+    index_date=end_date,
     default_expectations={
         "date": {"earliest": start_date, "latest": end_date},
         "rate": "uniform",
         "incidence": 0.5,
     },
-
     population=patients.all(),
-
-    ethnicity = patients.categorised_as(
+    ethnicity=patients.categorised_as(
         {
             "Missing": "DEFAULT",
             "White": """ eth2001=1 """,
             "Mixed": """ eth2001=2 """,
-            "South Asian": """ eth2001=3 """, 
+            "South Asian": """ eth2001=3 """,
             "Black": """ eth2001=4 """,
             "Other": """ eth2001=5 """,
-            "Unknown": """ non_eth2001_dat OR eth_notgiptref_dat OR eth_notstated_dat OR eth_norecord_dat"""
+            "Unknown": """ non_eth2001_dat OR eth_notgiptref_dat OR eth_notstated_dat OR eth_norecord_dat""",
         },
-        return_expectations = {
+        return_expectations={
             "rate": "universal",
             "category": {
-                        "ratios": {
-                            "Missing": 0.4,
-                            "White": 0.1,
-                            "Mixed": 0.1,
-                            "South Asian": 0.1,
-                            "Black": 0.1,
-                            "Other": 0.1,
-                            "Unknown": 0.1,
-                                }
-                        },
+                "ratios": {
+                    "Missing": 0.4,
+                    "White": 0.1,
+                    "Mixed": 0.1,
+                    "South Asian": 0.1,
+                    "Black": 0.1,
+                    "Other": 0.1,
+                    "Unknown": 0.1,
+                }
             },
-
+        },
         eth2001=patients.with_these_clinical_events(
             eth2001,
             returning="category",
@@ -53,7 +47,6 @@ study = StudyDefinition(
                 "incidence": 0.75,
             },
         ),
-
         # Any other ethnicity code
         non_eth2001_dat=patients.with_these_clinical_events(
             non_eth2001,

@@ -5,431 +5,119 @@ expectations:
 
 actions:
 
-  generate_study_population_1:
-    run: cohortextractor:latest generate_cohort --study-definition study_definition --index-date-range "2019-09-01 to 2020-05-01 by month" --output-format feather
+  generate_study_population_test:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition --index-date-range "2019-09-01 to 2019-09-01 by month" --output-format feather
     outputs:
       highly_sensitive:
         cohort: output/input_*.feather
-
-  generate_study_population_2:
-    run: cohortextractor:latest generate_cohort --study-definition study_definition --index-date-range "2020-06-01 to 2021-02-01 by month" --output-format feather
+  
+  check_test:
+    run: python:latest python analysis/test_study_def.py
+    needs: [generate_study_population_test]
     outputs:
-      highly_sensitive:
-        cohort: output/input*.feather
+      moderately_sensitive:
+        egfr: output/EGFR_*.csv
 
-  generate_study_population_3:
-    run: cohortextractor:latest generate_cohort --study-definition study_definition --index-date-range "2021-03-01 to 2021-09-01 by month" --output-format feather
-    outputs:
-      highly_sensitive:
-        cohort: output/inpu*.feather
 
-  generate_study_population_a:
-    run: cohortextractor:latest generate_cohort --study-definition study_definition_a --index-date-range "2019-09-01 to 2021-09-01 by month" --output-format feather
-    outputs:
-      highly_sensitive:
-        cohort: output/input_a_*.feather
+  # generate_study_population_1:
+  #   run: cohortextractor:latest generate_cohort --study-definition study_definition --index-date-range "2019-09-01 to 2020-05-01 by month" --output-format feather
+  #   outputs:
+  #     highly_sensitive:
+  #       cohort: output/input_*.feather
 
-  generate_study_population_ethnicity:
-    run: cohortextractor:latest generate_cohort --study-definition study_definition_ethnicity --output-format feather
-    outputs:
-      highly_sensitive:
-        cohort: output/input_ethnicity.feather
+  # generate_study_population_2:
+  #   run: cohortextractor:latest generate_cohort --study-definition study_definition --index-date-range "2020-06-01 to 2021-02-01 by month" --output-format feather
+  #   outputs:
+  #     highly_sensitive:
+  #       cohort: output/input*.feather
+
+  # generate_study_population_3:
+  #   run: cohortextractor:latest generate_cohort --study-definition study_definition --index-date-range "2021-03-01 to 2021-09-01 by month" --output-format feather
+  #   outputs:
+  #     highly_sensitive:
+  #       cohort: output/inpu*.feather
+
+  # generate_study_population_ethnicity:
+  #   run: cohortextractor:latest generate_cohort --study-definition study_definition_ethnicity --output-format feather
+  #   outputs:
+  #     highly_sensitive:
+  #       cohort: output/input_ethnicity.feather
  
-  generate_study_population_egfr:
-    run: cohortextractor:latest generate_cohort --study-definition study_definition_egfr --output-format feather
-    outputs:
-      highly_sensitive:
-        cohort: output/input_egfr.feather
-  
-  check_indicator_k_definition:
-    run: python:latest python analysis/check_indicator_k_denominator.py
-    needs: [generate_study_population_1, generate_study_population_2, generate_study_population_3, generate_study_population_egfr]
-    outputs:
-      moderately_sensitive:
-        check1: output/new-indicator-k_denominator-check.csv
-        check2: output/new-indicator-k_denominator-match-counts.csv
+  # join_ethnicity_region:
+  #   run: python:latest python analysis/join_ethnicity_region.py
+  #   needs: [generate_study_population_1, generate_study_population_2, generate_study_population_3, generate_study_population_ethnicity]
+  #   outputs:
+  #     highly_sensitive:
+  #       cohort: output/inp*.feather
+          
 
-  join_ethnicity_region:
-    run: python:latest python analysis/join_ethnicity_region.py
-    needs: [generate_study_population_1, generate_study_population_2, generate_study_population_3, generate_study_population_ethnicity]
-    outputs:
-      highly_sensitive:
-        cohort: output/inp*.feather
+  # calculate_numerators:
+  #   run: python:latest python analysis/calculate_numerators.py
+  #   needs: [join_ethnicity_region]
+  #   outputs:
+  #     highly_sensitive:
+  #       cohort: output/indicator_e_f_*.feather
+
+  # calculate_composite_indicators:
+  #   run: python:latest python analysis/composite_indicators.py
+  #   needs: [calculate_numerators, join_ethnicity_region]
+  #   outputs:
+  #     moderately_sensitive:
+  #       counts: output/*_composite_measure.csv
+
+  # generate_measures:
+  #   run: cohortextractor:latest generate_measures --study-definition study_definition --output-dir=output
+  #   needs: [join_ethnicity_region]
+  #   outputs:
+  #       moderately_sensitive:
+  #         measure_csv: output/measure_*_rate.csv
+
   
-  count_egfr_comparators:
-    run: python:latest python analysis/count_comparator_value_pairs.py
-    needs: [join_ethnicity_region]
-    outputs:
-      moderately_sensitive:
-        cohort: output/EGFR_*.csv
+  # generate_measures_demographics:
+  #   run: python:latest python analysis/calculate_measures.py
+  #   needs: [calculate_numerators, join_ethnicity_region]
+  #   outputs:
+  #     moderately_sensitive:
+  #       counts: output/indicator_measure_*.csv
+  #       measure_csv: output/measure*_rate.csv
+  #       demographics: output/demographics_summary_*.csv
         
 
-  calculate_numerators:
-    run: python:latest python analysis/calculate_numerators.py
-    needs: [join_ethnicity_region]
-    outputs:
-      highly_sensitive:
-        cohort: output/indicator_e_f_*.feather
-
-  calculate_composite_indicators:
-    run: python:latest python analysis/composite_indicators.py
-    needs: [calculate_numerators, join_ethnicity_region]
-    outputs:
-      moderately_sensitive:
-        counts: output/*_composite_measure.csv
-
-  generate_measures:
-    run: cohortextractor:latest generate_measures --study-definition study_definition --output-dir=output
-    needs: [join_ethnicity_region]
-    outputs:
-        moderately_sensitive:
-          measure_csv: output/measure_*_rate.csv
+  # generate_summary_counts:
+  #   run: python:latest python analysis/summary_statistics.py
+  #   needs: [join_ethnicity_region, generate_measures, generate_measures_demographics, calculate_numerators]
+  #   outputs:
+  #     moderately_sensitive:
+  #       patient_count: output/patient_count_*.json
+  #       practice_count: output/practice_count_*.json
+  #       summary: output/indicator_summary_statistics_*.json
   
-  check_asthma:
-    run: python:latest python analysis/check_asthma.py
-    needs: [generate_measures]
-    outputs:
-      moderately_sensitive:
-        csv: output/asthma_sum.csv
+  # generate_plots:
+  #   run: python:latest python analysis/plot_measures.py
+  #   needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
+  #   outputs:
+  #     moderately_sensitive:
+  #       counts: output/figures/plot_*.jpeg
+  #       combined: output/figures/combined_plot_*.png
+  #       demographics: output/demographic_aggregates.csv
   
-  generate_measures_demographics:
-    run: python:latest python analysis/calculate_measures.py
-    needs: [calculate_numerators, join_ethnicity_region]
-    outputs:
-      moderately_sensitive:
-        counts: output/indicator_measure_*.csv
-        measure_csv: output/measure*_rate.csv
-        demographics: output/demographics_summary_*.csv
-        
-  
-  practice_proportions:
-    run: python:latest python analysis/extract_rates.py
-    needs: [generate_measures, generate_measures_demographics]
-    outputs:
-      moderately_sensitive:
-        measure_csv: output/measure_cleaned_*.csv
-        
-
-  generate_summary_counts:
-    run: python:latest python analysis/summary_statistics.py
-    needs: [join_ethnicity_region, generate_measures, generate_measures_demographics, calculate_numerators]
-    outputs:
-      moderately_sensitive:
-        patient_count: output/patient_count_*.json
-        practice_count: output/practice_count_*.json
-        summary: output/indicator_summary_statistics_*.json
-  
-  generate_plots:
-    run: python:latest python analysis/plot_measures.py
-    needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
-    outputs:
-      moderately_sensitive:
-        counts: output/figures/plot_*.jpeg
-        combined: output/figures/combined_plot_*.png
-        demographics: output/demographic_aggregates.csv
-
-  cusum:
-    run: python:latest python analysis/cusum.py
-    needs: [generate_measures, generate_measures_demographics]
-    outputs:
-      moderately_sensitive:
-        cusum: output/cusum/cusum_results.json
-        alerts: output/cusum/cusum_alerts_summary.json
-        by_date: output/cusum/cusum_alerts_by_date.json
-  
-  plot_cusum:
-    run: python:latest python analysis/plot_cusum.py
-    needs: [cusum, generate_measures, generate_measures_demographics]
-    outputs:
-      moderately_sensitive:
-        cusum: output/cusum/cusum/cusum_indicator_*.jpeg
-        alert: output/cusum/alerts/alerts_indicator_*.jpeg
-        combined_cusum: output/cusum/combined_*.png
-  
-  generate_notebook:
-    run: jupyter:latest jupyter nbconvert /workspace/analysis/report.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
-    needs: [generate_plots, generate_summary_counts]
-    outputs:
-      moderately_sensitive:
-        notebook: output/report.html
-
-
-  generate_dem_notebook:
-    run: jupyter:latest jupyter nbconvert /workspace/analysis/demographic_report.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
-    needs: [generate_plots]
-    outputs:
-      moderately_sensitive:
-        notebook: output/demographic_report.html
-
-#   generate_publication_tables:
-#     run: jupyter:latest jupyter nbconvert /workspace/analysis/publication_tables.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
-#     needs: [generate_measures_demographics, generate_summary_counts]
-#     outputs:
-#       moderately_sensitive:
-#         notebook: output/publication_tables.html
-
-
-
-  indicator_saturation_a:
-    run: r:latest analysis/indicator_saturation_analysis.R -I a -T date -C practice -v -i output -o output/indicator_saturation measure_indicator_a_rate.csv 
-    needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
-    outputs:
-      moderately_sensitive:
-        out_csv: output/indicator_saturation/indicator_saturation_*_a/summary_output.csv
-        plot_csv: output/indicator_saturation/indicator_saturation_*_a/plot_data.csv
-
-  indicator_saturation_b:
-    run: r:latest analysis/indicator_saturation_analysis.R -I b -T date -C practice -v -i output -o output/indicator_saturation measure_indicator_b_rate.csv 
-    needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
-    outputs:
-      moderately_sensitive:
-        out_csv: output/indicator_saturation/indicator_saturation_*_b/summary_output.csv
-        plot_csv: output/indicator_saturation/indicator_saturation_*_b/plot_data.csv
-
-  indicator_saturation_c:
-    run: r:latest analysis/indicator_saturation_analysis.R -I c -T date -C practice -v -i output -o output/indicator_saturation measure_indicator_c_rate.csv 
-    needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
-    outputs:
-      moderately_sensitive:
-        out_csv: output/indicator_saturation/indicator_saturation_*_c/summary_output.csv
-        plot_csv: output/indicator_saturation/indicator_saturation_*_c/plot_data.csv
-
-  indicator_saturation_d:
-    run: r:latest analysis/indicator_saturation_analysis.R -I d -T date -C practice -v -i output -o output/indicator_saturation measure_indicator_d_rate.csv 
-    needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
-    outputs:
-      moderately_sensitive:
-        out_csv: output/indicator_saturation/indicator_saturation_*_d/summary_output.csv
-        plot_csv: output/indicator_saturation/indicator_saturation_*_d/plot_data.csv
-
-  indicator_saturation_e:
-    run: r:latest analysis/indicator_saturation_analysis.R -I e -T date -C practice -v -i output -o output/indicator_saturation measure_indicator_e_rate.csv 
-    needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
-    outputs:
-      moderately_sensitive:
-        out_csv: output/indicator_saturation/indicator_saturation_*_e/summary_output.csv
-        plot_csv: output/indicator_saturation/indicator_saturation_*_e/plot_data.csv
-
-  indicator_saturation_f:
-    run: r:latest analysis/indicator_saturation_analysis.R -I f -T date -C practice -v -i output -o output/indicator_saturation measure_indicator_f_rate.csv 
-    needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
-    outputs:
-      moderately_sensitive:
-        out_csv: output/indicator_saturation/indicator_saturation_*_f/summary_output.csv
-        plot_csv: output/indicator_saturation/indicator_saturation_*_f/plot_data.csv
-        
-  indicator_saturation_g:
-    run: r:latest analysis/indicator_saturation_analysis.R -I g -T date -C practice -v -i output -o output/indicator_saturation measure_indicator_g_rate.csv 
-    needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
-    outputs:
-      moderately_sensitive:
-        out_csv: output/indicator_saturation/indicator_saturation_*_g/summary_output.csv
-        plot_csv: output/indicator_saturation/indicator_saturation_*_g/plot_data.csv
-
-  indicator_saturation_i:
-    run: r:latest analysis/indicator_saturation_analysis.R -I i -T date -C practice -v -i output -o output/indicator_saturation measure_indicator_i_rate.csv 
-    needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
-    outputs:
-      moderately_sensitive:
-        out_csv: output/indicator_saturation/indicator_saturation_*_i/summary_output.csv
-        plot_csv: output/indicator_saturation/indicator_saturation_*_i/plot_data.csv
-
-  indicator_saturation_k:
-    run: r:latest analysis/indicator_saturation_analysis.R -I k -T date -C practice -v -i output -o output/indicator_saturation measure_indicator_k_rate.csv 
-    needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
-    outputs:
-      moderately_sensitive:
-        out_csv: output/indicator_saturation/indicator_saturation_*_k/summary_output.csv
-        plot_csv: output/indicator_saturation/indicator_saturation_*_k/plot_data.csv
-
-  indicator_saturation_ac:
-    run: r:latest analysis/indicator_saturation_analysis.R -I ac -T date -C practice -v -i output -o output/indicator_saturation measure_indicator_ac_rate.csv 
-    needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
-    outputs:
-      moderately_sensitive:
-        out_csv: output/indicator_saturation/indicator_saturation_*_ac/summary_output.csv
-        plot_csv: output/indicator_saturation/indicator_saturation_*_ac/plot_data.csv
-
-  indicator_saturation_me_no_fbc:
-    run: r:latest analysis/indicator_saturation_analysis.R -I me_no_fbc -T date -C practice -B indicator_me_denominator -v -i output -o output/indicator_saturation measure_indicator_me_no_fbc_rate.csv 
-    needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
-    outputs:
-      moderately_sensitive:
-        out_csv: output/indicator_saturation/indicator_saturation_*_me_no_fbc/summary_output.csv
-        plot_csv: output/indicator_saturation/indicator_saturation_*_me_no_fbc/plot_data.csv
-        
-  indicator_saturation_me_no_lft:
-    run: r:latest analysis/indicator_saturation_analysis.R -I me_no_lft -T date -C practice -B indicator_me_denominator -v -i output -o output/indicator_saturation measure_indicator_me_no_lft_rate.csv 
-    needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
-    outputs:
-      moderately_sensitive:
-        out_csv: output/indicator_saturation/indicator_saturation_*_me_no_lft/summary_output.csv
-        plot_csv: output/indicator_saturation/indicator_saturation_*_me_no_lft/plot_data.csv
-
-  indicator_saturation_li:
-    run: r:latest analysis/indicator_saturation_analysis.R -I li -T date -C practice -v -i output -o output/indicator_saturation measure_indicator_li_rate.csv 
-    needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
-    outputs:
-      moderately_sensitive:
-        out_csv: output/indicator_saturation/indicator_saturation_*_li/summary_output.csv
-        plot_csv: output/indicator_saturation/indicator_saturation_*_li/plot_data.csv
-
-  indicator_saturation_am:
-    run: r:latest analysis/indicator_saturation_analysis.R -I am -T date -C practice -v -i output -o output/indicator_saturation measure_indicator_am_rate.csv 
-    needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
-    outputs:
-      moderately_sensitive:
-        out_csv: output/indicator_saturation/indicator_saturation_*_am/summary_output.csv
-        plot_csv: output/indicator_saturation/indicator_saturation_*_am/plot_data.csv
-
-  combine_indicator_saturation_data:
-    run: r:latest analysis/combine_indicator_saturation_output.R output/indicator_saturation output/indicator_saturation/combined
-    needs: [indicator_saturation_a, indicator_saturation_b, indicator_saturation_c, indicator_saturation_d, indicator_saturation_e, indicator_saturation_f, indicator_saturation_g, indicator_saturation_i, indicator_saturation_k, indicator_saturation_ac, indicator_saturation_me_no_fbc, indicator_saturation_me_no_lft, indicator_saturation_li, indicator_saturation_am]
-    outputs:
-      moderately_sensitive:
-        counts: output/indicator_saturation/combined/*.csv
-        # plots: output/indicator_saturation/combined/CDPLOT_*.png
-        # summary: output/indicator_saturation/combined/SUMMARY_*.png
-        # Rdat: output/indicator_saturation/combined/ANALYSIS_OUTPUT.Rdat
-  
-  generate_indicator_saturation_plots:
-    run: r:latest analysis/generate_indicator_saturation_plots.R output/indicator_saturation output/indicator_saturation/combined
-    needs: [combine_indicator_saturation_data]
-    outputs:
-      moderately_sensitive:
-        plots: output/indicator_saturation/combined/BREAK-COUNT_*.png
- 
-  # indicator_saturation_a_rev:
-  #   run: r:latest analysis/indicator_saturation_analysis.R -I a -T date -C practice -v -Q -i output -o output/indicator_saturation_rev measure_indicator_a_rate.csv 
-  #   needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
+  # generate_notebook:
+  #   run: jupyter:latest jupyter nbconvert /workspace/analysis/report.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
+  #   needs: [generate_plots, generate_summary_counts]
   #   outputs:
   #     moderately_sensitive:
-  #       out_csv: output/indicator_saturation_rev/indicator_saturation_*_a/summary_output.csv
-  #       plot_csv: output/indicator_saturation_rev/indicator_saturation_*_a/plot_data.csv        
-        
-  # indicator_saturation_b_rev:
-  #   run: r:latest analysis/indicator_saturation_analysis.R -I b -T date -C practice -v -Q -i output -o output/indicator_saturation_rev measure_indicator_b_rate.csv 
-  #   needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
-  #   outputs:
-  #     moderately_sensitive:
-  #       out_csv: output/indicator_saturation_rev/indicator_saturation_*_b/summary_output.csv
-  #       plot_csv: output/indicator_saturation_rev/indicator_saturation_*_b/plot_data.csv
+  #       notebook: output/report.html
 
-  # indicator_saturation_c_rev:
-  #   run: r:latest analysis/indicator_saturation_analysis.R -I c -T date -C practice -v -Q -i output -o output/indicator_saturation_rev measure_indicator_c_rate.csv 
-  #   needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
+  # generate_dem_notebook:
+  #   run: jupyter:latest jupyter nbconvert /workspace/analysis/demographic_report.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
+  #   needs: [generate_plots]
   #   outputs:
   #     moderately_sensitive:
-  #       out_csv: output/indicator_saturation_rev/indicator_saturation_*_c/summary_output.csv
-  #       plot_csv: output/indicator_saturation_rev/indicator_saturation_*_c/plot_data.csv
+  #       notebook: output/demographic_report.html
 
-  # indicator_saturation_d_rev:
-  #   run: r:latest analysis/indicator_saturation_analysis.R -I d -T date -C practice -v -Q -i output -o output/indicator_saturation_rev measure_indicator_d_rate.csv 
-  #   needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
+  # run_tests:
+  #   run: python:latest python -m pytest --junit-xml=output/pytest.xml --verbose
   #   outputs:
   #     moderately_sensitive:
-  #       out_csv: output/indicator_saturation_rev/indicator_saturation_*_d/summary_output.csv
-  #       plot_csv: output/indicator_saturation_rev/indicator_saturation_*_d/plot_data.csv
-  # indicator_saturation_e_rev:
-  #   run: r:latest analysis/indicator_saturation_analysis.R -I e -T date -C practice -v -Q -i output -o output/indicator_saturation_rev measure_indicator_e_rate.csv 
-  #   needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
-  #   outputs:
-  #     moderately_sensitive:
-  #       out_csv: output/indicator_saturation_rev/indicator_saturation_*_e/summary_output.csv
-  #       plot_csv: output/indicator_saturation_rev/indicator_saturation_*_e/plot_data.csv
-
-  # indicator_saturation_f_rev:
-  #   run: r:latest analysis/indicator_saturation_analysis.R -I f -T date -C practice -v -Q -i output -o output/indicator_saturation_rev measure_indicator_f_rate.csv 
-  #   needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
-  #   outputs:
-  #     moderately_sensitive:
-  #       out_csv: output/indicator_saturation_rev/indicator_saturation_*_f/summary_output.csv
-  #       plot_csv: output/indicator_saturation_rev/indicator_saturation_*_f/plot_data.csv
-
-  # indicator_saturation_g_rev:
-  #   run: r:latest analysis/indicator_saturation_analysis.R -I g -T date -C practice -v -Q -i output -o output/indicator_saturation_rev measure_indicator_g_rate.csv 
-  #   needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
-  #   outputs:
-  #     moderately_sensitive:
-  #       out_csv: output/indicator_saturation_rev/indicator_saturation_*_g/summary_output.csv
-  #       plot_csv: output/indicator_saturation_rev/indicator_saturation_*_g/plot_data.csv
-
-  # indicator_saturation_i_rev:
-  #   run: r:latest analysis/indicator_saturation_analysis.R -I i -T date -C practice -v -Q -i output -o output/indicator_saturation_rev measure_indicator_i_rate.csv 
-  #   needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
-  #   outputs:
-  #     moderately_sensitive:
-  #       out_csv: output/indicator_saturation_rev/indicator_saturation_*_i/summary_output.csv
-  #       plot_csv: output/indicator_saturation_rev/indicator_saturation_*_i/plot_data.csv
-
-  # indicator_saturation_k_rev:
-  #   run: r:latest analysis/indicator_saturation_analysis.R -I k -T date -C practice -v -Q -i output -o output/indicator_saturation_rev measure_indicator_k_rate.csv 
-  #   needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
-  #   outputs:
-  #     moderately_sensitive:
-  #       out_csv: output/indicator_saturation_rev/indicator_saturation_*_k/summary_output.csv
-  #       plot_csv: output/indicator_saturation_rev/indicator_saturation_*_k/plot_data.csv
-
-  # indicator_saturation_ac_rev:
-  #   run: r:latest analysis/indicator_saturation_analysis.R -I ac -T date -C practice -v -Q -i output -o output/indicator_saturation_rev measure_indicator_ac_rate.csv 
-  #   needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
-  #   outputs:
-  #     moderately_sensitive:
-  #       out_csv: output/indicator_saturation_rev/indicator_saturation_*_ac/summary_output.csv
-  #       plot_csv: output/indicator_saturation_rev/indicator_saturation_*_ac/plot_data.csv
-
-  # indicator_saturation_am_rev:
-  #   run: r:latest analysis/indicator_saturation_analysis.R -I am -T date -C practice -v -Q -i output -o output/indicator_saturation_rev measure_indicator_am_rate.csv 
-  #   needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
-  #   outputs:
-  #     moderately_sensitive:
-  #       out_csv: output/indicator_saturation_rev/indicator_saturation_*_am/summary_output.csv
-  #       plot_csv: output/indicator_saturation_rev/indicator_saturation_*_am/plot_data.csv
-
-  # indicator_saturation_li_rev:
-  #   run: r:latest analysis/indicator_saturation_analysis.R -I li -T date -C practice -v -Q -i output -o output/indicator_saturation_rev measure_indicator_li_rate.csv 
-  #   needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
-  #   outputs:
-  #     moderately_sensitive:
-  #       out_csv: output/indicator_saturation_rev/indicator_saturation_*_li/summary_output.csv
-  #       plot_csv: output/indicator_saturation_rev/indicator_saturation_*_li/plot_data.csv
-
-  # indicator_saturation_me_no_fbc_rev:
-  #   run: r:latest analysis/indicator_saturation_analysis.R -I me_no_fbc -T date -C practice -B indicator_me_denominator -v -Q -i output -o output/indicator_saturation_rev measure_indicator_me_no_fbc_rate.csv 
-  #   needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
-  #   outputs:
-  #     moderately_sensitive:
-  #       out_csv: output/indicator_saturation_rev/indicator_saturation_*_me_no_fbc/summary_output.csv
-  #       plot_csv: output/indicator_saturation_rev/indicator_saturation_*_me_no_fbc/plot_data.csv
-        
-  # indicator_saturation_me_no_lft_rev:
-  #   run: r:latest analysis/indicator_saturation_analysis.R -I me_no_lft -T date -C practice -B indicator_me_denominator -v -Q -i output -o output/indicator_saturation_rev measure_indicator_me_no_lft_rate.csv 
-  #   needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
-  #   outputs:
-  #     moderately_sensitive:
-  #       out_csv: output/indicator_saturation_rev/indicator_saturation_*_me_no_lft/summary_output.csv
-  #       plot_csv: output/indicator_saturation_rev/indicator_saturation_*_me_no_lft/plot_data.csv
-
-  # combine_indicator_saturation_data_rev:
-  #   run: r:latest analysis/combine_indicator_saturation_output.R output/indicator_saturation_rev output/indicator_saturation_rev/combined
-  #   needs: [indicator_saturation_a_rev, indicator_saturation_b_rev, indicator_saturation_c_rev, indicator_saturation_d_rev, indicator_saturation_e_rev, indicator_saturation_f_rev, indicator_saturation_g_rev, indicator_saturation_i_rev, indicator_saturation_k_rev, indicator_saturation_ac_rev, indicator_saturation_me_no_fbc_rev, indicator_saturation_me_no_lft_rev, indicator_saturation_li_rev, indicator_saturation_am_rev]
-  #   outputs:
-  #     moderately_sensitive:
-  #       counts: output/indicator_saturation_rev/combined/*.csv
-  #       # plots: output/indicator_saturation/combined/CDPLOT_*.png
-  #       # summary: output/indicator_saturation/combined/SUMMARY_*.png
-  #       # Rdat: output/indicator_saturation/combined/ANALYSIS_OUTPUT.Rdat
-  
-  # generate_indicator_saturation_plots_rev:
-  #   run: r:latest analysis/generate_indicator_saturation_plots.R output/indicator_saturation_rev output/indicator_saturation_rev/combined
-  #   needs: [combine_indicator_saturation_data_rev]
-  #   outputs:
-  #     moderately_sensitive:
-  #       plots: output/indicator_saturation_rev/combined/BREAK-COUNT_*.png
-
-  run_tests:
-    run: python:latest python -m pytest --junit-xml=output/pytest.xml --verbose
-    outputs:
-      moderately_sensitive:
-        log: output/pytest.xml
+  #       log: output/pytest.xml
 

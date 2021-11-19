@@ -24,7 +24,7 @@ study = StudyDefinition(
        (age >=18 AND age <=120) AND 
        (sex = 'M' OR sex = 'F') AND
        (
-           (age >=65 AND ppi) OR
+           (age >=65 AND (NOT ppi)) OR
            (methotrexate_6_3_months AND methotrexate_3_months) OR
            (lithium_6_3_months AND lithium_3_months) OR
            (amiodarone_12_6_months AND amiodarone_6_months) OR

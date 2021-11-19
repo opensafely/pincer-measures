@@ -86,24 +86,6 @@ actions:
         counts: output/figures/plot_*.jpeg
         combined: output/figures/combined_plot_*.png
         demographics: output/demographic_aggregates.csv
-
-  cusum:
-    run: python:latest python analysis/cusum.py
-    needs: [generate_measures, generate_measures_demographics]
-    outputs:
-      moderately_sensitive:
-        cusum: output/cusum/cusum_results.json
-        alerts: output/cusum/cusum_alerts_summary.json
-        by_date: output/cusum/cusum_alerts_by_date.json
-  
-  plot_cusum:
-    run: python:latest python analysis/plot_cusum.py
-    needs: [cusum, generate_measures, generate_measures_demographics]
-    outputs:
-      moderately_sensitive:
-        cusum: output/cusum/cusum/cusum_indicator_*.jpeg
-        alert: output/cusum/alerts/alerts_indicator_*.jpeg
-        combined_cusum: output/cusum/combined_*.png
   
   generate_notebook:
     run: jupyter:latest jupyter nbconvert /workspace/analysis/report.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input

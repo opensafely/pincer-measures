@@ -1,14 +1,14 @@
 import pandas as pd
-from utilities import OUTPUT_DIR, match_input_files_filtered, get_date_input_file_filtered
+from utilities import OUTPUT_DIR, match_input_files, get_date_input_file
 
 counts = {}
 for file in OUTPUT_DIR.iterdir():
 
-        if match_input_files_filtered(file.name):
+        if match_input_files(file.name):
 
             df = pd.read_feather(OUTPUT_DIR / file.name)
 
-            date = get_date_input_file_filtered(file.name)
+            date = get_date_input_file(file.name)
             
             df_filtered = df[
                 (
@@ -31,8 +31,6 @@ for file in OUTPUT_DIR.iterdir():
                         ((df['age'] >=75) & (df['loop_diuretic']==1) & (df['loop_diuretic_recent']==1))
                     )
                 )
-                ]
+                ].reset_index()
 
-            counts[date] = {'original': df.shape[0], 'filterd': df_filtered.shape[0]}
-
-pd.DataFrame.from_dict(counts).to_csv(OUTPUT_DIR / 'population_counts.csv')
+            df_filtered.to_feather(OUTPUT_DIR / f'input_filtered_{date}.feather')

@@ -3,7 +3,7 @@ from utilities import (
     OUTPUT_DIR,
     match_input_files_filtered,
     co_prescription,
-    get_date_input_file,
+    get_date_input_file_filtered,
 )
 
 for file in OUTPUT_DIR.iterdir():

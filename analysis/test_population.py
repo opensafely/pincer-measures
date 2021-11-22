@@ -2,6 +2,8 @@ import pandas as pd
 from utilities import OUTPUT_DIR, match_input_files_filtered, get_date_input_file_filtered
 
 counts = {}
+
+patient_ids = []
 for file in OUTPUT_DIR.iterdir():
 
         if match_input_files_filtered(file.name):
@@ -34,5 +36,9 @@ for file in OUTPUT_DIR.iterdir():
                 ]
 
             counts[date] = {'original': df.shape[0], 'filterd': df_filtered.shape[0]}
+            patient_ids.append(df_filtered['patient_id'])
 
 pd.DataFrame.from_dict(counts).to_csv(OUTPUT_DIR / 'population_counts.csv')
+
+with open(f"output/patient_count_check.json", "w") as f:
+    json.dump({"summary": len(patient_ids.unique())}, f)

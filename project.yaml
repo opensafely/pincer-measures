@@ -121,3 +121,4 @@ actions:
     outputs:
       moderately_sensitive:
         counts: output/population_counts.csv
+        count: output/patient_count_check.json

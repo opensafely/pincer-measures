@@ -33,4 +33,4 @@ for file in OUTPUT_DIR.iterdir():
                 )
                 ].reset_index()
 
-            df_filtered.to_feather(OUTPUT_DIR / 'input_filtered_{date}.feather')
+            df_filtered.to_feather(OUTPUT_DIR / f'input_filtered_{date}.feather')

@@ -1013,5 +1013,5 @@ def update_demographics(demographics_df, df):
     """Updates demographics_df with values from df."""
     demographics_df = demographics_df.append(
         df[demographics_df.columns]
-    ).drop_duplicates(keep="last")
+    ).drop_duplicates(subset="patient_id", keep="last")
     return demographics_df

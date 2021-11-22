@@ -21,7 +21,7 @@ for file in OUTPUT_DIR.iterdir():
                     ((df['age'] >=18) & (df['age']<=120)) &
                     (df['sex'].isin(['F', 'M'])) &
                     (
-                        ((df['age'] >=65) & (df['ppi']==1)) |
+                        ((df['age'] >=65) & (df['ppi']==0)) |
                         ((df['methotrexate_6_3_months'] ==1) & (df['methotrexate_3_months']==1)) |
                         ((df['lithium_6_3_months']==1) & (df['lithium_3_months']==1)) |
                         ((df['amiodarone_12_6_months']==1) & (df['amiodarone_6_months']==1)) |

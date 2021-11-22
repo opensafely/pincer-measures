@@ -3,8 +3,8 @@ import json
 import numpy as np
 from utilities import (
     OUTPUT_DIR,
-    match_input_files,
-    get_date_input_file,
+    match_input_files_filtered,
+    get_date_input_file_filtered,
     calculate_rate,
     redact_small_numbers,
     update_demographics,
@@ -34,11 +34,11 @@ if __name__ == "__main__":
 
     for file in OUTPUT_DIR.iterdir():
 
-        if match_input_files(file.name):
+        if match_input_files_filtered(file.name):
 
             df = pd.read_feather(OUTPUT_DIR / file.name)
 
-            date = get_date_input_file(file.name)
+            date = get_date_input_file_filtered(file.name)
 
             indicator_e_f = pd.read_feather(
                 OUTPUT_DIR / f"indicator_e_f_{date}.feather"

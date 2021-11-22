@@ -1,8 +1,8 @@
 import pandas as pd
 from utilities import (
     OUTPUT_DIR,
-    match_input_files,
-    get_date_input_file,
+    match_input_files_filtered,
+    get_date_input_file_filtered,
     get_composite_indicator_counts,
     group_low_values,
 )
@@ -42,9 +42,9 @@ all_counts = []
 
 for file in OUTPUT_DIR.iterdir():
 
-    if match_input_files(file.name):
+    if match_input_files_filtered(file.name):
         df = pd.read_feather(OUTPUT_DIR / file.name)
-        date = get_date_input_file(file.name)
+        date = get_date_input_file_filtered(file.name)
         indicator_e_f = pd.read_feather(OUTPUT_DIR / f"indicator_e_f_{date}.feather")
         e_dict = dict(
             zip(indicator_e_f["patient_id"], indicator_e_f["indicator_e_numerator"])

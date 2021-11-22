@@ -16,10 +16,10 @@ num_events_total = 0
 
 for file in OUTPUT_DIR.iterdir():
 
-    if match_input_files(file.name):
+    if match_input_files_filtered(file.name):
 
         df = pd.read_feather(OUTPUT_DIR / file.name)
-        date = get_date_input_file(file.name)
+        date = get_date_input_file_filtered(file.name)
         practice_list.extend(np.unique(df["practice"]))
 
         for indicator in indicators_list:

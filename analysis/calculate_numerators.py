@@ -1,14 +1,14 @@
 import pandas as pd
 from utilities import (
     OUTPUT_DIR,
-    match_input_files,
+    match_input_files_filtered,
     co_prescription,
     get_date_input_file,
 )
 
 for file in OUTPUT_DIR.iterdir():
 
-    if match_input_files(file.name):
+    if match_input_files_filtered(file.name):
 
         df = pd.read_feather(OUTPUT_DIR / file.name)
         date = get_date_input_file(file.name)

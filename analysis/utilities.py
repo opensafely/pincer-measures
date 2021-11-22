@@ -65,7 +65,7 @@ def get_date_input_file(file: str) -> str:
 def get_date_input_file_filtered(file: str) -> str:
     """Gets the date in format YYYY-MM-DD from input file name string"""
     # check format
-    if not match_input_files(file):
+    if not match_input_files_filtered(file):
         raise Exception("Not valid input file format")
 
     else:

@@ -31,6 +31,6 @@ for file in OUTPUT_DIR.iterdir():
                         ((df['age'] >=75) & (df['loop_diuretic']==1) & (df['loop_diuretic_recent']==1))
                     )
                 )
-                ]
+                ].reset_index()
 
             df_filtered.to_feather(OUTPUT_DIR / 'input_filtered_{date}.feather')

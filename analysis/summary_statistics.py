@@ -81,11 +81,22 @@ with open(f"output/practice_count_{backend}.json", "w") as f:
 
 unique_patients_total = []
 unique_patients_total_denominator = []
+unique_patients_categories = {"gi_bleed": {"numerator": [], "denominator": []}, "monitoring": {"numerator": [], "denominator": []}, "other": {"numerator": [], "denominator": []}}
 
 for (key, value) in patient_dict["numerator"].items():
     # get unique patients
     unique_patients_numerator = len(np.unique(patient_dict["numerator"][key]))
     unique_patients_total.extend(np.unique(patient_dict["numerator"][key]))
+
+    if key in ["a", "b", "c", "d", "e", "f"]:
+        unique_patients_categories["gi_bleed"]["numerator"].extend(np.unique(patient_dict["numerator"][key]))
+
+    elif key in ["g", "i", "k"]:
+        unique_patients_categories["other"]["numerator"].extend(np.unique(patient_dict["numerator"][key]))
+
+    elif key in ["ac", "me_no_fbc", "me_no_lft", "li", "am"]:
+        unique_patients_categories["monitoring"]["numerator"].extend(np.unique(patient_dict["numerator"][key]))
+
 
     # add to dictionary as num(mil)
     patient_counts_dict["numerator"][key] = unique_patients_numerator
@@ -97,6 +108,17 @@ for (key, value) in patient_dict["denominator"].items():
         np.unique(patient_dict["denominator"][key])
     )
 
+    if key in ["a", "b", "c", "d", "e", "f"]:
+        unique_patients_categories["gi_bleed"]["denominator"].extend(np.unique(patient_dict["denominator"][key]))
+
+    elif key in ["g", "i", "k"]:
+        unique_patients_categories["other"]["denominator"].extend(np.unique(patient_dict["denominator"][key]))
+
+    elif key in ["ac", "me_no_fbc", "me_no_lft", "li", "am"]:
+        unique_patients_categories["monitoring"]["denominator"].extend(np.unique(patient_dict["denominator"][key]))
+
+
+
     # add to dictionary as num(mil)
     patient_counts_dict["denominator"][key] = unique_patients_denominator
 
@@ -105,12 +127,18 @@ with open(f"output/patient_count_{backend}.json", "w") as f:
     json.dump({"num_patients": patient_counts_dict}, f)
 
 
-counts_dict = {}
+counts_dict = {"gi_bleed": {}, "monitoring": {}, "other": {}}
+
+practices_gi_bleed = []
+practices_monitoring = []
+practices_other = []
 
 for indicator in indicators_list:
     counts_dict[indicator] = {}
     df = pd.read_csv(OUTPUT_DIR / f"measure_indicator_{indicator}_rate.csv")
     num_practices, percentage_practices = get_percentage_practices(df)
+    
+
     num_events = get_number_events(df, indicator)
     num_patients_numerator = get_number_patients(indicator, "numerator")
     num_patients_denominator = get_number_patients(indicator, "denominator")
@@ -121,11 +149,37 @@ for indicator in indicators_list:
     counts_dict[indicator]["num_practices"] = num_practices
     counts_dict[indicator]["percent_practice"] = percentage_practices
 
+    # get practices for broad categories
+    unique_practices = np.unique(df['practice'])
+    if key in ["a", "b", "c", "d", "e", "f"]:
+        practices_gi_bleed.extend(unique_practices)
+    elif key in ["g", "i", "k"]:
+        practices_other.extend(unique_practices)
+    elif key in ["ac", "me_no_fbc", "me_no_lft", "li", "am"]:
+        practices_monitoring.extend(unique_practices)
+
+
+
+
 counts_dict["total_patients"] = len(np.unique(unique_patients_total))
 counts_dict["total_patients_denominator"] = len(
     np.unique(unique_patients_total_denominator)
 )
 counts_dict["total_events"] = float(num_events_total)
+
+counts_dict["gi_bleed"]["patients_numerator"] = len(np.unique(unique_patients_categories["gi_bleed"]["numerator"]))
+counts_dict["gi_bleed"]["patients_denominator"] = len(np.unique(unique_patients_categories["gi_bleed"]["denominator"]))
+
+counts_dict["monitoring"]["patients_numerator"] = len(np.unique(unique_patients_categories["monitoring"]["numerator"]))
+counts_dict["monitoring"]["patients_denominator"] = len(np.unique(unique_patients_categories["monitoring"]["denominator"]))
+
+counts_dict["other"]["patients_numerator"] = len(np.unique(unique_patients_categories["other"]["numerator"]))
+counts_dict["other"]["patients_denominator"] = len(np.unique(unique_patients_categories["other"]["denominator"]))
+
+
+counts_dict["monitoring"]["num_practices"] = len(np.unique(practices_monitoring))
+counts_dict["gi_bleed"]["num_practices"] = len(np.unique(practices_gi_bleed))
+counts_dict["other"]["num_practices"] = len(np.unique(practices_other))
 
 with open(f"output/indicator_summary_statistics_{backend}.json", "w") as f:
     json.dump({"summary": counts_dict}, f)

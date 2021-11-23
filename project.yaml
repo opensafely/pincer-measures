@@ -108,6 +108,13 @@ actions:
       moderately_sensitive:
         notebook: output/demographic_report.html
 
+  plot_Q1_comparisons:
+    run: r:latest analysis/generate_demographic_slope_plot.R
+    needs: [generate_plots]
+    outputs:
+      moderately_sensitive:
+        plots: output/figures/SLOPE_*.png
+
   run_tests:
     run: python:latest python -m pytest --junit-xml=output/pytest.xml --verbose
     outputs:

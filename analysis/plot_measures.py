@@ -13,6 +13,12 @@ import matplotlib.pyplot as plt
 additional_indicators = ["e", "f", "li"]
 indicators_list.extend(additional_indicators)
 
+# SELECT DATES FOR AGGREGATE DEMOGRAPHIC VALUES
+pre_q1 = ["2020-01-01", "2020-02-01", "2020-03-01"]
+post_q1 = ["2021-01-01", "2021-02-01", "2021-03-01"]
+
+medians_dict = {}
+
 time_period_mapping = {
     "ac": "2021-05-01",
     "me_no_fbc": "2020-06-01",
@@ -98,6 +104,13 @@ for i in indicators_list:
 
     # Need this for dummy data
     df = df.replace(np.inf, np.nan)
+
+    df_deciles = compute_redact_deciles(df, "date", f"indicator_{i}_numerator", "rate")
+    median_df = df_deciles.loc[df_deciles["percentile"]==50,:]
+    median_df_pre = median_df.loc[median_df["date"].isin(pre_q1),"rate"].mean()
+    median_df_post = median_df.loc[median_df["date"].isin(post_q1),"rate"].mean()
+    medians_dict[i] = {"pre": median_df_pre, "post": median_df_post}
+
 
     deciles_chart(
         df,
@@ -190,9 +203,7 @@ for i in indicators_list:
             df, 10, f"indicator_{i}_numerator", denominator, "rate", "date"
         )
 
-        # SELECT DATES FOR AGGREGATE DEMOGRAPHIC VALUES
-        pre_q1 = ["2020-01-01", "2020-02-01", "2020-03-01"]
-        post_q1 = ["2021-01-01", "2021-02-01", "2021-03-01"]
+        
 
         pre_df = df.loc[df["date"].isin(pre_q1), :]
         mean_pre = pre_df.groupby(by=[d])["rate"].mean().rename("pre")
@@ -295,3 +306,6 @@ prescribing_fig.savefig("output/figures/combined_plot_prescribing.png")
 plt.clf()
 monitoring_fig.subplots_adjust(bottom=0.15)
 monitoring_fig.savefig("output/figures/combined_plot_monitoring.png")
+
+with open(f"output/medians.json", "w") as f:
+    json.dump({"summary": medians_dict}, f)

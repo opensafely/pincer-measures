@@ -32,6 +32,11 @@ d_toplot = d_in %>%
     arrange( change_class )  %>% 
     unique( )
 
+d_averages = d_toplot %>% 
+    group_by( indicator, demographic, indicator_set, timepoint_order )  %>% 
+    summarise( mean = mean( rate ) )
+
+
 ### 
 ### BY INDICATOR TYPE
 ### 
@@ -40,6 +45,10 @@ indicator_sets = d_toplot %>% pull( indicator_set ) %>% unique()
 change_class_colour_scheme = c(
     increase = "red",
     decrease = "grey"
+)
+change_class_alpha_scheme = c(
+    increase = 1,
+    decrease = 0.6
 )
 
 demographic_labeller = c( "Age band", "Sex", "Region", "IMD", "Ethnicity" )
@@ -83,16 +92,19 @@ names( indicator_labeller ) = c( "a", "b", "c", "d", "e", "f",
 
 for ( this_set in indicator_sets ) {
     this_data = d_toplot %>% filter( indicator_set == this_set )
+    these_means = d_averages %>% filter( indicator_set == this_set )
+    
     num_indicators = this_data %>% pull( indicator ) %>% unique %>% length
 
     cat( glue("generating plots for: {this_set}\n\n"))
     
-    base_plot = ggplot( this_data, 
+    base_plot0 = ggplot( this_data, 
                         aes(x=timepoint_order,
                             y=rate,
                             label = group,
                             group = grouping_variable,
-                            colour = change_class
+                            colour = change_class,
+                            alpha = change_class
                         )) +
         geom_line( data = this_data %>% filter( change_class == "decrease" )) + 
         geom_point( data = this_data %>% filter( change_class == "decrease" )) +
@@ -111,16 +123,30 @@ for ( this_set in indicator_sets ) {
                           labels=c( "Q1 2020" = "Q1\n2020",
                                     "Q1 2021" = "Q1\n2021" ) ) +
         scale_colour_manual( values = change_class_colour_scheme ) +
+        scale_alpha_manual( values = change_class_alpha_scheme ) +
         theme_bw() +
         theme( plot.margin = margin(1, 1, 2, 1, "cm"),
-        legend.position = "none" ) +
+               legend.position = "none" ) +
         labs( title="" )
 
+    base_plot1 = base_plot0 + geom_point( data=these_means,
+                            aes(x=timepoint_order,
+                                y=mean,
+                                group=demographic,
+                                label=demographic),
+                            colour="black", alpha=1 ) +
+                geom_line( data=these_means,
+                            aes(x=timepoint_order,
+                                y=mean,
+                                group=demographic,
+                                label=demographic),
+                            colour="black", size=1, alpha=1 )
+
     plot_width = 1+1.2*num_indicators 
-    base_plot + facet_grid( demographic ~ indicator, scales = "free",
+    base_plot1 + facet_grid( demographic ~ indicator, scales = "free",
                             labeller = labeller(demographic = demographic_labeller,
-                                                indicator = indicator_labeller,
-                                                groupwrap = label_wrap_gen(10) )  )
+                                                indicator = indicator_labeller )  ) +
+                theme( strip.text = element_text(size = 8) )
     ggsave(glue("output/figures/SLOPE_{this_set}_slope-plot.png"),
     height=9, width=plot_width )
     

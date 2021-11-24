@@ -8,7 +8,7 @@ library(ggrepel)
 
 file_in = "output/demographic_aggregates.csv"
 
-d_in = read_csv( file_in, show_col_types = FALSE )
+d_in = read_csv( file_in )
 
 d_toplot = d_in %>%
     mutate( delta = post_mean - pre_mean ) %>% 

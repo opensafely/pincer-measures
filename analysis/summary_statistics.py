@@ -151,7 +151,7 @@ for indicator in indicators_list:
     counts_dict[indicator]["percent_practice"] = percentage_practices
     
     # get practices for broad categories
-    unique_practices = np.unique(df['practice'])
+    unique_practices = np.unique(df.loc[df[f'indicator_{indicator}_numerator']>0,'practice'])
     if indicator in ["a", "b", "c", "d", "e", "f"]:
         practices_gi_bleed.extend(unique_practices)
     elif indicator in ["g", "i", "k"]:

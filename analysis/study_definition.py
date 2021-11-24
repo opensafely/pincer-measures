@@ -623,7 +623,7 @@ study = StudyDefinition(
     ###
     other_prescribing_composite_denominator=patients.satisfying(
         """
-       
+        indicator_g_denominator OR
         indicator_i_denominator OR
         indicator_k_denominator
         """,

@@ -34,7 +34,7 @@ d_toplot = d_in %>%
 
 d_averages = d_toplot %>% 
     group_by( indicator, demographic, indicator_set, timepoint_order )  %>% 
-    summarise( mean = mean( rate ) )
+    summarise( mean = mean( rate, na.rm = TRUE ) )
 
 
 ### 

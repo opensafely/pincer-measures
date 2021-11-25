@@ -133,6 +133,7 @@ practices_gi_bleed = []
 practices_monitoring = []
 practices_other = []
 
+
 for indicator in indicators_list:
     counts_dict[indicator] = {}
     df = pd.read_csv(OUTPUT_DIR / f"measure_indicator_{indicator}_rate.csv")
@@ -148,14 +149,14 @@ for indicator in indicators_list:
     counts_dict[indicator]["patients_denominator"] = num_patients_denominator
     counts_dict[indicator]["num_practices"] = num_practices
     counts_dict[indicator]["percent_practice"] = percentage_practices
-
+    
     # get practices for broad categories
-    unique_practices = np.unique(df['practice'])
-    if key in ["a", "b", "c", "d", "e", "f"]:
+    unique_practices = np.unique(df.loc[df[f'indicator_{indicator}_numerator']>0,'practice'])
+    if indicator in ["a", "b", "c", "d", "e", "f"]:
         practices_gi_bleed.extend(unique_practices)
-    elif key in ["g", "i", "k"]:
+    elif indicator in ["g", "i", "k"]:
         practices_other.extend(unique_practices)
-    elif key in ["ac", "me_no_fbc", "me_no_lft", "li", "am"]:
+    elif indicator in ["ac", "me_no_fbc", "me_no_lft", "li", "am"]:
         practices_monitoring.extend(unique_practices)
 
 

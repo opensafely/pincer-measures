@@ -30,12 +30,11 @@ study = StudyDefinition(
             "category": {
                 "ratios": {
                     "Missing": 0.4,
-                    "White": 0.1,
+                    "White": 0.2,
                     "Mixed": 0.1,
                     "South Asian": 0.1,
                     "Black": 0.1,
                     "Other": 0.1,
-                    "Unknown": 0.1,
                 }
             },
         },

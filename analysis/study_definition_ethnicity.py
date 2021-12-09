@@ -39,5 +39,18 @@ study = StudyDefinition(
                 }
             },
         },
+
+        ethnicity_code=patients.with_these_clinical_events(
+        ethnicity_codes,
+        returning="category",
+        find_last_match_in_period=True,
+        on_or_before="index_date",
+        return_expectations={
+            "category": {"ratios": {"1": 0.4, "2": 0.4, "3": 0.2, "4":0.2,"5": 0.2}},
+            "incidence": 0.75,
+        },
+    ),
+
+        
 )
 )

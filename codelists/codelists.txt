@@ -22,8 +22,4 @@ pincer/antiplat/26a09064
 pincer/egfr/v1.8
 pincer/nsaid/23edd06e
 pincer/pep/v1.8
-primis-covid19-vacc-uptake/eth2001/v1
-primis-covid19-vacc-uptake/non_eth2001/v1
-primis-covid19-vacc-uptake/eth_notgiptref/v1
-primis-covid19-vacc-uptake/eth_notstated/v1
-primis-covid19-vacc-uptake/eth_norecord/v1
+opensafely/ethnicity/2020-04-27

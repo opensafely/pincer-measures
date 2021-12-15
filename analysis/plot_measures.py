@@ -68,7 +68,7 @@ title_mapping = {
     # "Anticoagulation and antiplatelet, no gastroprotection",
     "e": "Warfarin/DOAC & antiplatelet",
     # "Aspirin and antiplatelet, no gastroprotection",
-    "f": "Aspiring & other antiplatelet",
+    "f": "Aspirin & other antiplatelet",
     "g": "Asthma & beta-blocker",  # "Asthma and non-selective beta-blocker",
     "i": "HF & NSAID",  # "Heart failure and NSAID",
     "k": "CRF & NSAID",  # "Chronic renal impairment and NSAID",

@@ -61,20 +61,24 @@ monitoring_fig.delaxes(monitoring_axs[0, 2])
 monitoring_indicators = ["ac", "me_no_fbc", "me_no_lft", "li", "am"]
 
 title_mapping = {
-    "a": "NSAID without gastroprotection, age >=65",
-    "b": "NSAID without gastroprotection, H/O peptic ulcer",
-    "c": "Antiplatelet without gastroprotection, H/O peptic ulcer",
-    "d": "DOAC with warfarin",
-    "e": "Anticoagulation and antiplatelet, no gastroprotection",
-    "f": "Aspirin and antiplatelet, no gastroprotection",
-    "g": "Asthma and non-selective beta-blocker",
-    "i": "Heart failure and NSAID",
-    "k": "Chronic renal impairment and NSAID",
-    "ac": "ACE inhibitor or loop diuretic without renal function/electrolyte test",
-    "me_no_fbc": "Methotrexate without full blood count",
-    "me_no_lft": "Methotrexate without liver function test",
-    "li": "Lithium without lithium concentration test",
-    "am": "Amiodarone without thyroid function test",
+    "a": "Age >= 65 & NSAID",  # "NSAID without gastroprotection, age >=65",
+    "b": "PU & NSAID",  # "NSAID without gastroprotection, H/O peptic ulcer",
+    "c": "PU & antiplatelet",  # "Antiplatelet without gastroprotection, H/O peptic ulcer",
+    "d": "Warfarin/DOAC & NSAID",  # "DOAC with warfarin",
+    # "Anticoagulation and antiplatelet, no gastroprotection",
+    "e": "Warfarin/DOAC & antiplatelet",
+    # "Aspirin and antiplatelet, no gastroprotection",
+    "f": "Aspirin & other antiplatelet",
+    "g": "Asthma & beta-blocker",  # "Asthma and non-selective beta-blocker",
+    "i": "HF & NSAID",  # "Heart failure and NSAID",
+    "k": "CRF & NSAID",  # "Chronic renal impairment and NSAID",
+    # "ACE inhibitor or loop diuretic without renal function/electrolyte test",
+    "ac": "ACEI or loop diuretic, no blood tests",
+    "me_no_fbc": "Methotrexate and no FBC", #"Methotrexate without full blood count",
+    "me_no_lft": "Methotrexate and no LFT", #"Methotrexate without liver function test",
+    # "Lithium without lithium concentration test",
+    "li": "Lithium and no level recording",
+    "am": "Amiodarone and no TFT",  # "Amiodarone without thyroid function test",
 }
 
 
@@ -98,7 +102,7 @@ for i in indicators_list:
     else:
         denominator = f"indicator_{i}_denominator"
 
-    df["rate"] = df[f"value"]
+    df["rate"] = df[f"value"] * 100
 
     df = df.drop(["value"], axis=1)
 
@@ -121,7 +125,7 @@ for i in indicators_list:
         column="rate",
         count_column=f"indicator_{i}_numerator",
         title=title_mapping[i],
-        ylabel="Proportion",
+        ylabel="Percentage",
         time_window=time_period_mapping.get(i, ""),
     )
 
@@ -135,7 +139,7 @@ for i in indicators_list:
             column="rate",
             count_column=f"indicator_{i}_numerator",
             title=title_mapping[i],
-            ylabel="Proportion",
+            ylabel="Percentage",
             show_outer_percentiles=False,
             show_legend=False,
             ax=gi_bleed_axs[gi_bleed_axs_list[ind]],
@@ -153,7 +157,7 @@ for i in indicators_list:
             column="rate",
             count_column=f"indicator_{i}_numerator",
             title=title_mapping[i],
-            ylabel="Proportion",
+            ylabel="Percentage",
             show_outer_percentiles=False,
             show_legend=False,
             ax=prescribing_axs[prescribing_axs_list[ind]],
@@ -171,7 +175,7 @@ for i in indicators_list:
             column="rate",
             count_column=f"indicator_{i}_numerator",
             title=title_mapping[i],
-            ylabel="Proportion",
+            ylabel="Percentage",
             show_outer_percentiles=False,
             show_legend=False,
             ax=monitoring_axs[monitoring_axs_list[ind]],

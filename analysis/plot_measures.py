@@ -106,10 +106,12 @@ for i in indicators_list:
     df = df.replace(np.inf, np.nan)
 
     df_deciles = compute_redact_deciles(df, "date", f"indicator_{i}_numerator", "rate")
-    median_df = df_deciles.loc[df_deciles["percentile"]==50,:]
-    median_df_pre = median_df.loc[median_df["date"].isin(pre_q1),"rate"].mean()
-    median_df_post = median_df.loc[median_df["date"].isin(post_q1),"rate"].mean()
-    medians_dict[i] = {"pre": median_df_pre, "post": median_df_post}
+
+    
+    # median_df = df_deciles.loc[df_deciles["percentile"]==50,:]
+    rate_df_pre = df.loc[df["date"].isin(pre_q1),"rate"].mean()
+    rate_df_post = df.loc[df["date"].isin(post_q1),"rate"].mean()
+    medians_dict[i] = {"pre": rate_df_pre, "post": rate_df_post}
 
 
     deciles_chart(

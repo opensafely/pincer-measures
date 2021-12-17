@@ -1,11 +1,9 @@
-version: '3.0'
+version: "3.0"
 
 expectations:
   population_size: 1000
 
 actions:
-
-
   generate_study_population_1:
     run: cohortextractor:latest generate_cohort --study-definition study_definition --index-date-range "2019-09-01 to 2020-05-01 by month" --output-format feather
     outputs:
@@ -29,17 +27,28 @@ actions:
     outputs:
       highly_sensitive:
         cohort: output/input_ethnicity.feather
- 
+
   join_ethnicity_region:
     run: python:latest python analysis/join_ethnicity_region.py
-    needs: [generate_study_population_1, generate_study_population_2, generate_study_population_3, generate_study_population_ethnicity]
+    needs:
+      [
+        generate_study_population_1,
+        generate_study_population_2,
+        generate_study_population_3,
+        generate_study_population_ethnicity,
+      ]
     outputs:
       highly_sensitive:
         cohort: output/inp*.feather
-          
+
   filter_population:
     run: python:latest python analysis/filter_population.py
-    needs: [join_ethnicity_region]
+    needs:
+      [
+        generate_study_population_1,
+        generate_study_population_2,
+        generate_study_population_3,
+      ]
     outputs:
       highly_sensitive:
         cohort: output/input_filtered_*.feather
@@ -62,10 +71,9 @@ actions:
     run: cohortextractor:latest generate_measures --study-definition study_definition --output-dir=output
     needs: [filter_population]
     outputs:
-        moderately_sensitive:
-          measure_csv: output/measure_*_rate.csv
+      moderately_sensitive:
+        measure_csv: output/measure_*_rate.csv
 
-  
   generate_measures_demographics:
     run: python:latest python analysis/calculate_measures.py
     needs: [calculate_numerators, filter_population]
@@ -74,27 +82,37 @@ actions:
         counts: output/indicator_measure_*.csv
         measure_csv: output/measure*_rate.csv
         demographics: output/demographics_summary_*.csv
-        
 
   generate_summary_counts:
     run: python:latest python analysis/summary_statistics.py
-    needs: [filter_population, generate_measures, generate_measures_demographics, calculate_numerators]
+    needs:
+      [
+        filter_population,
+        generate_measures,
+        generate_measures_demographics,
+        calculate_numerators,
+      ]
     outputs:
       moderately_sensitive:
         patient_count: output/patient_count_*.json
         practice_count: output/practice_count_*.json
         summary: output/indicator_summary_statistics_*.json
-  
+
   generate_plots:
     run: python:latest python analysis/plot_measures.py
-    needs: [generate_measures, generate_measures_demographics, calculate_composite_indicators]
+    needs:
+      [
+        generate_measures,
+        generate_measures_demographics,
+        calculate_composite_indicators,
+      ]
     outputs:
       moderately_sensitive:
         counts: output/figures/plot_*.jpeg
         combined: output/figures/combined_plot_*.png
         demographics: output/demographic_aggregates.csv
         medians: output/medians.json
-  
+
   generate_notebook:
     run: jupyter:latest jupyter nbconvert /workspace/analysis/report.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
     needs: [generate_plots, generate_summary_counts]
@@ -121,7 +139,6 @@ actions:
     outputs:
       moderately_sensitive:
         log: output/pytest.xml
-
 
   test_population:
     run: python:latest python analysis/test_population.py

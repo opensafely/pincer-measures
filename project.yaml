@@ -43,12 +43,7 @@ actions:
 
   filter_population:
     run: python:latest python analysis/filter_population.py
-    needs:
-      [
-        generate_study_population_1,
-        generate_study_population_2,
-        generate_study_population_3,
-      ]
+    needs: [join_ethnicity_region]
     outputs:
       highly_sensitive:
         cohort: output/input_filtered_*.feather

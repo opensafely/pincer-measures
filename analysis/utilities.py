@@ -995,9 +995,9 @@ def deciles_chart_subplots(
 
     # set ymax across all subplots as largest value across dataset
     ax.set_ylim(
-        [0, df[column].max() * 1.05 if (df[column].max() * 1.05) < 1.0 else 100]
+        [0, df[column].max() * 1.05 if (df[column].max() * 1.05) < 100 else 100]
     )
-    ax.tick_params(labelsize=12)
+    ax.tick_params(labelsize=10)
     ax.set_xlim(
         [df[period_column].min(), df[period_column].max()]
     )  # set x axis range as full date range

@@ -35,9 +35,13 @@ def match_input_files(file: str) -> bool:
     pattern = r"^input_20\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\.feather"
     return True if re.match(pattern, file) else False
 
+
 def match_input_files_filtered(file: str) -> bool:
-    pattern = r"^input_filtered_20\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\.feather"
+    pattern = (
+        r"^input_filtered_20\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\.feather"
+    )
     return True if re.match(pattern, file) else False
+
 
 def match_egfr_files(file: str) -> bool:
     """Checks if file name has format outputted by cohort extractor"""
@@ -62,6 +66,7 @@ def get_date_input_file(file: str) -> str:
         date = result = re.search(r"input_(.*)\.feather", file)
         return date.group(1)
 
+
 def get_date_input_file_filtered(file: str) -> str:
     """Gets the date in format YYYY-MM-DD from input file name string"""
     # check format
@@ -71,6 +76,7 @@ def get_date_input_file_filtered(file: str) -> str:
     else:
         date = result = re.search(r"input_filtered_(.*)\.feather", file)
         return date.group(1)
+
 
 def get_date_egfr_file(file: str) -> str:
     """Gets the date in format YYYY-MM-DD from input file name string"""
@@ -288,7 +294,7 @@ def plot_measures(
     plt.title(title)
     plt.ylim(
         bottom=0,
-        top=1
+        top=100
         if df[column_to_plot].isnull().values.all()
         else df[column_to_plot].max() * 1.05,
     )
@@ -386,7 +392,9 @@ def deciles_chart_ebm(
         ax.set_title(title, size=14, wrap=True)
     # set ymax across all subplots as largest value across dataset
 
-    ax.set_ylim([0, 1 if df[column].isnull().values.all() else df[column].max() * 1.05])
+    ax.set_ylim(
+        [0, 100 if df[column].isnull().values.all() else df[column].max() * 1.05]
+    )
     ax.tick_params(labelsize=12)
     ax.set_xlim(
         [df[period_column].min(), df[period_column].max()]
@@ -539,7 +547,9 @@ def deciles_chart(
         ax.set_title(title, size=14, wrap=True)
     # set ymax across all subplots as largest value across dataset
 
-    ax.set_ylim([0, 1 if df[column].isnull().values.all() else df[column].max() * 1.05])
+    ax.set_ylim(
+        [0, 100 if df[column].isnull().values.all() else df[column].max() * 1.05]
+    )
     ax.tick_params(labelsize=12)
     ax.set_xlim(
         [df[period_column].min(), df[period_column].max()]
@@ -553,7 +563,7 @@ def deciles_chart(
     plt.vlines(
         x=[pd.to_datetime("2020-03-01")],
         ymin=0,
-        ymax=1,
+        ymax=100,
         colors="orange",
         ls="--",
         label="National Lockdown",
@@ -564,7 +574,7 @@ def deciles_chart(
         plt.vlines(
             x=[pd.to_datetime(time_window)],
             ymin=0,
-            ymax=1,
+            ymax=100,
             colors="green",
             ls="--",
             label="Date of expected impact",
@@ -963,7 +973,7 @@ def deciles_chart_subplots(
     ax.vlines(
         x=[pd.to_datetime("2020-03-01")],
         ymin=0,
-        ymax=1,
+        ymax=100,
         colors="orange",
         ls="--",
         label="National Lockdown",
@@ -973,7 +983,7 @@ def deciles_chart_subplots(
         ax.vlines(
             x=[pd.to_datetime(time_window)],
             ymin=0,
-            ymax=1,
+            ymax=100,
             colors="green",
             ls="--",
             label="Date of expected maximum impact",
@@ -985,7 +995,7 @@ def deciles_chart_subplots(
 
     # set ymax across all subplots as largest value across dataset
     ax.set_ylim(
-        [0, df[column].max() * 1.05 if (df[column].max() * 1.05) < 1.0 else 1.0]
+        [0, df[column].max() * 1.05 if (df[column].max() * 1.05) < 1.0 else 100]
     )
     ax.tick_params(labelsize=12)
     ax.set_xlim(

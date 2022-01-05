@@ -997,11 +997,11 @@ def deciles_chart_subplots(
     ax.set_ylim(
         [0, df[column].max() * 1.05 if (df[column].max() * 1.05) < 100 else 100]
     )
-    ax.tick_params(labelsize=10)
+    ax.tick_params(labelsize=18)
     ax.set_xlim(
         [df[period_column].min(), df[period_column].max()]
     )  # set x axis range as full date range
-    ax.tick_params(axis="x", labelrotation=90, size=15, labelsize=24)
+    ax.tick_params(axis="x", labelrotation=90, size=15, labelsize=22)
     ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter("%B %Y"))
     ax.set_xticks(sorted(df[period_column].unique()))
     if show_legend:

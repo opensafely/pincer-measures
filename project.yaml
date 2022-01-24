@@ -54,19 +54,19 @@ actions:
       highly_sensitive:
         cohort: output/input_filtered_*.feather
 
+  calculate_numerators:
+    run: python:latest python analysis/calculate_numerators.py
+    needs: [filter_population]
+    outputs:
+      highly_sensitive:
+        cohort: output/indicator_e_f_*.feather
+
   add_indicator_f:
     run: python:latest python analysis/add_indicator_f.py
     needs: [filter_population, generate_study_population_indicator_f]
     outputs:
       highly_sensitive:
         cohort: output/input_filtered*.feather
-
-  calculate_numerators:
-    run: python:latest python analysis/calculate_numerators.py
-    needs: [add_indicator_f]
-    outputs:
-      highly_sensitive:
-        cohort: output/indicator_e_f_*.feather
 
   calculate_composite_indicators:
     run: python:latest python analysis/composite_indicators.py

@@ -1,7 +1,7 @@
 version: "3.0"
 
 expectations:
-  population_size: 1000
+  population_size: 5000
 
 actions:
   generate_study_population_1:
@@ -61,23 +61,30 @@ actions:
       highly_sensitive:
         cohort: output/indicator_e_f_*.feather
 
+  add_indicator_f:
+    run: python:latest python analysis/add_indicator_f.py
+    needs: [filter_population, generate_study_population_indicator_f]
+    outputs:
+      highly_sensitive:
+        cohort: output/input_filtered*.feather
+
   calculate_composite_indicators:
     run: python:latest python analysis/composite_indicators.py
-    needs: [calculate_numerators, filter_population]
+    needs: [calculate_numerators, add_indicator_f]
     outputs:
       moderately_sensitive:
         counts: output/*_composite_measure.csv
 
   generate_measures:
     run: cohortextractor:latest generate_measures --study-definition study_definition --output-dir=output
-    needs: [filter_population]
+    needs: [add_indicator_f]
     outputs:
       moderately_sensitive:
         measure_csv: output/measure_*_rate.csv
 
   generate_measures_demographics:
     run: python:latest python analysis/calculate_measures.py
-    needs: [calculate_numerators, filter_population]
+    needs: [calculate_numerators, add_indicator_f]
     outputs:
       moderately_sensitive:
         counts: output/indicator_measure_*.csv
@@ -88,7 +95,7 @@ actions:
     run: python:latest python analysis/summary_statistics.py
     needs:
       [
-        filter_population,
+        add_indicator_f,
         generate_measures,
         generate_measures_demographics,
         calculate_numerators,
@@ -140,11 +147,3 @@ actions:
     outputs:
       moderately_sensitive:
         log: output/pytest.xml
-
-  test_population:
-    run: python:latest python analysis/test_population.py
-    needs: [filter_population]
-    outputs:
-      moderately_sensitive:
-        counts: output/population_counts.csv
-        count: output/patient_count_check.json

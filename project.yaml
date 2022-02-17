@@ -28,12 +28,6 @@ actions:
       highly_sensitive:
         cohort: output/input_ethnicity.feather
 
-  generate_study_population_indicator_f:
-    run: cohortextractor:latest generate_cohort --study-definition study_definition_indicator_f --index-date-range "2019-09-01 to 2021-09-01 by month" --output-format feather
-    outputs:
-      highly_sensitive:
-        cohort: output/input_indicator_f*.feather
-
   join_ethnicity_region:
     run: python:latest python analysis/join_ethnicity_region.py
     needs:

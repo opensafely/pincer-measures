@@ -33,7 +33,6 @@ study = StudyDefinition(
            (aspirin AND (NOT ppi)) OR
            ((asthma AND (NOT asthma_resolved)) OR (asthma_resolved_date <= asthma_date)) OR
            (heart_failure) OR
-           (egfr_between_1_and_45=1) OR
            (age >= 75 AND acei AND acei_recent) OR
            (age >=75 AND loop_diuretic AND loop_diuretic_recent)
        )
@@ -363,76 +362,10 @@ study = StudyDefinition(
     ),
     ###
     # OTHER PRESCRIBING INDICATORS
-    # K - Chronic Renal Impairment & NSAID Audit (KI_P3K)
+    # K - Removed as don't have access to comparator
     ###
-    # oral_nsaid from A
-    egfr=patients.with_these_clinical_events(
-        codelist=egfr_codelist,
-        find_last_match_in_period=True,
-        returning="numeric_value",
-        on_or_before="index_date - 3 months",
-        return_expectations={
-            "float": {"distribution": "normal", "mean": 45.0, "stddev": 20},
-            "incidence": 0.5,
-        },
-    ),
-    # https://docs.opensafely.org/study-def-variables/#cohortextractor.patients.comparator_from
-    egfr_comparator=patients.comparator_from(
-        "egfr",
-        return_expectations={
-            "rate": "universal",
-            "category": {
-                "ratios": {  # ~, =, >= , > , < , <=
-                    None: 0.10,
-                    "~": 0.05,
-                    "=": 0.65,
-                    ">=": 0.05,
-                    ">": 0.05,
-                    "<": 0.05,
-                    "<=": 0.05,
-                }
-            },
-            "incidence": 0.80,
-        },
-    ),
-    egfr_less_than_45=patients.categorised_as(
-        {"0": "DEFAULT", "1": """ (egfr>=0) AND (egfr < 45)"""},
-        return_expectations={
-            "rate": "universal",
-            "category": {
-                "ratios": {
-                    "0": 0.94,
-                    "1": 0.06,
-                }
-            },
-        },
-    ),
-    egfr_between_1_and_45=patients.categorised_as(
-        {
-            "0": "DEFAULT",
-            "1": """ (egfr>=1) AND (egfr < 45) AND ( NOT egfr_comparator = '>' ) AND ( NOT egfr_comparator = '>=' ) AND ( NOT egfr_comparator = '~' ) AND ( NOT ( egfr = 1  AND egfr_comparator='<') ) """,
-        },
-        return_expectations={
-            "rate": "universal",
-            "category": {
-                "ratios": {
-                    "0": 0.94,
-                    "1": 0.06,
-                }
-            },
-        },
-    ),
-    indicator_k_denominator=patients.satisfying(
-        """
-        egfr_between_1_and_45=1
-        """,
-    ),
-    indicator_k_numerator=patients.satisfying(
-        """
-        egfr_between_1_and_45=1 AND
-        oral_nsaid
-        """,
-    ),
+   
+    
     ###
     # MONITORING COMPOSITE INDICATOR
     # AC - ACEI Audit (MO_P13)

@@ -26,7 +26,6 @@ for file in OUTPUT_DIR.iterdir():
                         ((df['aspirin'] ==1) & (df['ppi']==0)) |
                         (((df['asthma']==1) & (df['asthma_resolved']==0)) | (df['asthma_resolved_date'] < df['asthma_date'])) |
                         (df['heart_failure']==1) |
-                        (df['egfr_between_1_and_45']==1) |
                         ((df['age'] >=75) &(df['acei']==1) & (df['acei_recent']==1)) |
                         ((df['age'] >=75) & (df['loop_diuretic']==1) & (df['loop_diuretic_recent']==1))
                     )

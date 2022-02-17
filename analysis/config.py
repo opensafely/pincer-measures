@@ -7,7 +7,6 @@ indicators_list = [
     "d",
     "g",
     "i",
-    "k",
     "ac",
     "me_no_fbc",
     "me_no_lft",

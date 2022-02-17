@@ -91,7 +91,7 @@ for (key, value) in patient_dict["numerator"].items():
     if key in ["a", "b", "c", "d", "e", "f"]:
         unique_patients_categories["gi_bleed"]["numerator"].extend(np.unique(patient_dict["numerator"][key]))
 
-    elif key in ["g", "i", "k"]:
+    elif key in ["g", "i"]:
         unique_patients_categories["other"]["numerator"].extend(np.unique(patient_dict["numerator"][key]))
 
     elif key in ["ac", "me_no_fbc", "me_no_lft", "li", "am"]:
@@ -111,7 +111,7 @@ for (key, value) in patient_dict["denominator"].items():
     if key in ["a", "b", "c", "d", "e", "f"]:
         unique_patients_categories["gi_bleed"]["denominator"].extend(np.unique(patient_dict["denominator"][key]))
 
-    elif key in ["g", "i", "k"]:
+    elif key in ["g", "i"]:
         unique_patients_categories["other"]["denominator"].extend(np.unique(patient_dict["denominator"][key]))
 
     elif key in ["ac", "me_no_fbc", "me_no_lft", "li", "am"]:
@@ -154,7 +154,7 @@ for indicator in indicators_list:
     unique_practices = np.unique(df.loc[df[f'indicator_{indicator}_numerator']>0,'practice'])
     if indicator in ["a", "b", "c", "d", "e", "f"]:
         practices_gi_bleed.extend(unique_practices)
-    elif indicator in ["g", "i", "k"]:
+    elif indicator in ["g", "i"]:
         practices_other.extend(unique_practices)
     elif indicator in ["ac", "me_no_fbc", "me_no_lft", "li", "am"]:
         practices_monitoring.extend(unique_practices)

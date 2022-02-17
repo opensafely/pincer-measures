@@ -19,8 +19,7 @@ gi_bleed_numerators = [
 
 other_prescribing_numerators = [
     "indicator_g_numerator",
-    "indicator_i_numerator",
-    "indicator_k_numerator",
+    "indicator_i_numerator"
 ]
 
 monitoring_numerators = [
@@ -59,8 +58,7 @@ for file in OUTPUT_DIR.iterdir():
     
         df["other_prescribing_composite_denominator"] = np.where(
             (df["indicator_g_denominator"]==1) | 
-            (df["indicator_i_denominator"]==1)| 
-            (df["indicator_k_denominator"]==1)
+            (df["indicator_i_denominator"]==1)
             , 
             1,
             0

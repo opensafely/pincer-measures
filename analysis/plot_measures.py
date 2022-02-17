@@ -48,7 +48,7 @@ prescribing_axs_list = [i for i in prescribing_y]
 prescribing_fig, prescribing_axs = plt.subplots(1, 3, figsize=(30, 10), sharex="col")
 
 
-prescribing_indicators = ["g", "i", "k"]
+prescribing_indicators = ["g", "i"]
 
 monitoring_x = np.arange(0, 2, 1)
 monitoring_y = np.arange(0, 3, 1)
@@ -71,7 +71,6 @@ title_mapping = {
     "f": "Aspirin & other antiplatelet",
     "g": "Asthma & beta-blocker",  # "Asthma and non-selective beta-blocker",
     "i": "HF & NSAID",  # "Heart failure and NSAID",
-    "k": "CRF & NSAID",  # "Chronic renal impairment and NSAID",
     # "ACE inhibitor or loop diuretic without renal function/electrolyte test",
     "ac": "ACEI or loop diuretic, no blood tests",
     "me_no_fbc": "Methotrexate and no FBC", #"Methotrexate without full blood count",

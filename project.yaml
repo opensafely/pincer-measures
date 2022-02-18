@@ -41,19 +41,19 @@ actions:
   #     highly_sensitive:
   #       cohort: output/inp*.feather
 
-  # filter_population:
-  #   run: python:latest python analysis/filter_population.py
-  #   needs: [generate_study_population_1, generate_study_population_2, generate_study_population_3]
-  #   outputs:
-  #     highly_sensitive:
-  #       cohort: output/input_filtered_*.feather
+  filter_population:
+    run: python:latest python analysis/filter_population.py
+    needs: [generate_study_population_1]
+    outputs:
+      highly_sensitive:
+        cohort: output/input_filtered_*.feather
 
-  # calculate_numerators:
-  #   run: python:latest python analysis/calculate_numerators.py
-  #   needs: [filter_population]
-  #   outputs:
-  #     highly_sensitive:
-  #       cohort: output/indicator_e_f_*.feather
+  calculate_numerators:
+    run: python:latest python analysis/calculate_numerators.py
+    needs: [filter_population]
+    outputs:
+      highly_sensitive:
+        cohort: output/indicator_e_f_*.feather
 
   # calculate_composite_indicators:
   #   run: python:latest python analysis/composite_indicators.py
@@ -62,12 +62,12 @@ actions:
   #     moderately_sensitive:
   #       counts: output/*_composite_measure.csv
 
-  # generate_measures:
-  #   run: cohortextractor:latest generate_measures --study-definition study_definition --output-dir=output
-  #   needs: [filter_population]
-  #   outputs:
-  #     moderately_sensitive:
-  #       measure_csv: output/measure_*_rate.csv
+  generate_measures:
+    run: cohortextractor:latest generate_measures --study-definition study_definition --output-dir=output
+    needs: [filter_population]
+    outputs:
+      moderately_sensitive:
+        measure_csv: output/measure_*_rate.csv
 
   # generate_measures_demographics:
   #   run: python:latest python analysis/calculate_measures.py

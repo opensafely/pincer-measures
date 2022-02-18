@@ -5,7 +5,7 @@ expectations:
 
 actions:
   generate_study_population_1:
-    run: cohortextractor:latest generate_cohort --study-definition study_definition --index-date-range "2019-09-01 to 2019-09-01 by month" --output-format feather
+    run: cohortextractor:latest generate_cohort --study-definition study_definition --index-date-range "2019-09-01 to 2020-05-01 by month" --output-format feather
     outputs:
       highly_sensitive:
         cohort: output/input_*.feather
@@ -43,7 +43,7 @@ actions:
 
   filter_population:
     run: python:latest python analysis/filter_population.py
-    needs: [generate_study_population_1]
+    needs: [generate_study_population_1, generate_study_population_2, generate_study_population_3]
     outputs:
       highly_sensitive:
         cohort: output/input_filtered_*.feather

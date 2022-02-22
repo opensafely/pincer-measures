@@ -17,10 +17,10 @@ actions:
         cohort: output/input*.feather
 
   generate_study_population_3:
-    run: cohortextractor:latest generate_cohort --study-definition study_definition --index-date-range "2021-03-01 to 2021-09-01 by month" --output-format feather
+    run: cohortextractor:latest generate_cohort --study-definition study_definition --index-date-range "2021-03-01 to 2021-09-01 by month" --output-format csv.gz
     outputs:
       highly_sensitive:
-        cohort: output/inpu*.feather
+        cohort: output/inpu*.csv.gz
 
   # generate_study_population_ethnicity:
   #   run: cohortextractor:latest generate_cohort --study-definition study_definition_ethnicity --output-format feather

@@ -32,7 +32,9 @@ CENTER = 10
 
 def match_input_files(file: str) -> bool:
     """Checks if file name has format outputted by cohort extractor"""
-    pattern = r"^input_20\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\.(csv.gz|feather)"
+    pattern = (
+        r"^input_20\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\.(csv.gz|feather)"
+    )
     return True if re.match(pattern, file) else False
 
 
@@ -191,7 +193,9 @@ def count_comparator_value_pairs(directory: str) -> None:
     )
 
 
-def calculate_rate(df, value_col: str, population_col: str, rate_per: int):
+def calculate_rate(
+    df, value_col: str, population_col: str, rate_per: int, round_rate=False
+):
     """Calculates the rate of events for given number of the population.
 
     Args:
@@ -203,7 +207,13 @@ def calculate_rate(df, value_col: str, population_col: str, rate_per: int):
     Returns:
         A pandas series with rate values
     """
-    rate = df[value_col] / (df[population_col] / rate_per)
+
+    if round_rate:
+        rate = round(df[value_col] / (df[population_col] / rate_per), 2)
+
+    else:
+        rate = df[value_col] / (df[population_col] / rate_per)
+
     return rate
 
 
@@ -794,18 +804,6 @@ def co_prescription(df, medications_x: str, medications_y: str) -> None:
     ].map({False: 0, True: 1})
 
 
-def drop_irrelevant_practices(df):
-    """Drops irrelevant practices from the given measure table.
-    An irrelevant practice has zero events during the study period.
-    Args:
-        df: A measure table.
-    Returns:
-        A copy of the given measure table with irrelevant practices dropped.
-    """
-    is_relevant = df.groupby("practice").value.any()
-    return df[df.practice.isin(is_relevant[is_relevant == True].index)]
-
-
 def suppress_practice_measures(df, n, numerator, denominator, rate_column):
 
     df_grouped = df.groupby(by=["date"])[[numerator, denominator]].sum().reset_index()
@@ -1025,3 +1023,23 @@ def update_demographics(demographics_df, df):
         df[demographics_df.columns]
     ).drop_duplicates(subset="patient_id", keep="last")
     return demographics_df
+
+
+def produce_stripped_measures(df):
+    """Takes in a practice level measures file, calculates rate and strips
+    persistent id,including only a rate and date column. Rates are rounded
+    and the df is randomly shuffled to remove any potentially predictive ordering.
+    Returns stripped df
+    """
+
+    # drop irrelevant practices
+    df = drop_irrelevant_practices(df)
+
+    # calculate rounded rate
+    df["rate"] = round(df["value"]*100, 2)
+
+    #select only rate and date column
+    df = df.loc[:, ["rate", "date"]]
+    
+    # randomly shuffle (resetting index)
+    return df.sample(frac=1).reset_index(drop=True)

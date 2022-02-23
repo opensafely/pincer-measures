@@ -92,6 +92,17 @@ actions:
         practice_count: output/practice_count_*.json
         summary: output/indicator_summary_statistics_*.json
 
+  produce_stripped_measures:
+    run: python:latest python analysis/stripped_measures.py
+    needs:
+      [
+        generate_measures,
+        generate_measures_additional
+      ]
+    outputs:
+      moderately_sensitive:
+        measures: output/measure_stripped_*.csv
+
   generate_plots:
     run: python:latest python analysis/plot_measures.py
     needs:

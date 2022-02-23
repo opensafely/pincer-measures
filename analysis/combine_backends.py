@@ -19,6 +19,10 @@ time_period_mapping = {
     "am": "2020-09-01",
 }
 
+# SELECT DATES FOR AGGREGATES
+pre_q1 = ["2020-01-01", "2020-02-01", "2020-03-01"]
+post_q1 = ["2021-01-01", "2021-02-01", "2021-03-01"]
+
 title_mapping = {
     "a": "Age >= 65 & NSAID",  # "NSAID without gastroprotection, age >=65",
     "b": "PU & NSAID",  # "NSAID without gastroprotection, H/O peptic ulcer",
@@ -39,6 +43,8 @@ title_mapping = {
     "li": "Lithium and no level recording",
     "am": "Amiodarone and no TFT",  # "Amiodarone without thyroid function test",
 }
+
+medians_dict = {}
 
 # set up plots for combined decile charts
 gi_bleed_x = np.arange(0, 2, 1)
@@ -70,6 +76,11 @@ for i in indicators_list:
     measures_combined = pd.concat([measure_emis, measure_tpp], axis="index")
     measures_combined.to_csv(BASE_DIR / f"backend_outputs/measure_combined_{i}.csv")
     
+    rate_df_pre = measures_combined.loc[df["date"].isin(pre_q1),"rate"].mean()
+    rate_df_post = measures_combined.loc[df["date"].isin(post_q1),"rate"].mean()
+    medians_dict[i] = {"pre": rate_df_pre, "post": rate_df_post}
+
+
 
     # gi bleed
     if i in gi_bleed_indicators:
@@ -129,3 +140,7 @@ prescribing_fig.savefig("backend_outputs/figures/combined_plot_prescribing.png")
 plt.clf()
 monitoring_fig.subplots_adjust(bottom=0.15)
 monitoring_fig.savefig("backend_outputs/figures/combined_plot_monitoring.png")
+
+
+with open(f"backend_outputs/medians.json", "w") as f:
+    json.dump({"summary": medians_dict}, f)

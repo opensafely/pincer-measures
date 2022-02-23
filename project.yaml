@@ -77,20 +77,20 @@ actions:
         measure_csv: output/measure*_rate.csv
        
 
-  # generate_summary_counts:
-  #   run: python:latest python analysis/summary_statistics.py
-  #   needs:
-  #     [
-  #       filter_population,
-  #       generate_measures,
-  #       generate_measures_demographics,
-  #       calculate_numerators,
-  #     ]
-  #   outputs:
-  #     moderately_sensitive:
-  #       patient_count: output/patient_count_*.json
-  #       practice_count: output/practice_count_*.json
-  #       summary: output/indicator_summary_statistics_*.json
+  generate_summary_counts:
+    run: python:latest python analysis/summary_statistics.py
+    needs:
+      [
+        filter_population,
+        generate_measures,
+        generate_measures_additional,
+        calculate_numerators,
+      ]
+    outputs:
+      moderately_sensitive:
+        patient_count: output/patient_count_*.json
+        practice_count: output/practice_count_*.json
+        summary: output/indicator_summary_statistics_*.json
 
   # generate_plots:
   #   run: python:latest python analysis/plot_measures.py

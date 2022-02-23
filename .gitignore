@@ -4,6 +4,7 @@ model.log
 __pycache__
 .python-version
 output/*
+backend_outputs/*
 metadata/*
 venv/
 *.json

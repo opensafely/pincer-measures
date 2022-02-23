@@ -6,7 +6,12 @@ for file in OUTPUT_DIR.iterdir():
 
         if match_input_files(file.name):
 
-            df = pd.read_feather(OUTPUT_DIR / file.name)
+            if file.name.endswith('csv.gz'):
+                file_type='csv.gz'
+                df = pd.read_csv(OUTPUT_DIR / file.name)
+            elif file.name.endswith('feather'):
+                file_type='feather'
+                df = pd.read_feather(OUTPUT_DIR / file.name)
 
             date = get_date_input_file(file.name)
             

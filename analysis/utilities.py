@@ -1025,3 +1025,22 @@ def update_demographics(demographics_df, df):
         df[demographics_df.columns]
     ).drop_duplicates(subset="patient_id", keep="last")
     return demographics_df
+
+def produce_stripped_measures(df):
+    """Takes in a practice level measures file, calculates rate and strips
+    persistent id,including only a rate and date column. Rates are rounded
+    and the df is randomly shuffled to remove any potentially predictive ordering.
+    Returns stripped df
+    """
+
+    # drop irrelevant practices
+    df = drop_irrelevant_practices(df)
+
+    # calculate rounded rate
+    df["rate"] = round(df["value"]*100, 2)
+
+    #select only rate and date column
+    df = df.loc[:, ["rate", "date"]]
+    
+    # randomly shuffle (resetting index)
+    return df.sample(frac=1).reset_index(drop=True)

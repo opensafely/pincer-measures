@@ -7,6 +7,7 @@ import numpy as np
 
 additional_indicators = ["e", "f", "li"]
 indicators_list.extend(additional_indicators)
+indicators_list.remove('k')
 
 EMIS_DIR = BASE_DIR / "backend_outputs/emis"
 TPP_DIR = BASE_DIR / "backend_outputs/tpp"
@@ -37,8 +38,8 @@ title_mapping = {
     "k": "CRF & NSAID",  # "Chronic renal impairment and NSAID",
     # "ACE inhibitor or loop diuretic without renal function/electrolyte test",
     "ac": "ACEI or loop diuretic, no blood tests",
-    "me_no_fbc": "Methotrexate and no FBC", #"Methotrexate without full blood count",
-    "me_no_lft": "Methotrexate and no LFT", #"Methotrexate without liver function test",
+    "me_no_fbc": "Methotrexate and no FBC",  # "Methotrexate without full blood count",
+    "me_no_lft": "Methotrexate and no LFT",  # "Methotrexate without liver function test",
     # "Lithium without lithium concentration test",
     "li": "Lithium and no level recording",
     "am": "Amiodarone and no TFT",  # "Amiodarone without thyroid function test",
@@ -67,20 +68,26 @@ monitoring_fig, monitoring_axs = plt.subplots(2, 3, figsize=(30, 20), sharex="co
 monitoring_fig.delaxes(monitoring_axs[0, 2])
 monitoring_indicators = ["ac", "me_no_fbc", "me_no_lft", "li", "am"]
 
-indicators_list = ["a"]
+
 for i in indicators_list:
 
-    measure_emis = pd.read_csv(EMIS_DIR / f"measure_stripped_{i}.csv", parse_dates=["date"])
-    measure_tpp = pd.read_csv(EMIS_DIR / f"measure_stripped_{i}.csv", parse_dates=["date"])
+    measure_emis = pd.read_csv(
+        EMIS_DIR / f"measure_stripped_{i}.csv", parse_dates=["date"]
+    )
+    measure_tpp = pd.read_csv(
+        EMIS_DIR / f"measure_stripped_{i}.csv", parse_dates=["date"]
+    )
 
     measures_combined = pd.concat([measure_emis, measure_tpp], axis="index")
     measures_combined.to_csv(BASE_DIR / f"backend_outputs/measure_combined_{i}.csv")
-    
-    rate_df_pre = measures_combined.loc[df["date"].isin(pre_q1),"rate"].mean()
-    rate_df_post = measures_combined.loc[df["date"].isin(post_q1),"rate"].mean()
+
+    rate_df_pre = measures_combined.loc[
+        measures_combined["date"].isin(pre_q1), "rate"
+    ].mean()
+    rate_df_post = measures_combined.loc[
+        measures_combined["date"].isin(post_q1), "rate"
+    ].mean()
     medians_dict[i] = {"pre": rate_df_pre, "post": rate_df_post}
-
-
 
     # gi bleed
     if i in gi_bleed_indicators:
@@ -104,7 +111,7 @@ for i in indicators_list:
         ind = prescribing_indicators.index(i)
 
         deciles_chart_subplots(
-            df,
+            measures_combined,
             period_column="date",
             column="rate",
             title=title_mapping[i],
@@ -121,7 +128,7 @@ for i in indicators_list:
         ind = monitoring_indicators.index(i)
 
         deciles_chart_subplots(
-            df,
+            measures_combined,
             period_column="date",
             column="rate",
             title=title_mapping[i],
@@ -146,7 +153,6 @@ with open(f"backend_outputs/medians.json", "w") as f:
     json.dump({"summary": medians_dict}, f)
 
 
-
 # join practice count
 
 combined_practice_count = {}
@@ -164,21 +170,24 @@ with open(f"backend_outputs/combined_practice_count.json", "w") as f:
     json.dump(combined_practice_count, f)
 
 
-
 # join summary statistics
 
 combined_summary_statistics = {}
 with open("backend_outputs/emis/indicator_summary_statistics_emis.json") as f:
     summary_statistics_emis = json.load(f)["summary"]
 
-with open("backend_outputs/tpp/indicator_summary_statistics.json") as f:
+with open("backend_outputs/tpp/indicator_summary_statistics_tpp.json") as f:
     summary_statistics_tpp = json.load(f)["summary"]
 
 
 for indicator_key, indicator_dict in summary_statistics_emis.items():
-    for key, value in indicator_dict.items()
-        combined_summary_statistics[key] = value + summary_statistics_tpp[indicator_key][key]
+    if type(indicator_dict) is dict:
+
+        for key, value in indicator_dict.items():
+            combined_summary_statistics[key] = (
+                value + summary_statistics_tpp[indicator_key][key]
+            )
+
 
 with open(f"backend_outputs/combined_summary_statistics.json", "w") as f:
     json.dump(combined_summary_statistics, f)
-

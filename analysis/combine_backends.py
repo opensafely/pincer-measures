@@ -144,3 +144,41 @@ monitoring_fig.savefig("backend_outputs/figures/combined_plot_monitoring.png")
 
 with open(f"backend_outputs/medians.json", "w") as f:
     json.dump({"summary": medians_dict}, f)
+
+
+
+# join practice count
+
+combined_practice_count = {}
+with open("backend_outputs/emis/practice_count_emis.json") as f:
+    patient_count_emis = json.load(f)
+
+with open("backend_outputs/tpp/practice_count_tpp.json") as f:
+    patient_count_tpp = json.load(f)
+
+
+for key, value in patient_count_emis.items():
+    combined_practice_count[key] = value + patient_count_tpp[key]
+
+with open(f"backend_outputs/combined_practice_count.json", "w") as f:
+    json.dump(combined_practice_count, f)
+
+
+
+# join summary statistics
+
+combined_summary_statistics = {}
+with open("backend_outputs/emis/indicator_summary_statistics_emis.json") as f:
+    summary_statistics_emis = json.load(f)["summary"]
+
+with open("backend_outputs/tpp/indicator_summary_statistics.json") as f:
+    summary_statistics_tpp = json.load(f)["summary"]
+
+
+for indicator_key, indicator_dict in summary_statistics_emis.items():
+    for key, value in indicator_dict.items()
+        combined_summary_statistics[key] = value + summary_statistics_tpp[indicator_key][key]
+
+with open(f"backend_outputs/combined_summary_statistics.json", "w") as f:
+    json.dump(combined_summary_statistics, f)
+

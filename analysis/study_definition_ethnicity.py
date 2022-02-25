@@ -14,7 +14,7 @@ study = StudyDefinition(
     },
     population=patients.all(),
     ethnicity=patients.with_these_clinical_events(
-        codelists.eth2001,
+        eth2001,
         returning="category",
         find_last_match_in_period=True,
         on_or_before="index_date",
@@ -33,7 +33,7 @@ study = StudyDefinition(
     ),
     # Any other ethnicity code
     non_eth2001_dat=patients.with_these_clinical_events(
-        codelists.non_eth2001,
+        non_eth2001,
         returning="date",
         find_last_match_in_period=True,
         on_or_before="index_date",
@@ -41,7 +41,7 @@ study = StudyDefinition(
     ),
     # Ethnicity not given - patient refused
     eth_notgiptref_dat=patients.with_these_clinical_events(
-        codelists.eth_notgiptref,
+        eth_notgiptref,
         returning="date",
         find_last_match_in_period=True,
         on_or_before="index_date",
@@ -49,7 +49,7 @@ study = StudyDefinition(
     ),
     # Ethnicity not stated
     eth_notstated_dat=patients.with_these_clinical_events(
-        codelists.eth_notstated,
+        eth_notstated,
         returning="date",
         find_last_match_in_period=True,
         on_or_before="index_date",
@@ -57,7 +57,7 @@ study = StudyDefinition(
     ),
     # Ethnicity no record
     eth_norecord_dat=patients.with_these_clinical_events(
-        codelists.eth_norecord,
+        eth_norecord,
         returning="date",
         find_last_match_in_period=True,
         on_or_before="index_date",

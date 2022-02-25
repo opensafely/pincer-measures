@@ -22,11 +22,30 @@ actions:
       highly_sensitive:
         cohort: output/inpu*.csv.gz
 
-  # generate_study_population_ethnicity:
-  #   run: cohortextractor:latest generate_cohort --study-definition study_definition_ethnicity --output-format feather
-  #   outputs:
-  #     highly_sensitive:
-  #       cohort: output/input_ethnicity.feather
+  generate_study_definition_demographics_1:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_demographics --index-date-range "2019-09-01 to 2020-05-01 by month" --output-format csv.gz
+    outputs:
+      highly_sensitive:
+        cohort: output/input_demographics_*.csv.gz
+  
+  generate_study_definition_demographics_2:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_demographics --index-date-range "2020-06-01 to 2021-02-01 by month" --output-format csv.gz
+    outputs:
+      highly_sensitive:
+        cohort: output/input_demographics*.csv.gz
+
+  generate_study_definition_demographics_3:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_demographics --index-date-range "2021-03-01 to 2021-09-01 by month" --output-format csv.gz
+    outputs:
+      highly_sensitive:
+        cohort: output/input_demographic*.csv.gz
+
+
+  generate_study_population_ethnicity:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_ethnicity --output-format feather
+    outputs:
+      highly_sensitive:
+        cohort: output/input_ethnicity.feather
 
   # join_ethnicity_region:
   #   run: python:latest python analysis/join_ethnicity_region.py

@@ -13,9 +13,6 @@ study = StudyDefinition(
         "incidence": 0.5,
     },
     population=patients.all(),
-
-    
-
     ethnicity=patients.with_these_clinical_events(
         codelists.eth2001,
         returning="category",
@@ -66,7 +63,4 @@ study = StudyDefinition(
         on_or_before="index_date",
         date_format="YYYY-MM-DD",
     ),
-
-        
-)
 )

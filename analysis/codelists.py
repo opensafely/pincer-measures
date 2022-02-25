@@ -2,13 +2,6 @@ from cohortextractor import (
     codelist_from_csv,
 )
 
-ethnicity_codes = codelist_from_csv(
-    "codelists/opensafely-ethnicity.csv",
-    system="ctv3",
-    column="Code",
-    category_column="Grouping_6",
-)
-
 # Used in AC
 acei_codelist = codelist_from_csv(
     "codelists/pincer-acei.csv",

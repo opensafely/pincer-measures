@@ -40,6 +40,12 @@ actions:
       highly_sensitive:
         cohort: output/input_demographic*.csv.gz
 
+  generate_study_population_region:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_region --index-date-range "2019-09-01 to 2021-09-01 by month" --output-format csv.gz
+    outputs:
+      highly_sensitive:
+        cohort: output/input_region*.csv.gz
+
 
   generate_study_population_ethnicity:
     run: cohortextractor:latest generate_cohort --study-definition study_definition_ethnicity --output-format feather

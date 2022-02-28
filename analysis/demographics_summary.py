@@ -1,7 +1,14 @@
 from re import L
 import pandas as pd
 import numpy as np
-from utilities import OUTPUT_DIR, ANALYSIS_DIR, match_input_files, get_date_input_file, backend, update_demographics
+from utilities import (
+    OUTPUT_DIR,
+    ANALYSIS_DIR,
+    match_input_files,
+    get_date_input_file,
+    backend,
+    update_demographics,
+)
 
 demographics = ["age_band", "sex", "region", "imd", "ethnicity"]
 
@@ -27,7 +34,6 @@ for file in OUTPUT_DIR.iterdir():
 
         dem_df = pd.read_csv(OUTPUT_DIR / f"input_demographics_{date}.csv.gz")
         ethnicity_df = pd.read_feather(OUTPUT_DIR / f"input_ethnicity.feather")
-        msoa_dict = dict(zip(msoa_to_region["MSOA11CD"], msoa_to_region["RGN11NM"]))
 
         for d in demographics:
 
@@ -37,7 +43,11 @@ for file in OUTPUT_DIR.iterdir():
                 )
 
             elif d == "region":
-                demographics_dict = msoa_dict
+                msoa_dict = dict(
+                    zip(msoa_to_region["MSOA11CD"], msoa_to_region["RGN11NM"])
+                )
+                dem_df["region"] = dem_df["msoa"].map(msoa_dict)
+                demographics_dict = dict(zip(dem_df["patient_id"], dem_df[d]))
             else:
                 demographics_dict = dict(zip(dem_df["patient_id"], dem_df[d]))
 

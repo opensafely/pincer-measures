@@ -46,6 +46,23 @@ actions:
     outputs:
       highly_sensitive:
         cohort: output/input_ethnicity.feather
+  
+  generate_demographics:
+    run: python:latest python analysis/demographics_summary.py
+    needs:
+      [
+        generate_study_population_1,
+        generate_study_population_2,
+        generate_study_population_3,
+        generate_study_population_ethnicity,
+        generate_study_definition_demographics_1,
+        generate_study_definition_demographics_2,
+        generate_study_definition_demographics_3
+      ]
+    outputs:
+      moderately_sensitive:
+        demographics: output/demographics_summary*.csv
+
 
   # join_ethnicity_region:
   #   run: python:latest python analysis/join_ethnicity_region.py

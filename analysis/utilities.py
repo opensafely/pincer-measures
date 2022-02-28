@@ -1036,10 +1036,10 @@ def produce_stripped_measures(df):
     df = drop_irrelevant_practices(df)
 
     # calculate rounded rate
-    df["rate"] = round(df["value"]*100, 2)
+    df["rate"] = round(df["value"] * 100, 2)
 
-    #select only rate and date column
+    # select only rate and date column
     df = df.loc[:, ["rate", "date"]]
-    
+
     # randomly shuffle (resetting index)
     return df.sample(frac=1).reset_index(drop=True)

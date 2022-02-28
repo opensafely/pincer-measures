@@ -66,7 +66,7 @@ study = StudyDefinition(
 
     address_msoa=patients.address_as_of(
     "index_date",
-    returning="msoa",
+    returning="msoa_code",
     return_expectations={
             "rate": "universal",
             "category": {

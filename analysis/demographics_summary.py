@@ -14,12 +14,7 @@ demographics = ["age_band", "sex", "region", "imd", "ethnicity"]
 
 demographics_df = pd.DataFrame(columns=["patient_id"] + (demographics))
 
-msoa_to_region = pd.read_csv(
-    ANALYSIS_DIR / "ONS_MSOA_to_region_map.csv",
-    usecols=["MSOA11CD", "RGN11NM"],
-    dtype={"MSOA11CD": "category", "RGN11NM": "category"},
-)
-
+ethnicity_df = pd.read_feather(OUTPUT_DIR / f"input_ethnicity.feather")
 
 for file in OUTPUT_DIR.iterdir():
 
@@ -33,7 +28,7 @@ for file in OUTPUT_DIR.iterdir():
         date = get_date_input_file(file.name)
 
         dem_df = pd.read_csv(OUTPUT_DIR / f"input_demographics_{date}.csv.gz")
-        ethnicity_df = pd.read_feather(OUTPUT_DIR / f"input_ethnicity.feather")
+        region_df = pd.read_csv(OUTPUT_DIR / f"input_region_{date}.csv.gz")
 
         for d in demographics:
 
@@ -43,11 +38,8 @@ for file in OUTPUT_DIR.iterdir():
                 )
 
             elif d == "region":
-                msoa_dict = dict(
-                    zip(msoa_to_region["MSOA11CD"], msoa_to_region["RGN11NM"])
-                )
-                dem_df["region"] = dem_df["msoa"].map(msoa_dict)
-                demographics_dict = dict(zip(dem_df["patient_id"], dem_df[d]))
+                demographics_dict = dict(zip(region_df["patient_id"], region_df[d]))
+            
             else:
                 demographics_dict = dict(zip(dem_df["patient_id"], dem_df[d]))
 

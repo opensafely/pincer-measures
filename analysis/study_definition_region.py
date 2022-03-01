@@ -1,4 +1,4 @@
-from cohortextractor import StudyDefinition, patients
+from cohortextractor import StudyDefinition, patients, Measure
 
 from codelists import *
 
@@ -84,3 +84,15 @@ study = StudyDefinition(
 
         
 )
+
+measures = [
+
+    Measure(
+            id=f"msoa_rate",
+            numerator=f"registered",
+            denominator=f"population",
+            group_by=["region","msoa", ],
+        ),
+
+
+]

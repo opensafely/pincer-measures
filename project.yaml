@@ -118,6 +118,13 @@ actions:
       moderately_sensitive:
         measure_csv: output/measure*_rate.csv
        
+  generate_measures_region:
+    run: cohortextractor:latest generate_measures --study-definition study_definition_region --output-dir=output
+    needs: [generate_study_population_region]
+    outputs:
+      moderately_sensitive:
+        measure_csv: output/measure_msoa_rate.csv
+
 
   generate_summary_counts:
     run: python:latest python analysis/summary_statistics.py

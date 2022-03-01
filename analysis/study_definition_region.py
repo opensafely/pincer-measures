@@ -91,7 +91,14 @@ measures = [
             id=f"msoa_rate",
             numerator=f"registered",
             denominator=f"population",
-            group_by=["region","msoa", ],
+            group_by=["region","msoa"],
+        ),
+
+    Measure(
+            id=f"region_rate",
+            numerator=f"registered",
+            denominator=f"population",
+            group_by=["region"],
         ),
 
 

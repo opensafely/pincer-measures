@@ -63,7 +63,8 @@ actions:
         generate_study_population_ethnicity,
         generate_study_definition_demographics_1,
         generate_study_definition_demographics_2,
-        generate_study_definition_demographics_3
+        generate_study_definition_demographics_3,
+        generate_study_population_region
       ]
     outputs:
       moderately_sensitive:

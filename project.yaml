@@ -126,6 +126,15 @@ actions:
         measure_csv: output/measure_msoa_rate.csv
         measure_csv_region: output/measure_region_rate.csv
 
+  generate_region_counts:
+    run: python:latest python analysis/check_region.py
+    needs:
+      [
+        generate_study_population_region
+      ]
+    outputs:
+      moderately_sensitive:
+        region_count: output/combined_count.csv
 
   generate_summary_counts:
     run: python:latest python analysis/summary_statistics.py

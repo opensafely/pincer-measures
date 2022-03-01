@@ -37,6 +37,11 @@ def match_input_files(file: str) -> bool:
     )
     return True if re.match(pattern, file) else False
 
+def match_input_files_region(file: str) -> bool:
+    pattern = (
+        r"^input_region_20\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\.csv.gz"
+    )
+    return True if re.match(pattern, file) else False
 
 def match_input_files_filtered(file: str) -> bool:
     pattern = (

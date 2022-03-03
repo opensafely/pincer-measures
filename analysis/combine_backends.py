@@ -7,7 +7,6 @@ import numpy as np
 
 additional_indicators = ["e", "f", "li"]
 indicators_list.extend(additional_indicators)
-indicators_list.remove('k')
 
 EMIS_DIR = BASE_DIR / "backend_outputs/emis"
 TPP_DIR = BASE_DIR / "backend_outputs/tpp"
@@ -58,7 +57,7 @@ gi_bleed_indicators = ["a", "b", "c", "d", "e", "f"]
 prescribing_y = np.arange(0, 3, 1)
 prescribing_axs_list = [i for i in prescribing_y]
 prescribing_fig, prescribing_axs = plt.subplots(1, 3, figsize=(30, 10), sharex="col")
-prescribing_indicators = ["g", "i"]
+prescribing_indicators = ["g", "i", "k"]
 
 monitoring_x = np.arange(0, 2, 1)
 monitoring_y = np.arange(0, 3, 1)
@@ -70,15 +69,22 @@ monitoring_indicators = ["ac", "me_no_fbc", "me_no_lft", "li", "am"]
 
 
 for i in indicators_list:
+    if i == "k":
+    
+        measures_combined = pd.read_csv(
+            TPP_DIR / f"measure_stripped_{i}.csv", parse_dates=["date"]
+        )
 
-    measure_emis = pd.read_csv(
-        EMIS_DIR / f"measure_stripped_{i}.csv", parse_dates=["date"]
-    )
-    measure_tpp = pd.read_csv(
-        EMIS_DIR / f"measure_stripped_{i}.csv", parse_dates=["date"]
-    )
+    else:
 
-    measures_combined = pd.concat([measure_emis, measure_tpp], axis="index")
+        measure_emis = pd.read_csv(
+            EMIS_DIR / f"measure_stripped_{i}.csv", parse_dates=["date"]
+        )
+        measure_tpp = pd.read_csv(
+            TPP_DIR / f"measure_stripped_{i}.csv", parse_dates=["date"]
+        )
+
+        measures_combined = pd.concat([measure_emis, measure_tpp], axis="index")
     measures_combined.to_csv(BASE_DIR / f"backend_outputs/measure_combined_{i}.csv")
 
     rate_df_pre = measures_combined.loc[
@@ -180,14 +186,22 @@ with open("backend_outputs/tpp/indicator_summary_statistics_tpp.json") as f:
     summary_statistics_tpp = json.load(f)["summary"]
 
 
-for indicator_key, indicator_dict in summary_statistics_emis.items():
+for indicator_key, indicator_dict in summary_statistics_tpp.items():
     if type(indicator_dict) is dict:
 
+        combined_summary_statistics[indicator_key] = {}
         for key, value in indicator_dict.items():
-            combined_summary_statistics[key] = (
-                value + summary_statistics_tpp[indicator_key][key]
-            )
-
+            if indicator_key == "k":
+                # only present in tpp
+                combined_summary_statistics[indicator_key][key] = (
+                    summary_statistics_tpp[indicator_key][key]
+                )
+            else:
+                combined_summary_statistics[indicator_key][key] = (
+                    value + summary_statistics_emis[indicator_key][key]
+                )
+    else:
+        combined_summary_statistics[indicator_key] = value + summary_statistics_emis[indicator_key]
 
 with open(f"backend_outputs/combined_summary_statistics.json", "w") as f:
     json.dump(combined_summary_statistics, f)

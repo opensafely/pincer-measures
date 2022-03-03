@@ -1,6 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-from utilities import BASE_DIR, compute_deciles, deciles_chart_subplots
+from utilities import BASE_DIR, compute_deciles, deciles_chart_subplots, deciles_chart
 from config import indicators_list
 import json
 import numpy as np
@@ -94,6 +94,17 @@ for i in indicators_list:
         measures_combined["date"].isin(post_q1), "rate"
     ].mean()
     medians_dict[i] = {"pre": rate_df_pre, "post": rate_df_post}
+
+    deciles_chart(
+        measures_combined,
+        filename=f"backend_outputs/figures/plot_{i}",
+        period_column="date",
+        column="rate",
+        title=title_mapping[i],
+        ylabel="Percentage",
+        time_window=time_period_mapping.get(i, ""),
+    )
+
 
     # gi bleed
     if i in gi_bleed_indicators:

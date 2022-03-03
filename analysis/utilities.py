@@ -492,8 +492,11 @@ def deciles_chart(
 ):
     """period_column must be dates / datetimes"""
 
-    df = compute_redact_deciles(df, period_column, count_column, column)
+    if count_column:
+        df = compute_redact_deciles(df, period_column, count_column, column)
 
+    else:
+        df = compute_deciles(df, period_column, column, has_outer_percentiles=False)
     """period_column must be dates / datetimes"""
     sns.set_style("whitegrid", {"grid.color": ".9"})
 
@@ -592,7 +595,7 @@ def deciles_chart(
     #  specified in font-size units
 
     plt.tight_layout()
-    plt.savefig(f"output/figures/{filename}.jpeg")
+    plt.savefig(filename)
     plt.clf()
 
 

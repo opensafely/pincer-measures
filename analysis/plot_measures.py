@@ -120,7 +120,7 @@ for i in indicators_list:
 
     deciles_chart(
         df,
-        filename=f"plot_{i}",
+        filename=f"output/figures/plot_{i}",
         period_column="date",
         column="rate",
         count_column=f"indicator_{i}_numerator",

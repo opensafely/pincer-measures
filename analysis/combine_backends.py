@@ -204,15 +204,22 @@ for indicator_key, indicator_dict in summary_statistics_tpp.items():
         for key, value in indicator_dict.items():
             if indicator_key == "k":
                 # only present in tpp
+                
                 combined_summary_statistics[indicator_key][key] = (
                     summary_statistics_tpp[indicator_key][key]
                 )
             else:
-                combined_summary_statistics[indicator_key][key] = (
-                    value + summary_statistics_emis[indicator_key][key]
-                )
+                if key=="percent_practice":
+
+                    combined_summary_statistics[indicator_key][key] = ((
+                        value + summary_statistics_emis[indicator_key][key]
+                    )/2)
+                else:
+                    combined_summary_statistics[indicator_key][key] = (
+                        value + summary_statistics_emis[indicator_key][key]
+                    )
     else:
-        combined_summary_statistics[indicator_key] = value + summary_statistics_emis[indicator_key]
+        combined_summary_statistics[indicator_key] = summary_statistics_tpp[indicator_key] + summary_statistics_emis[indicator_key]
 
 with open(f"backend_outputs/combined_summary_statistics.json", "w") as f:
     json.dump(combined_summary_statistics, f)

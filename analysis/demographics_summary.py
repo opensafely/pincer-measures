@@ -28,6 +28,7 @@ for file in OUTPUT_DIR.iterdir():
         date = get_date_input_file(file.name)
 
         if date == "2021-09-01":
+            
           
             dem_df = pd.read_csv(OUTPUT_DIR / f"input_demographics_{date}.csv.gz")
             region_df = pd.read_csv(OUTPUT_DIR / f"input_region_{date}.csv.gz")
@@ -69,29 +70,31 @@ for file in OUTPUT_DIR.iterdir():
             
             demographics_df = update_demographics(demographics_df, df)
 
-    d_list = {}
-    for d in demographics:
+    
+d_list = {}
+for d in demographics:
 
-        counts = demographics_df[d].value_counts()
+    counts = demographics_df[d].value_counts()
 
-        counts_df = pd.concat(
-            [
-                counts,
-                pd.Series(
-                    [round((value / np.sum(counts)) * 100, 2) for value in counts],
-                    index=counts.index,
-                ),
-            ],
-            axis=1,
-            keys=["count", "%"],
-            levels=demographics,
-        )
-        d_list[d] = counts_df
-
-    demographic_counts_df = pd.concat(d_list, axis=0)
-    demographic_counts_df = demographic_counts_df.reset_index()
-    demographic_counts_df.columns = ["demographic", "level", "count", "perc"]
-
-    demographic_counts_df.to_csv(
-        OUTPUT_DIR / f"demographics_summary_{backend}.csv", index=False
+    counts_df = pd.concat(
+        [
+            counts,
+            pd.Series(
+                [round((value / np.sum(counts)) * 100, 2) for value in counts],
+                index=counts.index,
+            ),
+        ],
+        axis=1,
+        keys=["count", "%"],
+        levels=demographics,
     )
+    d_list[d] = counts_df
+
+
+demographic_counts_df = pd.concat(d_list, axis=0)
+demographic_counts_df = demographic_counts_df.reset_index()
+demographic_counts_df.columns = ["demographic", "level", "count", "perc"]
+
+demographic_counts_df.to_csv(
+    OUTPUT_DIR / f"demographics_summary_{backend}.csv", index=False
+)

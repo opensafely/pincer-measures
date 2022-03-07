@@ -79,8 +79,8 @@ if __name__ == "__main__":
                 df_dict_additional[additional_indicator].append(event)
 
             # update demographics data
-
-            demographics_df = update_demographics(demographics_df, df)
+            if date =='2019-09-01':
+                demographics_df = update_demographics(demographics_df, df)
 
             for d in demographics:
 

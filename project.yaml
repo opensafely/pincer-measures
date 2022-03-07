@@ -53,23 +53,7 @@ actions:
       highly_sensitive:
         cohort: output/input_ethnicity.feather
   
-  generate_demographics:
-    run: python:latest python analysis/demographics_summary.py
-    needs:
-      [
-        generate_study_population_1,
-        generate_study_population_2,
-        generate_study_population_3,
-        generate_study_population_ethnicity,
-        generate_study_definition_demographics_1,
-        generate_study_definition_demographics_2,
-        generate_study_definition_demographics_3,
-        generate_study_population_region
-      ]
-    outputs:
-      moderately_sensitive:
-        demographics: output/demographics_summary*.csv
-
+  
 
   # join_ethnicity_region:
   #   run: python:latest python analysis/join_ethnicity_region.py
@@ -90,6 +74,22 @@ actions:
     outputs:
       highly_sensitive:
         cohort: output/input_filtered_*.feather
+
+  generate_demographics:
+    run: python:latest python analysis/demographics_summary.py
+    needs:
+      [
+        filter_population,
+        generate_study_population_ethnicity,
+        generate_study_definition_demographics_1,
+        generate_study_definition_demographics_2,
+        generate_study_definition_demographics_3,
+        generate_study_population_region
+      ]
+    outputs:
+      moderately_sensitive:
+        demographics: output/demographics_summary*.csv
+
 
   calculate_numerators:
     run: python:latest python analysis/calculate_numerators.py

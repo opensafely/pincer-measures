@@ -491,6 +491,8 @@ def deciles_chart(
     time_window="",
 ):
     """period_column must be dates / datetimes"""
+    if count_column:
+        df = compute_redact_deciles(df, period_column, count_column, column)
 
     if count_column:
         df = compute_redact_deciles(df, period_column, count_column, column)

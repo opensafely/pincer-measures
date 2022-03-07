@@ -93,18 +93,18 @@ for i in indicators_list:
     rate_df_post = measures_combined.loc[
         measures_combined["date"].isin(post_q1), "rate"
     ].mean()
+    
     medians_dict[i] = {"pre": rate_df_pre, "post": rate_df_post}
 
     deciles_chart(
         measures_combined,
-        filename=f"backend_outputs/figures/plot_{i}",
+        filename=f"backend_outputs/figures/plot_{i}.jpeg",
         period_column="date",
         column="rate",
         title=title_mapping[i],
         ylabel="Percentage",
         time_window=time_period_mapping.get(i, ""),
     )
-
 
     # gi bleed
     if i in gi_bleed_indicators:
@@ -124,7 +124,7 @@ for i in indicators_list:
 
     # prescribing
 
-    if i in prescribing_indicators:
+    elif i in prescribing_indicators:
         ind = prescribing_indicators.index(i)
 
         deciles_chart_subplots(
@@ -141,7 +141,7 @@ for i in indicators_list:
 
     # monitoring
 
-    if i in monitoring_indicators:
+    elif i in monitoring_indicators:
         ind = monitoring_indicators.index(i)
 
         deciles_chart_subplots(
@@ -155,15 +155,15 @@ for i in indicators_list:
             ax=monitoring_axs[monitoring_axs_list[ind]],
             time_window=time_period_mapping.get(i, ""),
         )
-
+monitoring_fig.subplots_adjust(bottom=0.15)
+monitoring_fig.savefig("backend_outputs/figures/combined_plot_monitoring.png")
+plt.clf()
 gi_bleed_fig.subplots_adjust(bottom=0.15)
 gi_bleed_fig.savefig("backend_outputs/figures/combined_plot_gi_bleed.png")
 plt.clf()
 prescribing_fig.subplots_adjust(bottom=0.3)
 prescribing_fig.savefig("backend_outputs/figures/combined_plot_prescribing.png")
 plt.clf()
-monitoring_fig.subplots_adjust(bottom=0.15)
-monitoring_fig.savefig("backend_outputs/figures/combined_plot_monitoring.png")
 
 
 with open(f"backend_outputs/medians.json", "w") as f:
@@ -195,6 +195,20 @@ with open("backend_outputs/emis/indicator_summary_statistics_emis.json") as f:
 
 with open("backend_outputs/tpp/indicator_summary_statistics_tpp.json") as f:
     summary_statistics_tpp = json.load(f)["summary"]
+
+with open("backend_outputs/emis/practice_count_emis.json") as f:
+    practice_count_emis = json.load(f)
+
+with open("backend_outputs/tpp/practice_count_tpp.json") as f:
+    practice_count_tpp = json.load(f)
+
+combined_practice_count = {}
+for key, value in practice_count_emis.items():
+    combined_practice_count[key] = value + practice_count_tpp[key]
+
+with open(f"backend_outputs/combined_practice_count.json", "w") as f:
+    json.dump(combined_practice_count, f)
+
 
 
 for indicator_key, indicator_dict in summary_statistics_tpp.items():

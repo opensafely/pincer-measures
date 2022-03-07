@@ -4,8 +4,8 @@ import numpy as np
 from utilities import (
     OUTPUT_DIR,
     ANALYSIS_DIR,
-    match_input_files,
-    get_date_input_file,
+    match_input_files_filtered,
+    get_date_input_file_filtered,
     backend,
     update_demographics,
 )
@@ -18,14 +18,14 @@ ethnicity_df = pd.read_feather(OUTPUT_DIR / f"input_ethnicity.feather")
 
 for file in OUTPUT_DIR.iterdir():
 
-    if match_input_files(file.name):
+    if match_input_files_filtered(file.name):
         if file.suffix == ".feather":
             df = pd.read_feather(OUTPUT_DIR / file.name)
 
         elif file.suffix == ".csv.gz":
             df = pd.read_csv(OUTPUT_DIR / file.name)
 
-        date = get_date_input_file(file.name)
+        date = get_date_input_file_filtered(file.name)
 
         if date == "2021-09-01":
             

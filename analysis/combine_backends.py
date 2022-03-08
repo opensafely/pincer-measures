@@ -209,7 +209,16 @@ for key, value in practice_count_emis.items():
 with open(f"backend_outputs/combined_practice_count.json", "w") as f:
     json.dump(combined_practice_count, f)
 
+# combine demographics table
 
+demographics_tpp = pd.read_csv("backend_outputs/tpp/demographics_summary_tpp.csv")
+
+demographics_emis = pd.read_csv("backend_outputs/emis/demographics_summary_emis.csv")
+
+
+
+combined_demographics = pd.concat([demographics_tpp, demographics_emis]).groupby(['demographic', 'level']).sum().reset_index()
+combined_demographics.to_csv("backend_outputs/combined_demographics.csv")
 
 for indicator_key, indicator_dict in summary_statistics_tpp.items():
     if type(indicator_dict) is dict:
@@ -227,7 +236,7 @@ for indicator_key, indicator_dict in summary_statistics_tpp.items():
 
                     combined_summary_statistics[indicator_key][key] = ((
                         value + summary_statistics_emis[indicator_key][key]
-                    )/2)
+                    )/combined_practice_count["num_practices"])
                 else:
                     combined_summary_statistics[indicator_key][key] = (
                         value + summary_statistics_emis[indicator_key][key]

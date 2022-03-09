@@ -21,6 +21,12 @@ actions:
     outputs:
       highly_sensitive:
         cohort: output/inpu*.csv.gz
+  
+  generate_study_population_4:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition --index-date-range "2021-10-01 to 2022-02-01 by month" --output-format csv.gz
+    outputs:
+      highly_sensitive:
+        cohort: output/inp*.csv.gz
 
   generate_study_definition_demographics_1:
     run: cohortextractor:latest generate_cohort --study-definition study_definition_demographics --index-date-range "2019-09-01 to 2020-05-01 by month" --output-format csv.gz
@@ -39,6 +45,12 @@ actions:
     outputs:
       highly_sensitive:
         cohort: output/input_demographic*.csv.gz
+  
+  generate_study_definition_demographics_4:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_demographics --index-date-range "2021-10-01 to 2022-02-01 by month" --output-format csv.gz
+    outputs:
+      highly_sensitive:
+        cohort: output/input_demographi*.csv.gz
 
   generate_study_population_region:
     run: cohortextractor:latest generate_cohort --study-definition study_definition_region --index-date-range "2019-09-01 to 2021-09-01 by month" --output-format csv.gz

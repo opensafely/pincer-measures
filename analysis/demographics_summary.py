@@ -27,7 +27,7 @@ for file in OUTPUT_DIR.iterdir():
 
         date = get_date_input_file_filtered(file.name)
 
-        if date == "2021-09-01":
+        if date == "2022-02-01":
             
           
             dem_df = pd.read_csv(OUTPUT_DIR / f"input_demographics_{date}.csv.gz")

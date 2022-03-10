@@ -88,10 +88,13 @@ actions:
 
   filter_population:
     run: python:latest python analysis/filter_population.py
-    needs: [generate_study_population_1, generate_study_population_2, generate_study_population_3]
+    needs: [generate_study_population_1, generate_study_population_2, generate_study_population_3, generate_study_population_4]
     outputs:
       highly_sensitive:
         cohort: output/input_filtered_*.feather
+
+
+        
 
   generate_demographics:
     run: python:latest python analysis/demographics_summary.py
@@ -102,7 +105,9 @@ actions:
         generate_study_definition_demographics_1,
         generate_study_definition_demographics_2,
         generate_study_definition_demographics_3,
-        generate_study_population_region
+        generate_study_definition_demographics_4,
+        generate_study_population_region,
+        generate_study_population_region_2
       ]
     outputs:
       moderately_sensitive:
@@ -115,6 +120,8 @@ actions:
     outputs:
       highly_sensitive:
         cohort: output/indicator_e_f_*.feather
+
+
 
   # calculate_composite_indicators:
   #   run: python:latest python analysis/composite_indicators.py
@@ -132,14 +139,14 @@ actions:
 
   generate_measures_additional:
     run: python:latest python analysis/calculate_measures.py
-    needs: [calculate_numerators, filter_population]
+    needs: [calculate_numerators,filter_population]
     outputs:
       moderately_sensitive:
         measure_csv: output/measure*_rate.csv
        
   generate_measures_region:
     run: cohortextractor:latest generate_measures --study-definition study_definition_region --output-dir=output
-    needs: [generate_study_population_region]
+    needs: [generate_study_population_region, generate_study_population_region_2]
     outputs:
       moderately_sensitive:
         measure_csv: output/measure_msoa_rate.csv
@@ -149,7 +156,8 @@ actions:
     run: python:latest python analysis/check_region.py
     needs:
       [
-        generate_study_population_region
+        generate_study_population_region,
+        generate_study_population_region_2
       ]
     outputs:
       moderately_sensitive:
@@ -162,7 +170,7 @@ actions:
         filter_population,
         generate_measures,
         generate_measures_additional,
-        calculate_numerators,
+        calculate_numerators
       ]
     outputs:
       moderately_sensitive:

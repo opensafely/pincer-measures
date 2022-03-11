@@ -22,6 +22,12 @@ actions:
       highly_sensitive:
         cohort: output/inpu*.feather
 
+  generate_study_population_4:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition --index-date-range "2021-10-01 to 2022-02-01 by month" --output-format feather
+    outputs:
+      highly_sensitive:
+        cohort: output/in*.feather
+
   generate_study_population_ethnicity:
     run: cohortextractor:latest generate_cohort --study-definition study_definition_ethnicity --output-format feather
     outputs:

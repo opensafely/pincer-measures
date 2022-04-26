@@ -53,6 +53,13 @@ actions:
     outputs:
       highly_sensitive:
         cohort: output/input_filtered_*.feather
+  
+  check_asthma:
+    run: python:latest python analysis/asthma_check.py
+    needs: [filter_population]
+    outputs:
+      moderately_sensitive:
+        check: output/asthma_check.json
 
   calculate_numerators:
     run: python:latest python analysis/calculate_numerators.py

@@ -182,5 +182,15 @@ counts_dict["monitoring"]["num_practices"] = len(np.unique(practices_monitoring)
 counts_dict["gi_bleed"]["num_practices"] = len(np.unique(practices_gi_bleed))
 counts_dict["other"]["num_practices"] = len(np.unique(practices_other))
 
+class NpEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        if isinstance(obj, np.floating):
+            return float(obj)
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return super(NpEncoder, self).default(obj)
+
 with open(f"output/indicator_summary_statistics_{backend}.json", "w") as f:
-    json.dump({"summary": counts_dict}, f)
+    json.dump({"summary": counts_dict}, f, cls=NpEncoder)

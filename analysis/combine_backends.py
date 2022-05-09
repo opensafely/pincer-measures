@@ -233,10 +233,9 @@ for indicator_key, indicator_dict in summary_statistics_tpp.items():
                 )
             else:
                 if key=="percent_practice":
-
                     combined_summary_statistics[indicator_key][key] = ((
                         value + summary_statistics_emis[indicator_key][key]
-                    )/combined_practice_count["num_practices"])
+                    )/2)
                 else:
                     combined_summary_statistics[indicator_key][key] = (
                         value + summary_statistics_emis[indicator_key][key]

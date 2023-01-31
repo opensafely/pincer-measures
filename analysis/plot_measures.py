@@ -305,13 +305,13 @@ for i in composite_indicators:
 demographic_aggregate_df.to_csv("output/demographic_aggregates.csv")
 
 gi_bleed_fig.subplots_adjust(bottom=0.15)
-gi_bleed_fig.savefig("output/figures/combined_plot_gi_bleed.png")
+gi_bleed_fig.savefig("output/figures/combined_plot_gi_bleed.png", dpi=300)
 plt.clf()
 prescribing_fig.subplots_adjust(bottom=0.3)
-prescribing_fig.savefig("output/figures/combined_plot_prescribing.png")
+prescribing_fig.savefig("output/figures/combined_plot_prescribing.png", dpi=300)
 plt.clf()
 monitoring_fig.subplots_adjust(bottom=0.15)
-monitoring_fig.savefig("output/figures/combined_plot_monitoring.png")
+monitoring_fig.savefig("output/figures/combined_plot_monitoring.png", dpi=300)
 
 with open(f"output/medians.json", "w") as f:
     json.dump({"summary": medians_dict}, f)

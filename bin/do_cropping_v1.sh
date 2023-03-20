@@ -24,7 +24,7 @@ convert output/figures/combined_plot_gi_bleed+trimmed+labelled.png output/figure
 magick mogrify -format tiff output/figures/figure1ab.png
 magick mogrify -format tiff output/figures/figure2.png
 
-rm output/figures/*+trimmed*
+rm output/figures/*+trimmed*.png
 rm output/figures/figure1ab.png
 rm output/figures/figure2.png
 

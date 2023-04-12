@@ -26,7 +26,7 @@ actions:
     run: cohortextractor:latest generate_cohort --study-definition study_definition --index-date-range "2021-10-01 to 2022-02-01 by month" --output-format feather
     outputs:
       highly_sensitive:
-        cohort: output/in*.feather
+        cohort: output/inp*.feather
         
   generate_study_population_5:
     run: cohortextractor:latest generate_cohort --study-definition study_definition --index-date-range "2022-03-01 to 2023-03-01 by month" --output-format feather

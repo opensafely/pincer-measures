@@ -337,7 +337,7 @@ def deciles_chart_ebm(
     """period_column must be dates / datetimes"""
     sns.set_style("whitegrid", {"grid.color": ".9"})
     if not ax:
-        fig, ax = plt.subplots(1, 1)
+        fig, ax = plt.subplots(1, 1, figsize=(15, 8))
 
     df = compute_redact_deciles(df, period_column, count_column, column)
     linestyles = {
@@ -502,7 +502,7 @@ def deciles_chart(
     """period_column must be dates / datetimes"""
     sns.set_style("whitegrid", {"grid.color": ".9"})
 
-    fig, ax = plt.subplots(1, 1)
+    fig, ax = plt.subplots(1, 1, figsize=(15, 8))
 
     linestyles = {
         "decile": {

@@ -327,7 +327,6 @@ def deciles_chart_ebm(
     df,
     period_column=None,
     column=None,
-    count_column=None,
     title="",
     ylabel="",
     show_outer_percentiles=True,
@@ -339,7 +338,7 @@ def deciles_chart_ebm(
     if not ax:
         fig, ax = plt.subplots(1, 1, figsize=(15, 8))
 
-    df = compute_redact_deciles(df, period_column, count_column, column)
+    df = compute_deciles(df, period_column, count_column, column)
     linestyles = {
         "decile": {
             "line": "b--",
@@ -454,52 +453,19 @@ def get_practice_deciles(measure_table, value_column):
     return measure_table
 
 
-def compute_redact_deciles(df, period_column, count_column, column):
-    n_practices = df.groupby(by=["date"])[["practice"]].nunique()
-
-    count_df = compute_deciles(
-        measure_table=df,
-        groupby_col=period_column,
-        values_col=count_column,
-        has_outer_percentiles=False,
-    )
-    quintile_10 = count_df[count_df["percentile"] == 10][["date", count_column]]
-    df = (
-        compute_deciles(df, period_column, column, False)
-        .merge(n_practices, on="date")
-        .merge(quintile_10, on="date")
-    )
-
-    # if quintile 10 is 0, make sure at least 5 practices have 0. If >0, make sure more than 5 practices are in this bottom decile
-    df["drop"] = (((df["practice"] * 0.1) * df[count_column]) <= 5) & (
-        df[count_column] != 0
-    ) | ((df[count_column] == 0) & (df["practice"] <= 5))
-
-    df.loc[df["drop"] == True, ["rate"]] = np.nan
-
-    return df
-
-
 def deciles_chart(
     df,
     filename,
     period_column=None,
     column=None,
-    count_column=None,
     title="",
     ylabel="",
     time_window="",
 ):
     """period_column must be dates / datetimes"""
-    if count_column:
-        df = compute_redact_deciles(df, period_column, count_column, column)
-
-    if count_column:
-        df = compute_redact_deciles(df, period_column, count_column, column)
-
-    else:
-        df = compute_deciles(df, period_column, column, has_outer_percentiles=False)
-    """period_column must be dates / datetimes"""
+    
+    df = compute_deciles(df, period_column, column, has_outer_percentiles=False)
+  
     sns.set_style("whitegrid", {"grid.color": ".9"})
 
     fig, ax = plt.subplots(1, 1, figsize=(15, 8))
@@ -915,7 +881,6 @@ def deciles_chart_subplots(
     df,
     period_column=None,
     column=None,
-    count_column=None,
     title="",
     ylabel="",
     show_outer_percentiles=True,
@@ -926,11 +891,8 @@ def deciles_chart_subplots(
     """period_column must be dates / datetimes"""
     sns.set_style("whitegrid", {"grid.color": ".9"})
 
-    if count_column:
-        df = compute_redact_deciles(df, period_column, count_column, column)
-
-    else:
-        df = compute_deciles(df, period_column, column, has_outer_percentiles=False)
+    
+    df = compute_deciles(df, period_column, column, has_outer_percentiles=False)
     linestyles = {
         "decile": {
             "line": "b--",

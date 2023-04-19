@@ -438,10 +438,10 @@ def compute_deciles(measure_table, groupby_col, values_col, has_outer_percentile
 
     percentiles = (
         measure_table.groupby(groupby_col)[values_col]
-        .quantile(pd.Series(quantiles, name="percentile"))
+        .quantile(pd.Series(quantiles))
         .reset_index()
     )
-    percentiles["percentile"] = percentiles["percentile"].apply(lambda x: int(x * 100))
+    percentiles["percentile"] = percentiles["level_1"].apply(lambda x: int(x * 100))
 
     return percentiles
 
@@ -999,7 +999,7 @@ def deciles_chart_subplots(
 
     ax.set_ylabel(ylabel, size=24)
 
-    ax.set_title(title, size=30, wrap=True)._get_wrap_line_width = lambda: 700.0
+    ax.set_title(title, size=30, wrap=False, pad=10)
 
     # set ymax across all subplots as largest value across dataset
     ax.set_ylim(

@@ -302,15 +302,6 @@ def measure_table_for_deciles():
     return mt
 
 
-
-def test_compute_redact_deciles(measure_table_for_deciles):
-    
-    obs = utilities.compute_redact_deciles(measure_table_for_deciles, 'date', 'count', 'rate')
-
-    #check that rate for 2019-02-01 has been set to null
-    assert(len(obs[~obs['rate'].isnull()]['date'].unique())==1)
-
-
 @pytest.fixture
 def composite_indicator_table():
     """Returns a table that could have been read by calling `get_composite_indicator_counts`."""

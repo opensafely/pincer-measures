@@ -108,11 +108,7 @@ for i in indicators_list:
 
     # Need this for dummy data
     df = df.replace(np.inf, np.nan)
-
-    df_deciles = compute_redact_deciles(df, "date", f"indicator_{i}_numerator", "rate")
-
     
-    # median_df = df_deciles.loc[df_deciles["percentile"]==50,:]
     rate_df_pre = df.loc[df["date"].isin(pre_q1),"rate"].mean()
     rate_df_post = df.loc[df["date"].isin(post_q1),"rate"].mean()
     medians_dict[i] = {"pre": rate_df_pre, "post": rate_df_post}
@@ -123,7 +119,6 @@ for i in indicators_list:
         filename=f"output/figures/plot_{i}.jpeg",
         period_column="date",
         column="rate",
-        count_column=f"indicator_{i}_numerator",
         title=title_mapping[i],
         ylabel="Percentage",
         time_window=time_period_mapping.get(i, ""),
@@ -137,7 +132,6 @@ for i in indicators_list:
             df,
             period_column="date",
             column="rate",
-            count_column=f"indicator_{i}_numerator",
             title=title_mapping[i],
             ylabel="Percentage",
             show_outer_percentiles=False,
@@ -155,7 +149,6 @@ for i in indicators_list:
             df,
             period_column="date",
             column="rate",
-            count_column=f"indicator_{i}_numerator",
             title=title_mapping[i],
             ylabel="Percentage",
             show_outer_percentiles=False,
@@ -173,7 +166,6 @@ for i in indicators_list:
             df,
             period_column="date",
             column="rate",
-            count_column=f"indicator_{i}_numerator",
             title=title_mapping[i],
             ylabel="Percentage",
             show_outer_percentiles=False,
@@ -226,10 +218,11 @@ for i in indicators_list:
             demographic_aggregate_row["demographic"] = d
             demographic_aggregate_row["group"] = index
             demographic_aggregate_row["pre_mean"] = row["pre"]
-            demographic_aggregate_row["post_mean"] = row["post"]
+            demographic_aggregate_row["post_mean"] = row.loc["post"]
 
-            demographic_aggregate_df = demographic_aggregate_df.append(
-                pd.DataFrame(demographic_aggregate_row, index=[0])
+            
+            demographic_aggregate_df = pd.concat(
+                [demographic_aggregate_df, pd.DataFrame(demographic_aggregate_row, index=[0])]
             )
 
         plot_measures(

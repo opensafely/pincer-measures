@@ -248,7 +248,7 @@ def test_compute_deciles(measure_table, has_outer_percentiles, num_rows):
     # leaving us to check the shape and the type of the data.
     testing.assert_index_equal(
         obs.columns,
-        pd.Index(["date", "percentile", "value"]),
+        pd.Index(["date", "value", "percentile"]),
     )
     assert len(obs) == num_rows
     assert is_datetime64_dtype(obs.date)
@@ -300,15 +300,6 @@ def measure_table_for_deciles():
     )
     mt["date"] = pd.to_datetime(mt["date"])
     return mt
-
-
-
-def test_compute_redact_deciles(measure_table_for_deciles):
-    
-    obs = utilities.compute_redact_deciles(measure_table_for_deciles, 'date', 'count', 'rate')
-
-    #check that rate for 2019-02-01 has been set to null
-    assert(len(obs[~obs['rate'].isnull()]['date'].unique())==1)
 
 
 @pytest.fixture

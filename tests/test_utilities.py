@@ -248,7 +248,7 @@ def test_compute_deciles(measure_table, has_outer_percentiles, num_rows):
     # leaving us to check the shape and the type of the data.
     testing.assert_index_equal(
         obs.columns,
-        pd.Index(["date", "percentile", "value"]),
+        pd.Index(["date", "value", "percentile"]),
     )
     assert len(obs) == num_rows
     assert is_datetime64_dtype(obs.date)

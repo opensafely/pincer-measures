@@ -441,6 +441,7 @@ def compute_deciles(measure_table, groupby_col, values_col, has_outer_percentile
         .reset_index()
     )
     percentiles["percentile"] = percentiles["level_1"].apply(lambda x: int(x * 100))
+    percentiles = percentiles.drop(columns=["level_1"])
 
     return percentiles
 

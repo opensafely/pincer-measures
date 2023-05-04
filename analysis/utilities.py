@@ -408,7 +408,7 @@ def deciles_chart_ebm(
             loc=CENTER_LEFT,  # which part of the bounding box should
             #  be placed at bbox_to_anchor
             ncol=1,  # number of columns in the legend
-            fontsize=12,
+            fontsize=20,
             borderaxespad=0.0,
         )  # padding between the axes and legend
         #  specified in font-size units
@@ -558,7 +558,7 @@ def deciles_chart(
         loc=CENTER_LEFT,  # which part of the bounding box should
         #  be placed at bbox_to_anchor
         ncol=1,  # number of columns in the legend
-        fontsize=8,
+        fontsize=20,
         borderaxespad=0.0,
     )  # padding between the axes and legend
     #  specified in font-size units

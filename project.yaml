@@ -61,13 +61,6 @@ actions:
     outputs:
       highly_sensitive:
         cohort: output/input_filtered_*.feather
-  
-  check_asthma:
-    run: python:latest python analysis/asthma_check.py
-    needs: [filter_population]
-    outputs:
-      moderately_sensitive:
-        check: output/asthma_check.json
 
   calculate_numerators:
     run: python:latest python analysis/calculate_numerators.py
@@ -129,15 +122,11 @@ actions:
     run: python:latest python analysis/plot_measures.py
     needs:
       [
-        generate_measures,
-        generate_measures_demographics,
-        calculate_composite_indicators,
+        produce_stripped_measures,
       ]
     outputs:
       moderately_sensitive:
         counts: output/figures/plot_*.jpeg
-        combined: output/figures/combined_plot_*.png
-        demographics: output/demographic_aggregates.csv
         medians: output/medians.json
 
   generate_notebook:
@@ -154,30 +143,8 @@ actions:
       moderately_sensitive:
         notebook: output/report_updating.html
 
-  generate_dem_notebook:
-    run: jupyter:latest jupyter nbconvert /workspace/analysis/demographic_report.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
-    needs: [generate_plots]
-    outputs:
-      moderately_sensitive:
-        notebook: output/demographic_report.html
-
-  plot_Q1_comparisons:
-    run: r:latest analysis/generate_demographic_slope_plot.R
-    needs: [generate_plots]
-    outputs:
-      moderately_sensitive:
-        plots: output/figures/SLOPE_*.png
-
   run_tests:
     run: python:latest python -m pytest --junit-xml=output/pytest.xml --verbose
     outputs:
       moderately_sensitive:
         log: output/pytest.xml
-
-  test_population:
-    run: python:latest python analysis/test_population.py
-    needs: [filter_population]
-    outputs:
-      moderately_sensitive:
-        counts: output/population_counts.csv
-        count: output/patient_count_check.json

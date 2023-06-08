@@ -122,14 +122,11 @@ actions:
     run: python:latest python analysis/plot_measures.py
     needs:
       [
-        generate_measures,
-        generate_measures_demographics,
-        calculate_composite_indicators,
+        produce_stripped_measures,
       ]
     outputs:
       moderately_sensitive:
         counts: output/figures/plot_*.jpeg
-        combined: output/figures/combined_plot_*.png
         medians: output/medians.json
 
   generate_notebook:

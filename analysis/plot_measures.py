@@ -90,19 +90,8 @@ demographic_aggregate_df = pd.DataFrame(
 for i in indicators_list:
     # indicator plots
     df = pd.read_csv(
-        OUTPUT_DIR / f"measure_indicator_{i}_rate.csv", parse_dates=["date"]
+        OUTPUT_DIR / f"measure_stripped_{i}.csv", parse_dates=["date"]
     )
-    df = drop_irrelevant_practices(df)
-
-    if i in ["me_no_fbc", "me_no_lft"]:
-        denominator = "indicator_me_denominator"
-
-    else:
-        denominator = f"indicator_{i}_denominator"
-
-    df["rate"] = df[f"value"] * 100
-
-    df = df.drop(["value"], axis=1)
 
     # Need this for dummy data
     df = df.replace(np.inf, np.nan)
@@ -170,74 +159,6 @@ for i in indicators_list:
             ax=monitoring_axs[monitoring_axs_list[ind]],
             time_window=time_period_mapping.get(i, ""),
         )
-
-
-# plot composite measures
-
-composite_indicators = ["gi_bleed", "monitoring", "other_prescribing", "all"]
-
-for i in composite_indicators:
-    df = pd.read_csv(OUTPUT_DIR / f"{i}_composite_measure.csv", parse_dates=["date"])
-
-    # group those with 7+ indicators if all-composite
-    if i == "all":
-        num_indicators = list(df["num_indicators"].unique())
-        if "Other" in num_indicators:
-            num_indicators.remove("Other")
-        max_indicator = min([int(max(num_indicators)), 6])
-
-        above_nums = [f"{i}" for i in range(max_indicator, 14)]
-        above_nums.extend(["Other"])
-        below_nums = [f"{i}" for i in range(0, max_indicator)]
-
-        df_7_plus_count = (
-            df.loc[df["num_indicators"].isin(above_nums), :]
-            .groupby(["date"])[["count"]]
-            .sum()
-            .reset_index()
-        )
-        df_7_plus_population = (
-            df.loc[df["num_indicators"].isin(above_nums), :]
-            .groupby(["date"])[["denominator"]]
-            .mean()
-            .reset_index()
-        )
-
-        df_7_plus = df_7_plus_count.merge(df_7_plus_population, on=["date"])
-
-        if max_indicator < 7:
-            df_7_plus["num_indicators"] = f"{max_indicator}+"
-        else:
-            df_7_plus["num_indicators"] = "7+"
-
-        # drop combined columns from original df
-        df = df.loc[df["num_indicators"].isin(below_nums), :]
-
-        # concatenate
-        df = pd.concat([df, df_7_plus])
-
-        df["num_indicators"] = df["num_indicators"].astype("str")
-
-    df["rate"] = df["count"] / df["denominator"]
-    plot_measures(
-        df=df,
-        filename=f"plot_{i}_composite",
-        title=f"{i} composite indicator",
-        column_to_plot="rate",
-        y_label="Proportion",
-        as_bar=False,
-        category="num_indicators",
-    )
-
-
-gi_bleed_fig.subplots_adjust(bottom=0.15)
-gi_bleed_fig.savefig("output/figures/combined_plot_gi_bleed.png")
-plt.clf()
-prescribing_fig.subplots_adjust(bottom=0.3)
-prescribing_fig.savefig("output/figures/combined_plot_prescribing.png")
-plt.clf()
-monitoring_fig.subplots_adjust(bottom=0.15)
-monitoring_fig.savefig("output/figures/combined_plot_monitoring.png")
 
 with open(f"output/medians.json", "w") as f:
     json.dump({"summary": medians_dict}, f)

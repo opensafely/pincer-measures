@@ -174,67 +174,6 @@ for i in indicators_list:
             time_window=time_period_mapping.get(i, ""),
         )
 
-    # demographic plots
-    for d in demographics:
-        df = pd.read_csv(
-            OUTPUT_DIR / f"indicator_measure_{i}_{d}.csv", parse_dates=["date"]
-        )
-
-        if d == "sex":
-            df = df[df["sex"].isin(["M", "F"])]
-
-        elif d == "imd":
-            df = df[df["imd"] != 0]
-
-        elif d == "age_band":
-            df = df[df["age_band"] != "missing"]
-
-            if i == "a":
-                # remove bands < 65
-                df = df[df["age_band"].isin(["60-69", "70-79", "80+"])]
-
-            elif i == "ac":
-                # remove bands < 75
-                df = df[df["age_band"].isin(["70-79", "80+"])]
-
-        df = redact_small_numbers(
-            df, 10, f"indicator_{i}_numerator", denominator, "rate", "date"
-        )
-
-        
-
-        pre_df = df.loc[df["date"].isin(pre_q1), :]
-        mean_pre = pre_df.groupby(by=[d])["rate"].mean().rename("pre")
-
-        post_df = df.loc[df["date"].isin(post_q1), :]
-        mean_post = post_df.groupby(by=[d])["rate"].mean().rename("post")
-
-        mean_values = pd.concat([mean_pre, mean_post], axis=1)
-
-        for index, row in mean_values.iterrows():
-
-            demographic_aggregate_row = OrderedDict()
-            demographic_aggregate_row["indicator"] = i
-            demographic_aggregate_row["demographic"] = d
-            demographic_aggregate_row["group"] = index
-            demographic_aggregate_row["pre_mean"] = row["pre"]
-            demographic_aggregate_row["post_mean"] = row.loc["post"]
-
-            
-            demographic_aggregate_df = pd.concat(
-                [demographic_aggregate_df, pd.DataFrame(demographic_aggregate_row, index=[0])]
-            )
-
-        plot_measures(
-            df=df,
-            filename=f"plot_{i}_{d}",
-            title=f"Indicator {i} by {d}",
-            column_to_plot="rate",
-            y_label="Proportion",
-            as_bar=False,
-            category=d,
-        )
-
 
 # plot composite measures
 
@@ -295,7 +234,6 @@ for i in composite_indicators:
     )
 
 
-demographic_aggregate_df.to_csv("output/demographic_aggregates.csv")
 
 gi_bleed_fig.subplots_adjust(bottom=0.15)
 gi_bleed_fig.savefig("output/figures/combined_plot_gi_bleed.png")

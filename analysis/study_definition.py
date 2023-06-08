@@ -1,6 +1,6 @@
 from cohortextractor import StudyDefinition, patients, Measure
 
-from config import indicators_list, backend
+from config import indicators_list
 
 from codelists import *
 from co_prescribing_variables import create_co_prescribing_variables
@@ -661,12 +661,11 @@ measures = [
 ]
 
 for indicator in indicators_list:
-
     if indicator in ["me_no_fbc", "me_no_lft"]:
         m = Measure(
             id=f"indicator_{indicator}_rate",
             numerator=f"indicator_{indicator}_numerator",
-            denominator=f"indicator_me_denominator",
+            denominator="indicator_me_denominator",
             group_by=["practice"],
         )
 
@@ -699,15 +698,15 @@ for indicator in indicators_list:
 measures.extend(
     [
         Measure(
-            id=f"no_asthma_resolved_rate",
-            numerator=f"no_asthma_resolved",
-            denominator=f"population",
+            id="no_asthma_resolved_rate",
+            numerator="no_asthma_resolved",
+            denominator="population",
             group_by=["practice"],
         ),
         Measure(
-            id=f"asthma_resolved_rate",
-            numerator=f"asthma_resolved",
-            denominator=f"population",
+            id="asthma_resolved_rate",
+            numerator="asthma_resolved",
+            denominator="population",
             group_by=["practice"],
         ),
     ]

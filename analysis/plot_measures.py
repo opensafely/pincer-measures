@@ -1,12 +1,10 @@
 from utilities import *
 import pandas as pd
 import os
+import json
 from config import indicators_list
-from calculate_measures import demographics
-import re
-from collections import OrderedDict
 
-from utilities import *
+from utilities import OUTPUT_DIR, deciles_chart_subplots, drop_irrelevant_practices
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -74,8 +72,8 @@ title_mapping = {
     "k": "CRF & NSAID",  # "Chronic renal impairment and NSAID",
     # "ACE inhibitor or loop diuretic without renal function/electrolyte test",
     "ac": "ACEI or loop diuretic, no blood tests",
-    "me_no_fbc": "Methotrexate and no FBC", #"Methotrexate without full blood count",
-    "me_no_lft": "Methotrexate and no LFT", #"Methotrexate without liver function test",
+    "me_no_fbc": "Methotrexate and no FBC",  # "Methotrexate without full blood count",
+    "me_no_lft": "Methotrexate and no LFT",  # "Methotrexate without liver function test",
     # "Lithium without lithium concentration test",
     "li": "Lithium and no level recording",
     "am": "Amiodarone and no TFT",  # "Amiodarone without thyroid function test",
@@ -108,11 +106,10 @@ for i in indicators_list:
 
     # Need this for dummy data
     df = df.replace(np.inf, np.nan)
-    
-    rate_df_pre = df.loc[df["date"].isin(pre_q1),"rate"].mean()
-    rate_df_post = df.loc[df["date"].isin(post_q1),"rate"].mean()
-    medians_dict[i] = {"pre": rate_df_pre, "post": rate_df_post}
 
+    rate_df_pre = df.loc[df["date"].isin(pre_q1), "rate"].mean()
+    rate_df_post = df.loc[df["date"].isin(post_q1), "rate"].mean()
+    medians_dict[i] = {"pre": rate_df_pre, "post": rate_df_post}
 
     deciles_chart(
         df,
@@ -184,7 +181,6 @@ for i in composite_indicators:
 
     # group those with 7+ indicators if all-composite
     if i == "all":
-
         num_indicators = list(df["num_indicators"].unique())
         if "Other" in num_indicators:
             num_indicators.remove("Other")
@@ -232,7 +228,6 @@ for i in composite_indicators:
         as_bar=False,
         category="num_indicators",
     )
-
 
 
 gi_bleed_fig.subplots_adjust(bottom=0.15)

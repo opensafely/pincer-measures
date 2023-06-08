@@ -1,12 +1,10 @@
 import pandas as pd
-import json
 import numpy as np
 from utilities import (
     OUTPUT_DIR,
     match_input_files_filtered,
     get_date_input_file_filtered,
     calculate_rate,
-    redact_small_numbers,
     update_demographics,
 )
 from config import indicators_list, backend
@@ -23,7 +21,6 @@ demographics_df = pd.DataFrame(columns=["patient_id"] + (demographics))
 
 
 if __name__ == "__main__":
-
     df_dict = {}
     df_dict_additional = {i: [] for i in additional_indicators}
     for d in demographics:
@@ -33,9 +30,7 @@ if __name__ == "__main__":
             df_dict[d][i] = []
 
     for file in OUTPUT_DIR.iterdir():
-
         if match_input_files_filtered(file.name):
-
             df = pd.read_feather(OUTPUT_DIR / file.name)
 
             date = get_date_input_file_filtered(file.name)
@@ -54,7 +49,6 @@ if __name__ == "__main__":
             df["indicator_f_numerator"] = df["patient_id"].map(f_dict)
 
             for additional_indicator in additional_indicators:
-
                 event = (
                     df.groupby(by=["practice"])[
                         [
@@ -79,11 +73,10 @@ if __name__ == "__main__":
                 df_dict_additional[additional_indicator].append(event)
 
             # update demographics data
-            if date =='2019-09-01':
+            if date == "2019-09-01":
                 demographics_df = update_demographics(demographics_df, df)
 
             for d in demographics:
-
                 for i in indicators_list:
                     if i in ["me_no_fbc", "me_no_lft"]:
                         denominator = "indicator_me_denominator"
@@ -116,7 +109,6 @@ if __name__ == "__main__":
 
     d_list = {}
     for d in demographics:
-
         if d == "imd":
             # map imd
             df[d] = df[d].replace(

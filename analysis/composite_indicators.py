@@ -42,7 +42,6 @@ monitoring_counts = []
 all_counts = []
 
 for file in OUTPUT_DIR.iterdir():
-
     if match_input_files_filtered(file.name):
         df = pd.read_feather(OUTPUT_DIR / file.name)
         date = get_date_input_file_filtered(file.name)
@@ -56,16 +55,13 @@ for file in OUTPUT_DIR.iterdir():
         df["indicator_e_numerator"] = df["patient_id"].map(e_dict)
         df["indicator_f_numerator"] = df["patient_id"].map(f_dict)
 
-    
         df["other_prescribing_composite_denominator"] = np.where(
-            (df["indicator_g_denominator"]==1) | 
-            (df["indicator_i_denominator"]==1)| 
-            (df["indicator_k_denominator"]==1)
-            , 
+            (df["indicator_g_denominator"] == 1)
+            | (df["indicator_i_denominator"] == 1)
+            | (df["indicator_k_denominator"] == 1),
             1,
-            0
-            )
-        
+            0,
+        )
 
         gi_bleed_count = get_composite_indicator_counts(
             df, gi_bleed_numerators, "gi_bleed_composite_denominator", date

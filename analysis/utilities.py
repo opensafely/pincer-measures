@@ -63,7 +63,7 @@ def get_date_input_file(file: str) -> str:
         raise Exception("Not valid input file format")
 
     else:
-        date = result = re.search(r"input_(.*)\.feather", file)
+        date = re.search(r"input_(.*)\.feather", file)
         return date.group(1)
 
 
@@ -74,7 +74,7 @@ def get_date_input_file_filtered(file: str) -> str:
         raise Exception("Not valid input file format")
 
     else:
-        date = result = re.search(r"input_filtered_(.*)\.feather", file)
+        date = re.search(r"input_filtered_(.*)\.feather", file)
         return date.group(1)
 
 
@@ -85,7 +85,7 @@ def get_date_egfr_file(file: str) -> str:
         raise Exception("Not valid input file format")
 
     else:
-        date = result = re.search(r"input_egfr(.*)\.feather", file)
+        date = re.search(r"input_egfr(.*)\.feather", file)
         return date.group(1)
 
 
@@ -104,8 +104,8 @@ def join_ethnicity_region(directory: str) -> None:
     # get ethnicity input file
     ethnicity_df = pd.read_feather(dirpath / "input_ethnicity.feather")
 
-    ## ONS MSOA to region map from here:
-    ## https://geoportal.statistics.gov.uk/datasets/fe6c55f0924b4734adf1cf7104a0173e_0/data
+    # ONS MSOA to region map from here:
+    # https://geoportal.statistics.gov.uk/datasets/fe6c55f0924b4734adf1cf7104a0173e_0/data
     msoa_to_region = pd.read_csv(
         ANALYSIS_DIR / "ONS_MSOA_to_region_map.csv",
         usecols=["MSOA11CD", "RGN11NM"],
@@ -275,7 +275,6 @@ def plot_measures(
     plt.figure(figsize=(15, 8))
     if category:
         for unique_category in sorted(df[category].unique()):
-
             # subset on category column and sort by date
             df_subset = df[df[category] == unique_category].sort_values("date")
 
@@ -308,18 +307,6 @@ def plot_measures(
 
     plt.savefig(f"output/figures/{filename}.jpeg")
     plt.clf()
-
-
-def drop_irrelevant_practices(df):
-    """Drops irrelevant practices from the given measure table.
-    An irrelevant practice has zero events during the study period.
-    Args:
-        df: A measure table.
-    Returns:
-        A copy of the given measure table with irrelevant practices dropped.
-    """
-    is_relevant = df.groupby("practice").value.any()
-    return df[df.practice.isin(is_relevant[is_relevant == True].index)]
 
 
 # https://github.com/ebmdatalab/datalab-pandas/blob/master/ebmdatalab/charts.py
@@ -464,9 +451,9 @@ def deciles_chart(
     time_window="",
 ):
     """period_column must be dates / datetimes"""
-    
+
     df = compute_deciles(df, period_column, column, has_outer_percentiles=False)
-  
+
     sns.set_style("whitegrid", {"grid.color": ".9"})
 
     fig, ax = plt.subplots(1, 1, figsize=(15, 8))
@@ -542,7 +529,6 @@ def deciles_chart(
     )
 
     if not time_window == "":
-
         plt.vlines(
             x=[pd.to_datetime(time_window)],
             ymin=0,
@@ -779,7 +765,6 @@ def drop_irrelevant_practices(df):
 
 
 def suppress_practice_measures(df, n, numerator, denominator, rate_column):
-
     df_grouped = df.groupby(by=["date"])[[numerator, denominator]].sum().reset_index()
     df_grouped["rate"] = (df_grouped[numerator] / df_grouped[denominator]) * 1000
 
@@ -892,7 +877,6 @@ def deciles_chart_subplots(
     """period_column must be dates / datetimes"""
     sns.set_style("whitegrid", {"grid.color": ".9"})
 
-    
     df = compute_deciles(df, period_column, column, has_outer_percentiles=False)
     linestyles = {
         "decile": {
@@ -997,6 +981,7 @@ def update_demographics(demographics_df, df):
     ).drop_duplicates(subset="patient_id", keep="last")
     return demographics_df
 
+
 def produce_stripped_measures(df):
     """Takes in a practice level measures file, calculates rate and strips
     persistent id,including only a rate and date column. Rates are rounded
@@ -1008,10 +993,10 @@ def produce_stripped_measures(df):
     df = drop_irrelevant_practices(df)
 
     # calculate rounded rate
-    df["rate"] = round(df["value"]*100, 2)
+    df["rate"] = round(df["value"] * 100, 2)
 
-    #select only rate and date column
+    # select only rate and date column
     df = df.loc[:, ["rate", "date"]]
-    
+
     # randomly shuffle (resetting index)
     return df.sample(frac=1).reset_index(drop=True)

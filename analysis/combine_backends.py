@@ -1,6 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-from utilities import BASE_DIR, compute_deciles, deciles_chart_subplots, deciles_chart
+from utilities import BASE_DIR, deciles_chart_subplots, deciles_chart
 from config import indicators_list
 import json
 import numpy as np
@@ -70,13 +70,11 @@ monitoring_indicators = ["ac", "me_no_fbc", "me_no_lft", "li", "am"]
 
 for i in indicators_list:
     if i == "k":
-    
         measures_combined = pd.read_csv(
             TPP_DIR / f"measure_stripped_{i}.csv", parse_dates=["date"]
         )
 
     else:
-
         measure_emis = pd.read_csv(
             EMIS_DIR / f"measure_stripped_{i}.csv", parse_dates=["date"]
         )
@@ -93,7 +91,7 @@ for i in indicators_list:
     rate_df_post = measures_combined.loc[
         measures_combined["date"].isin(post_q1), "rate"
     ].mean()
-    
+
     medians_dict[i] = {"pre": rate_df_pre, "post": rate_df_post}
 
     deciles_chart(
@@ -166,7 +164,7 @@ prescribing_fig.savefig("backend_outputs/figures/combined_plot_prescribing.png")
 plt.clf()
 
 
-with open(f"backend_outputs/medians.json", "w") as f:
+with open("backend_outputs/medians.json", "w") as f:
     json.dump({"summary": medians_dict}, f)
 
 
@@ -183,7 +181,7 @@ with open("backend_outputs/tpp/practice_count_tpp.json") as f:
 for key, value in patient_count_emis.items():
     combined_practice_count[key] = value + patient_count_tpp[key]
 
-with open(f"backend_outputs/combined_practice_count.json", "w") as f:
+with open("backend_outputs/combined_practice_count.json", "w") as f:
     json.dump(combined_practice_count, f)
 
 
@@ -206,7 +204,7 @@ combined_practice_count = {}
 for key, value in practice_count_emis.items():
     combined_practice_count[key] = value + practice_count_tpp[key]
 
-with open(f"backend_outputs/combined_practice_count.json", "w") as f:
+with open("backend_outputs/combined_practice_count.json", "w") as f:
     json.dump(combined_practice_count, f)
 
 # combine demographics table
@@ -216,32 +214,38 @@ demographics_tpp = pd.read_csv("backend_outputs/tpp/demographics_summary_tpp.csv
 demographics_emis = pd.read_csv("backend_outputs/emis/demographics_summary_emis.csv")
 
 
-
-combined_demographics = pd.concat([demographics_tpp, demographics_emis]).groupby(['demographic', 'level']).sum().reset_index()
+combined_demographics = (
+    pd.concat([demographics_tpp, demographics_emis])
+    .groupby(["demographic", "level"])
+    .sum()
+    .reset_index()
+)
 combined_demographics.to_csv("backend_outputs/combined_demographics.csv")
 
 for indicator_key, indicator_dict in summary_statistics_tpp.items():
     if type(indicator_dict) is dict:
-
         combined_summary_statistics[indicator_key] = {}
         for key, value in indicator_dict.items():
             if indicator_key == "k":
                 # only present in tpp
-                
-                combined_summary_statistics[indicator_key][key] = (
-                    summary_statistics_tpp[indicator_key][key]
-                )
+
+                combined_summary_statistics[indicator_key][
+                    key
+                ] = summary_statistics_tpp[indicator_key][key]
             else:
-                if key=="percent_practice":
-                    combined_summary_statistics[indicator_key][key] = ((
+                if key == "percent_practice":
+                    combined_summary_statistics[indicator_key][key] = (
                         value + summary_statistics_emis[indicator_key][key]
-                    )/2)
+                    ) / 2
                 else:
                     combined_summary_statistics[indicator_key][key] = (
                         value + summary_statistics_emis[indicator_key][key]
                     )
     else:
-        combined_summary_statistics[indicator_key] = summary_statistics_tpp[indicator_key] + summary_statistics_emis[indicator_key]
+        combined_summary_statistics[indicator_key] = (
+            summary_statistics_tpp[indicator_key]
+            + summary_statistics_emis[indicator_key]
+        )
 
 with open(f"backend_outputs/combined_summary_statistics.json", "w") as f:
     json.dump(combined_summary_statistics, f)

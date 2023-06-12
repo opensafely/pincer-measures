@@ -148,3 +148,10 @@ actions:
     outputs:
       moderately_sensitive:
         log: output/pytest.xml
+  
+  non_zero_count:
+    run: python:latest python analysis/non_zero.py
+    needs: [produce_stripped_measures]
+    outputs:
+      moderately_sensitive:
+        counts: output/non_zero.csv

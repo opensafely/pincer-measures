@@ -14,4 +14,4 @@ count = df.groupby("date").count()
 
 merged = pd.merge(count_non_zero, count, on="date", suffixes=("_non_zero_count", "_total_count"))
 
-merged.to_csv(OUTPUT_DIR / "non_zero.csv", index=False)
+merged.to_csv(OUTPUT_DIR / "non_zero.csv")

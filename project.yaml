@@ -154,4 +154,4 @@ actions:
     needs: [produce_stripped_measures]
     outputs:
       moderately_sensitive:
-        counts: output/non_zero.csv
+        counts: output/non_zero*.csv

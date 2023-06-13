@@ -155,3 +155,10 @@ actions:
     outputs:
       moderately_sensitive:
         counts: output/non_zero*.csv
+  
+  numerator_distribution:
+    run: python:latest python analysis/event_distribution.py
+    needs: [generate_measures, calculate_composite_indicators]
+    outputs:
+      moderately_sensitive:
+        counts: output/numerator_distribution*.png

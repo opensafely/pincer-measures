@@ -161,4 +161,5 @@ actions:
     needs: [generate_measures, calculate_composite_indicators]
     outputs:
       moderately_sensitive:
-        counts: output/numerator_distribution*.png
+        counts: output/numerator_*_distribution*
+        

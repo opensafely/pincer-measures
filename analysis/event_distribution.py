@@ -9,19 +9,13 @@ for indicator in indicators_list:
     df = pd.read_csv(OUTPUT_DIR / f"measure_indicator_{indicator}_rate.csv")
     df = drop_irrelevant_practices(df)
 
-    # calculate rounded rate
+
     df["rate"] = round(df["value"] * 100, 2)
 
     df_subset = df.loc[(df["rate"]>0)&(df["date"]=="2020-01-01"),:]
+    
+    data_cut = pd.cut(df_subset[f"indicator_{indicator}_numerator"], bins=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,float("inf")])
+    data_cut = data_cut.value_counts().sort_index()
+    data_cut.columns = ["count_bin", "n"]
+    data_cut.to_csv(OUTPUT_DIR / f"numerator_{indicator}_distribution.csv")
 
-    # split into 100 bins. Ensure that each bin has a count of at least 10
-    df_subset[f"indicator_{indicator}_numerator"] = pd.cut(df_subset[f"indicator_{indicator}_numerator"], bins=100, labels=False)
-    df_subset[f"indicator_{indicator}_numerator"] = df_subset[f"indicator_{indicator}_numerator"].apply(lambda x: x if x>10 else 10)
-
-
-    #plot distribution of numerator
-    df_subset[f"indicator_{indicator}_numerator"].hist(bins=100)
-    plt.xlabel("numerator")
-    plt.ylabel("count")
-    plt.savefig(OUTPUT_DIR / f"numerator_distribution_{indicator}.png")
-    plt.clf()

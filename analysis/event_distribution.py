@@ -16,8 +16,9 @@ for indicator in indicators_list:
     
     data_cut = pd.cut(df_subset[f"indicator_{indicator}_numerator"], bins=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,float("inf")])
     data_cut = data_cut.value_counts().sort_index()
-    data_cut.columns = ["count_bin", "n"]
-    data_cut["n"] = data_cut["n"].apply(lambda x: round(x / 5) * 5)
-    data_cut["n"] = data_cut["n"].apply(lambda x: "<5" if x == 0 else x)
+   
+    data_cut.name = "count"
+    data_cut = data_cut.apply(lambda x: round(x / 5) * 5)
+    data_cut= data_cut.apply(lambda x: "<5" if x == 0 else x)
     data_cut.to_csv(OUTPUT_DIR / f"numerator_{indicator}_distribution.csv")
 

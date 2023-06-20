@@ -15,8 +15,8 @@ for indicator in indicators_list:
     count_non_zero = non_zero.groupby("date").count()
     count = df.groupby("date").count()
 
-    # merge on date
-
     merged = pd.merge(count_non_zero, count, on="date", suffixes=("_non_zero_count", "_total_count"))
+  
+    merged = merged.apply(lambda x: round(x / 5) * 5)
 
     merged.to_csv(OUTPUT_DIR / f"non_zero_{indicator}.csv")

@@ -28,7 +28,8 @@ for indicator in indicators_list:
     data_cut.index = data_cut.index.str.replace(r"\(10.0, inf\]", "10+")
 
     data_cut.name = "count"
-    data_cut = data_cut.apply(lambda x: round(x / 5) * 5)
-    data_cut= data_cut.apply(lambda x: "<5" if x == 0 else x)
+    data_cut= data_cut.apply(lambda x: "<=5" if x <=5 else x)
+    data_cut = data_cut.apply(lambda x: round(x, -1) if x != "<=5" else x)
+    
     data_cut.to_csv(OUTPUT_DIR / f"numerator_{indicator}_distribution.csv")
 

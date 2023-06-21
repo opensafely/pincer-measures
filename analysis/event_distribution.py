@@ -17,15 +17,16 @@ for indicator in indicators_list:
     data_cut = pd.cut(df_subset[f"indicator_{indicator}_numerator"], bins=[0, 6, 7, 8, 9, 10,float("inf")])
     data_cut = data_cut.value_counts().sort_index()
 
-    # replace "(0.0, 6.0]" with "<=6"
+    
     data_cut.index = data_cut.index.astype(str)
-    data_cut.index = data_cut.index.str.replace("(0.0, 6.0]", "<=5")
-    data_cut.index = data_cut.index.str.replace("(6.0, 7.0]", "6")
-    data_cut.index = data_cut.index.str.replace("(7.0, 8.0]", "7")
-    data_cut.index = data_cut.index.str.replace("(8.0, 9.0]", "8")
-    data_cut.index = data_cut.index.str.replace("(9.0, 10.0]", "9")
-    data_cut.index = data_cut.index.str.replace("(10.0, inf]", "10+")
-   
+    
+    data_cut.index = data_cut.index.str.replace(r"\(0.0, 6.0\]", "<=5")
+    data_cut.index = data_cut.index.str.replace(r"\(6.0, 7.0\]", "6")
+    data_cut.index = data_cut.index.str.replace(r"\(7.0, 8.0\]", "7")
+    data_cut.index = data_cut.index.str.replace(r"\(8.0, 9.0\]", "8")
+    data_cut.index = data_cut.index.str.replace(r"\(9.0, 10.0\]", "9")
+    data_cut.index = data_cut.index.str.replace(r"\(10.0, inf\]", "10+")
+
     data_cut.name = "count"
     data_cut = data_cut.apply(lambda x: round(x / 5) * 5)
     data_cut= data_cut.apply(lambda x: "<5" if x == 0 else x)

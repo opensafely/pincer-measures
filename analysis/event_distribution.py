@@ -14,18 +14,15 @@ for indicator in indicators_list:
 
     df_subset = df.loc[(df["rate"]>0)&(df["date"]=="2020-01-01"),:]
     
-    data_cut = pd.cut(df_subset[f"indicator_{indicator}_numerator"], bins=[0, 6, 7, 8, 9, 10,float("inf")])
+    data_cut = pd.cut(df_subset[f"indicator_{indicator}_numerator"], bins=[0, 5, 10,float("inf")])
     data_cut = data_cut.value_counts().sort_index()
 
     
     data_cut.index = data_cut.index.astype(str)
     
-    data_cut.index = data_cut.index.str.replace(r"\(0.0, 6.0\]", "<=5")
-    data_cut.index = data_cut.index.str.replace(r"\(6.0, 7.0\]", "6")
-    data_cut.index = data_cut.index.str.replace(r"\(7.0, 8.0\]", "7")
-    data_cut.index = data_cut.index.str.replace(r"\(8.0, 9.0\]", "8")
-    data_cut.index = data_cut.index.str.replace(r"\(9.0, 10.0\]", "9")
-    data_cut.index = data_cut.index.str.replace(r"\(10.0, inf\]", "10+")
+    data_cut.index = data_cut.index.str.replace(r"\(0.0, 5.0\]", "<=5")
+    data_cut.index = data_cut.index.str.replace(r"\(5.0, 10.0\]", "6-10")
+    data_cut.index = data_cut.index.str.replace(r"\(10.0, inf\]", ">10")
 
     data_cut.name = "count"
     data_cut= data_cut.apply(lambda x: "<=5" if x <=5 else x)

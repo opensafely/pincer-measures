@@ -129,6 +129,17 @@ actions:
         counts: output/figures/plot_*.jpeg
         medians: output/medians.json
 
+  generate_plots_alternative:
+    run: python:latest python analysis/plot_measures_alternative.py
+    needs:
+      [
+        generate_measures,
+        generate_measures_demographics,
+      ]
+    outputs:
+      moderately_sensitive:
+        counts: output/figures/plot_*_alternative.jpeg
+
   generate_notebook:
     run: jupyter:latest jupyter nbconvert /workspace/analysis/report.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
     needs: [generate_plots, generate_summary_counts]

@@ -61,14 +61,21 @@ def deciles_chart(
     time_window="",
 ):
     """period_column must be dates / datetimes"""
-    proportions = df.groupby(period_column).apply(lambda x: x[column].gt(0).count())
 
-    # round proportions to nearest 5
-    proportions = proportions.apply(lambda x: round(x / 5) * 5)
+    max_practices = df.groupby(period_column).agg(
+        {"practice": "nunique"}
+    ).max().values[0]
+
 
     # remove any practices with value of 0 each month
-    proportions = proportions[proportions != 0]
+    df = df.loc[df["value"]>0, :]
 
+    # monthly number of practices with column > 0
+    practice_numbers = df.groupby(period_column).agg(
+        {"practice": "nunique"}
+    )
+    
+    practice_numbers = practice_numbers.apply(lambda x: round(x / 5) * 5)
     df = compute_deciles(df, period_column, column, has_outer_percentiles=False)
     
     # calculate monthyl proportion of practices with non zero values
@@ -171,9 +178,9 @@ def deciles_chart(
 
     # plot proportions opn second y axis
     ax2 = ax.twinx()
-    ax2.bar(proportions.index, proportions, color="gray", label="Proportion of practices with non-zero values", width=20, alpha=0.3)
+    ax2.bar(practice_numbers.index, practice_numbers.practice, color="gray", label="Proportion of practices with non-zero values", width=20, alpha=0.3)
     # st y lim to 0- (proportions max rounded up to nearest 10)
-    ax2.set_ylim(0, proportions.max())
+    ax2.set_ylim(0, max_practices + 10 - (max_practices % 10))
 
     ax2.set_ylabel("Number of practices included", size=15, alpha=0.6)
 

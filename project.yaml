@@ -103,6 +103,16 @@ actions:
       moderately_sensitive:
         measures: output/measure_stripped_*.csv
 
+  produce_stripped_measures_ehrql:
+    run: python:latest python analysis/ehrQL/stripped_measures.py
+    needs:
+      [
+        measures_ehrql
+      ]
+    outputs:
+      moderately_sensitive:
+        measures: output/measure_stripped_*_ehrql.csv
+
   generate_summary_counts:
     run: python:latest python analysis/summary_statistics.py
     needs:

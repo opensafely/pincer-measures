@@ -90,10 +90,21 @@ def deciles_chart(
     title="",
     ylabel="",
     time_window="",
+    add_proportions=False,
 ):
     """period_column must be dates / datetimes"""
 
+    # remove any practices with value of 0 each month
+    df = df.loc[df["value"]>0, :]
+
+    # monthly number of practices with column > 0
+    practice_numbers = df.groupby(period_column).agg(
+        {"practice": "nunique"}
+    )
+    
+    practice_numbers = practice_numbers.apply(lambda x: round(x / 5) * 5)
     df = compute_deciles(df, period_column, column, has_outer_percentiles=False)
+
 
     sns.set_style("whitegrid", {"grid.color": ".9"})
 
@@ -190,6 +201,15 @@ def deciles_chart(
     )  # padding between the axes and legend
     #  specified in font-size units
 
+    if add_proportions:
+
+        # plot proportions opn second y axis
+        ax2 = ax.twinx()
+        ax2.bar(practice_numbers.index, practice_numbers.practice, color="gray", label="Proportion of practices with non-zero values", width=20, alpha=0.3)
+        # st y lim to 0- (proportions max rounded up to nearest 10)
+        ax2.set_ylim(0, 100)
+        ax2.set_ylabel("Number of practices included", size=15, alpha=0.6)
+
     plt.tight_layout()
     plt.savefig(filename)
     plt.clf()
@@ -197,15 +217,16 @@ def deciles_chart(
 for i in indicators_list:
     # indicator plots
     df = pd.read_csv(
-        OUTPUT_DIR / f"measure_stripped_{i}_ehrql.csv", parse_dates=["interval_start"]
+        OUTPUT_DIR / f"measure_{i}_ehrql.csv", parse_dates=["interval_start"]
     )
 
     deciles_chart(
         df,
         filename=f"output/figures_ehrql/plot_{i}.jpeg",
         period_column="interval_start",
-        column="rate",
+        column="value",
         title=title_mapping[i],
         ylabel="Percentage",
         time_window=time_period_mapping.get(i, ""),
+        add_proportions=True,
     )

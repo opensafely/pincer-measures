@@ -111,6 +111,7 @@ def main():
         measure_subset = measure_df[measure_df['measure'] == f"indicator_{i}"]
         measure_subset.rename(columns={'ratio': 'value'}, inplace=True)
 
+        measure_subset.to_csv(OUTPUT_DIR / f"measure_{i}_ehrql.csv", index=False)
         measure_subset_stripped = produce_stripped_measures(measure_subset)
         measure_subset_stripped.to_csv(OUTPUT_DIR / f"measure_stripped_{i}_ehrql.csv", index=False)
 

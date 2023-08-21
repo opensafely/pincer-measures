@@ -138,6 +138,16 @@ actions:
       moderately_sensitive:
         counts: output/figures/plot_*.jpeg
         medians: output/medians.json
+  
+  generate_plots_ehrql:
+    run: python:latest python analysis/ehrQL/plot_measures.py
+    needs:
+      [
+        produce_stripped_measures_ehrql,
+      ]
+    outputs:
+      moderately_sensitive:
+        counts: output/figures_ehrql/plot*.jpeg
 
   generate_plots_alternative:
     run: python:latest python analysis/plot_measures_alternative.py

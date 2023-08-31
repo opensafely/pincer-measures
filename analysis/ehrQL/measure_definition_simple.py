@@ -1,13 +1,10 @@
 from ehrql import INTERVAL, Measures, months
-from ehrql.tables.beta.core import clinical_events, medications, patients
+from ehrql.tables.beta.core import patients
 from ehrql.tables.beta.tpp import practice_registrations
 from codelists import Codelists
 from utils import (
     HistoricalEvent,
-    CoPrescribingVariableGenerator,
-    get_latest_clinical_event,
     Measure,
-    calculate_num_intervals,
 )
 
 ### Population variables and filter
@@ -26,23 +23,16 @@ population_filter = (
 )
 
 hist_med = HistoricalEvent("medication")
-hist_clinical = HistoricalEvent("clinical")
 
-acei = hist_med.fetch(Codelists.ACEI.codes, 15)
-loop_diuretic = hist_med.fetch(Codelists.LOOP_DIURETICS.codes, 15)
-acei_recent = hist_med.fetch(Codelists.ACEI.codes, 6)
-loop_diuretic_recent = hist_med.fetch(Codelists.LOOP_DIURETICS.codes, 6)
 renal_function_test = hist_med.fetch(Codelists.RENAL_FUNCTION.codes, 15)
 electrolytes_test = hist_med.fetch(Codelists.ELECTROLYTES_TEST.codes, 15)
 
 age_gt_75 = (age >= 75) & (age <= 120)
 
-indicator_ac_denominator = population_filter & age_gt_75 & (
-    acei.exists_for_patient() & acei_recent.exists_for_patient()
-) | (loop_diuretic.exists_for_patient() & loop_diuretic_recent.exists_for_patient())
+indicator_ac_denominator = population_filter & age_gt_75
 
-indicator_ac_numerator = indicator_ac_denominator & (
-    ~renal_function_test.exists_for_patient() | ~electrolytes_test.exists_for_patient()
+indicator_ac_numerator = indicator_ac_denominator & ~(
+    renal_function_test.exists_for_patient() | electrolytes_test.exists_for_patient()
 )
 
 

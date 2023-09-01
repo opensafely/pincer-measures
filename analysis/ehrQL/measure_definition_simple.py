@@ -19,7 +19,7 @@ population_filter = (
         patients.date_of_death.is_not_null()
         & patients.date_of_death.is_before(INTERVAL.start_date)
     )
-    & patients.sex.is_in(["M", "F"])
+    & patients.sex.is_in(["male", "female"])
 )
 
 hist_med = HistoricalEvent("medication")

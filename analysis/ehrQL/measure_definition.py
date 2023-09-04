@@ -296,7 +296,7 @@ indicator_am_numerator = (
 ### Measures
 start_date = "2019-01-01"
 # num_intervals = calculate_num_intervals(start_date)
-num_intervals=10
+num_intervals=1
 
 
 # Initialize the measures

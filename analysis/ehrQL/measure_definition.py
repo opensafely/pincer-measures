@@ -1,5 +1,3 @@
-import argparse
-
 from ehrql import INTERVAL, Measures, months
 from ehrql.tables.beta.core import clinical_events, medications, patients
 from ehrql.tables.beta.tpp import practice_registrations
@@ -11,13 +9,6 @@ from utils import (
     Measure,
     calculate_num_intervals,
 )
-
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--measure", type=str, help="Measure to run")
-    return parser.parse_args()
-
-args = parse_args()
 
 ### Population variables and filter
 age = patients.age_on(date=INTERVAL.start_date)
@@ -304,38 +295,38 @@ indicator_am_numerator = (
 
 ### Measures
 start_date = "2019-01-01"
-# num_intervals = calculate_num_intervals(start_date)
-num_intervals = 1
+num_intervals = calculate_num_intervals(start_date)
+
+
 
 # Initialize the measures
-
-all_measures = {
-    "a": Measure("a", indicator_a_numerator, indicator_a_denominator),
-    "b": Measure("b", indicator_b_numerator, indicator_b_denominator),
-    "c": Measure("c", indicator_c_numerator, indicator_c_denominator),
-    "d": Measure("d", indicator_d_numerator, indicator_d_denominator),
-    "e": Measure("e", indicator_e_numerator, indicator_e_denominator),
-    "f": Measure("f", indicator_f_numerator, indicator_f_denominator),
-    "k": Measure("k", indicator_k_numerator, indicator_k_denominator),
-    "g": Measure("g", indicator_g_numerator, indicator_g_denominator),
-    "i": Measure("i", indicator_i_numerator, indicator_i_denominator),
-    "ac": Measure("ac", indicator_ac_numerator, indicator_ac_denominator),
-    "me_no_fbc": Measure("me_no_fbc", indicator_me_no_fbc_numerator, indicator_me_denominator),
-    "me_no_lft": Measure("me_no_lft", indicator_me_no_lft_numerator, indicator_me_denominator),
-    "li": Measure("li", indicator_li_numerator, indicator_li_denominator),
-    "am": Measure("am", indicator_am_numerator, indicator_am_denominator),
-}
-
+all_measures = [
+    Measure("a", indicator_a_numerator, indicator_a_denominator),
+    Measure("b", indicator_b_numerator, indicator_b_denominator),
+    Measure("c", indicator_c_numerator, indicator_c_denominator),
+    Measure("d", indicator_d_numerator, indicator_d_denominator),
+    Measure("e", indicator_e_numerator, indicator_e_denominator),
+    Measure("f", indicator_f_numerator, indicator_f_denominator),
+    Measure("k", indicator_k_numerator, indicator_k_denominator),
+    Measure("g", indicator_g_numerator, indicator_g_denominator),
+    Measure("i", indicator_i_numerator, indicator_i_denominator),
+    Measure("ac", indicator_ac_numerator, indicator_ac_denominator),
+    Measure("me_no_fbc", indicator_me_no_fbc_numerator, indicator_me_denominator),
+    Measure("me_no_lft", indicator_me_no_lft_numerator, indicator_me_denominator),
+    Measure("li", indicator_li_numerator, indicator_li_denominator),
+    Measure("am", indicator_am_numerator, indicator_am_denominator),
+]
 
 measures = Measures()
-measure = all_measures[args.measure]
 
-measures.define_measure(
-    name=f"indicator_{measure.name}",
-    numerator=measure.numerator,
-    denominator=measure.denominator,
-    intervals=months(num_intervals).starting_on(start_date),
-    group_by={
-        "practice": registered_practice_id,
-    },
-)
+
+for measure in all_measures:
+    measures.define_measure(
+        name=f"indicator_{measure.name}",
+        numerator=measure.numerator,
+        denominator=measure.denominator,
+        intervals=months(num_intervals).starting_on(start_date),
+        group_by={
+            "practice": registered_practice_id,
+        },
+    )

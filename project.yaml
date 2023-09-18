@@ -203,11 +203,97 @@ actions:
         counts: output/numerator_*_distribution*
   
   measures_ehrql:
-    run: ehrql:v0 generate-measures analysis/ehrQL/measure_definition.py --output output/measures.csv
+    run: >
+      ehrql:v0 generate-measures analysis/ehrQL/measure_definition.py 
+      --output output/measures.csv
     outputs:
       moderately_sensitive:
         measure_csv: output/measures.csv
 
+  measures_ehrql_a:
+    run: ehrql:v0 generate-measures analysis/ehrQL/measure_definition.py --output output/a/measures.csv -- --measure "a"
+    outputs:
+      moderately_sensitive:
+        measure_csv: output/a/measures.csv
+  
+  measures_ehrql_b:
+    run: ehrql:v0 generate-measures analysis/ehrQL/measure_definition.py --output output/b/measures.csv -- --measure "b"
+    outputs:
+      moderately_sensitive:
+        measure_csv: output/b/measures.csv
+
+  measures_ehrql_c:
+    run: ehrql:v0 generate-measures analysis/ehrQL/measure_definition.py --output output/c/measures.csv -- --measure "c"
+    outputs:
+      moderately_sensitive:
+        measure_csv: output/c/measures.csv
+  
+  measures_ehrql_d:
+    run: ehrql:v0 generate-measures analysis/ehrQL/measure_definition.py --output output/d/measures.csv -- --measure "d"
+    outputs:
+      moderately_sensitive:
+        measure_csv: output/d/measures.csv
+  
+  measures_ehrql_e:
+    run: ehrql:v0 generate-measures analysis/ehrQL/measure_definition.py --output output/e/measures.csv -- --measure "e"
+    outputs:
+      moderately_sensitive:
+        measure_csv: output/e/measures.csv
+  
+  measures_ehrql_f:
+    run: ehrql:v0 generate-measures analysis/ehrQL/measure_definition.py --output output/f/measures.csv -- --measure "f"
+    outputs:
+      moderately_sensitive:
+        measure_csv: output/f/measures.csv
+  
+  measures_ehrql_k:
+    run: ehrql:v0 generate-measures analysis/ehrQL/measure_definition.py --output output/k/measures.csv -- --measure "k"
+    outputs:
+      moderately_sensitive:
+        measure_csv: output/k/measures.csv
+  
+  measures_ehrql_g:
+    run: ehrql:v0 generate-measures analysis/ehrQL/measure_definition.py --output output/g/measures.csv -- --measure "g"
+    outputs:
+      moderately_sensitive:
+        measure_csv: output/g/measures.csv
+  
+  measures_ehrql_i:
+    run: ehrql:v0 generate-measures analysis/ehrQL/measure_definition.py --output output/i/measures.csv -- --measure "i"
+    outputs:
+      moderately_sensitive:
+        measure_csv: output/i/measures.csv
+  
+  measures_ehrql_ac:
+    run: ehrql:v0 generate-measures analysis/ehrQL/measure_definition.py --output output/ac/measures.csv -- --measure "ac"
+    outputs:
+      moderately_sensitive:
+        measure_csv: output/ac/measures.csv
+  
+  measures_ehrql_me_no_fbc:
+    run: ehrql:v0 generate-measures analysis/ehrQL/measure_definition.py --output output/me_no_fbc/measures.csv -- --measure "me_no_fbc"
+    outputs:
+      moderately_sensitive:
+        measure_csv: output/me_no_fbc/measures.csv
+
+  measures_ehrql_me_no_lft:
+    run: ehrql:v0 generate-measures analysis/ehrQL/measure_definition.py --output output/me_no_lft/measures.csv -- --measure "me_no_lft"
+    outputs:
+      moderately_sensitive:
+        measure_csv: output/me_no_lft/measures.csv
+  
+  measures_ehrql_li:
+    run: ehrql:v0 generate-measures analysis/ehrQL/measure_definition.py --output output/li/measures.csv -- --measure "li"
+    outputs:
+      moderately_sensitive:
+        measure_csv: output/li/measures.csv
+  
+  measures_ehrql_am:
+    run: ehrql:v0 generate-measures analysis/ehrQL/measure_definition.py --output output/am/measures.csv -- --measure "am"
+    outputs:
+      moderately_sensitive:
+        measure_csv: output/am/measures.csv
+        
   dataset_ehrql:
     run: >
       ehrql:v0 generate-dataset analysis/ehrQL/measure_definition.py 
@@ -219,6 +305,8 @@ actions:
     outputs:
       highly_sensitive:
         measure_csv: output/dataset.csv
+
+
   measures_ehrql_simple:
     run: ehrql:v0 generate-measures analysis/ehrQL/measure_definition_simple.py --output output/measures_simple.csv
     outputs:

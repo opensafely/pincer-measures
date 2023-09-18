@@ -1,4 +1,6 @@
-from ehrql import INTERVAL, Measures, months
+import argparse
+
+from ehrql import INTERVAL, Measures, months, Dataset
 from ehrql.tables.beta.core import clinical_events, medications, patients
 from ehrql.tables.beta.tpp import practice_registrations
 from codelists import Codelists
@@ -10,139 +12,152 @@ from utils import (
     calculate_num_intervals,
 )
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--start-date", type=str)
+    parser.add_argument("--end-date", type=str)
+    parser.add_argument("--population-size", type=int, default=500)
+    parser.add_argument("--measure", type=str)
+    return parser.parse_args()
+
+args = parse_args()
+
+AS_DATASET = False
+
+if args.start_date and args.end_date:
+    INTERVAL = INTERVAL.__class__(start_date=args.start_date, end_date=args.end_date)
+    AS_DATASET = True
+
+
+dataset = Dataset()
+
+dataset.configure_dummy_dataset(population_size=args.population_size)
 ### Population variables and filter
-age = patients.age_on(date=INTERVAL.start_date)
+dataset.age = patients.age_on(date=INTERVAL.start_date)
 registered_practice = practice_registrations.for_patient_on(INTERVAL.start_date)
-registered_practice_id = registered_practice.practice_pseudo_id
+dataset.registered_practice_id = registered_practice.practice_pseudo_id
 
-population_filter = (
-    ((age >= 18) & (age < 120))
-    & registered_practice.exists_for_patient()
-    & ~(
-        patients.date_of_death.is_not_null()
-        & patients.date_of_death.is_before(INTERVAL.start_date)
-    ) &
-    patients.sex.is_in(["male", "female"])
-)
+# ### Indicator variables
 
-### Indicator variables
+hist_med = HistoricalEvent("medication", interval=INTERVAL)
+hist_clinical = HistoricalEvent("clinical", interval=INTERVAL)
 
-
-hist_med = HistoricalEvent("medication")
-hist_clinical = HistoricalEvent("clinical")
-
-###
-# GI BLEED INDICATORS
-# A - 65 or over, no GI protect, NSAID audit (GI_P3A)
-###
+# ###
+# # GI BLEED INDICATORS
+# # A - 65 or over, no GI protect, NSAID audit (GI_P3A)
+# ###
 
 oral_nsaid = hist_med.fetch(Codelists.ORAL_NSAID.codes, 3)
+dataset.oral_nsaid = oral_nsaid.exists_for_patient()
 
 ppi = hist_med.fetch(Codelists.ULCER_HEALING_DRUGS.codes, 3)
+dataset.ppi = ppi.exists_for_patient()
 
-###
-# GI BLEED INDICATORS
-# B - Peptic ulcer/GI bleed, no PPI protect, NSAID audit (GI_P3B)
-###
-# ppi from A
+# ###
+# # GI BLEED INDICATORS
+# # B - Peptic ulcer/GI bleed, no PPI protect, NSAID audit (GI_P3B)
+# ###
+# # ppi from A
 
 peptic_ulcer = hist_clinical.fetch(Codelists.PEPTIC_ULCER.codes, 3)
-
+dataset.peptic_ulcer = peptic_ulcer.exists_for_patient()
 
 gi_bleed = hist_clinical.fetch(Codelists.GI_BLEED.codes, 3)
+dataset.gi_bleed = gi_bleed.exists_for_patient()
 
-###
-# GI BLEED INDICATORS
-# C - Peptic ulcer/GI bleed, no PPI protect, NSAID audit (GI_P3B)
-###
-# peptic_ulcer from B
-# gi_bleed from B
-# ppi from A
-# antiplatelet_excluding_aspirin from co-prescribing vars
-# aspirin from co-prescribing vars
+# ###
+# # GI BLEED INDICATORS
+# # C - Peptic ulcer/GI bleed, no PPI protect, NSAID audit (GI_P3B)
+# ###
+# # peptic_ulcer from B
+# # gi_bleed from B
+# # ppi from A
+# # antiplatelet_excluding_aspirin from co-prescribing vars
+# # aspirin from co-prescribing vars
 
 
 cp_f = CoPrescribingVariableGenerator(
+    dataset,
     medications,
     (Codelists.ASPIRIN.codes, Codelists.ANTIPLATELET_EXCL_ASP.codes),
+    ("aspirin", "antiplatelet_excluding_aspirin"),
     INTERVAL.start_date,
     months=3,
 )
 
-co_prescribed_aspirin_antiplatelet_excluding_aspirin = (
+dataset.co_prescribed_aspirin_antiplatelet_excluding_aspirin = (
     cp_f.generate_co_prescribing_variable()
 )
-aspirin = cp_f.get_medications_period(Codelists.ASPIRIN.codes)
-antiplatelet_excluding_aspirin = cp_f.get_medications_period(
-    Codelists.ANTIPLATELET_EXCL_ASP.codes
-)
 
-###
-# GI BLEED INDICATORS
-# D – Warfarin/NOACS and NSAID audit (GI_P3D)
-###
-# anticoagulant from co-prescribing variables
-# oral_nsaid from A
+# ###
+# # GI BLEED INDICATORS
+# # D – Warfarin/NOACS and NSAID audit (GI_P3D)
+# ###
+# # anticoagulant from co-prescribing variables
+# # oral_nsaid from A
 
 cp_e = CoPrescribingVariableGenerator(
+    dataset,
     medications,
     (Codelists.ANTICOAG.codes, Codelists.ANTIPLATELET_ASP.codes),
+    ("anticoagulant", "antiplatelet_including_aspirin"),
     INTERVAL.start_date,
 )
 
 co_prescribed_anticoagulant_antiplatelet_including_aspirin = (
     cp_e.generate_co_prescribing_variable()
 )
-anticoagulant = cp_e.get_medications_period(Codelists.ANTICOAG.codes)
-antiplatelet_including_aspirin = cp_e.get_medications_period(
-    Codelists.ANTIPLATELET_ASP.codes
-)
+dataset.co_prescribed_anticoagulant_antiplatelet_including_aspirin = co_prescribed_anticoagulant_antiplatelet_including_aspirin
 
 
-###
-# GI BLEED INDICATORS
-# E – Anticoagulation & Antiplatelet & No GI Protection Audit (GI_P3E)
-###
-# ppi from A
-# anticoagulant from co-prescribing variables
+# ###
+# # GI BLEED INDICATORS
+# # E – Anticoagulation & Antiplatelet & No GI Protection Audit (GI_P3E)
+# ###
+# # ppi from A
+# # anticoagulant from co-prescribing variables
 
 
-###
-# GI BLEED INDICATORS
-# F – Aspirin, antiplatelet and no GI protection audit (GI_P3F)
-###
-# aspirin from co-prescribing vars
-# ppi from A
+# ###
+# # GI BLEED INDICATORS
+# # F – Aspirin, antiplatelet and no GI protection audit (GI_P3F)
+# ###
+# # aspirin from co-prescribing vars
+# # ppi from A
 
 
-###
-# OTHER PRESCRIBING INDICATORS
-# G - Asthma and non-selective betablockers audit (AS_P3G)
-###
+# ###
+# # OTHER PRESCRIBING INDICATORS
+# # G - Asthma and non-selective betablockers audit (AS_P3G)
+# ###
 
 asthma = hist_clinical.fetch(Codelists.ASTHMA.codes, 3)
+dataset.asthma = asthma.exists_for_patient()
 
 asthma_resolved = hist_clinical.fetch(Codelists.ASTHMA_RESOLVED.codes, ever=True)
+dataset.asthma_resolved = asthma_resolved.exists_for_patient()
 
 no_asthma_resolved = asthma.exists_for_patient() & ~asthma_resolved.exists_for_patient()
+dataset.no_asthma_resolved = no_asthma_resolved
 
 non_selective_bb = hist_med.fetch(Codelists.NSBB.codes, 3)
+dataset.non_selective_bb = non_selective_bb.exists_for_patient()
 
-
-###
-# OTHER PRESCRIBING INDICATORS
-# I - Heart failure and NSAID audit (HF_P3I)
-###
-# oral_nsaid from A
+# ###
+# # OTHER PRESCRIBING INDICATORS
+# # I - Heart failure and NSAID audit (HF_P3I)
+# ###
+# # oral_nsaid from A
 
 heart_failure = hist_clinical.fetch(Codelists.HF.codes, ever=True)
+dataset.heart_failure = heart_failure.exists_for_patient()
 
 
-###
-# OTHER PRESCRIBING INDICATORS
-# K - Chronic Renal Impairment & NSAID Audit (KI_P3K)
-###
-# oral_nsaid from A
+# ###
+# # OTHER PRESCRIBING INDICATORS
+# # K - Chronic Renal Impairment & NSAID Audit (KI_P3K)
+# ###
+# # oral_nsaid from A
 #####TODO: Need to get comparator
 latest_egfr = get_latest_clinical_event(
     clinical_events, Codelists.EGFR, INTERVAL.start_date
@@ -153,180 +168,266 @@ egfr_between_1_and_45 = (
     & (latest_egfr.numeric_value >= 1)
     & (latest_egfr.numeric_value < 45)
 )
+dataset.egfr_between_1_and_45 = egfr_between_1_and_45
 
 
-###
-# MONITORING COMPOSITE INDICATOR
-# AC - ACEI Audit (MO_P13)
-####
+
+
+
+
+# ###
+# # MONITORING COMPOSITE INDICATOR
+# # AC - ACEI Audit (MO_P13)
+# ####
 
 acei = hist_med.fetch(Codelists.ACEI.codes, 15)
+dataset.acei = acei.exists_for_patient()
+
 loop_diuretic = hist_med.fetch(Codelists.LOOP_DIURETICS.codes, 15)
+dataset.loop_diuretic = loop_diuretic.exists_for_patient()
+
 acei_recent = hist_med.fetch(Codelists.ACEI.codes, 6)
+dataset.acei_recent = acei_recent.exists_for_patient()
+
 loop_diuretic_recent = hist_med.fetch(Codelists.LOOP_DIURETICS.codes, 6)
+dataset.loop_diuretic_recent = loop_diuretic_recent.exists_for_patient()
+
 renal_function_test = hist_med.fetch(Codelists.RENAL_FUNCTION.codes, 15)
+dataset.renal_function_test = renal_function_test.exists_for_patient()
+
 electrolytes_test = hist_med.fetch(Codelists.ELECTROLYTES_TEST.codes, 15)
+dataset.electrolytes_test = electrolytes_test.exists_for_patient()
 
-age_gt_75 = (age >= 75) & (age <= 120)
+dataset.age_gt_75 = (dataset.age >= 75) & (dataset.age <= 120)
 
 
-###
-# MONITORING COMPOSITE INDICATOR
-# ME - Methotrexate audit (MO_P15)
-####
+# ###
+# # MONITORING COMPOSITE INDICATOR
+# # ME - Methotrexate audit (MO_P15)
+# ####
 
 methotrexate_6_3_month = hist_med.fetch(Codelists.METHOTREXATE.codes, 6, 3)
+dataset.methotrexate_6_3_month = methotrexate_6_3_month.exists_for_patient()
+
 methotrexate_3_month = hist_med.fetch(Codelists.METHOTREXATE.codes, 3)
+dataset.methotrexate_3_month = methotrexate_3_month.exists_for_patient()
+
 full_blood_count = hist_med.fetch(Codelists.FULL_BLOOD_COUNT.codes, 3)
+dataset.full_blood_count = full_blood_count.exists_for_patient()
+
 liver_function_test = hist_med.fetch(Codelists.FULL_BLOOD_COUNT.codes, 3)
+dataset.liver_function_test = liver_function_test.exists_for_patient()
 
 
-###
-# MONITORING COMPOSITE INDICATOR
-# LI - Lithium audit (MO_P17)
-####
+# ###
+# # MONITORING COMPOSITE INDICATOR
+# # LI - Lithium audit (MO_P17)
+# ####
 
 lithiumm_6_3_month = hist_med.fetch(Codelists.LITHIUM.codes, 6, 3)
-lithium_3_month = hist_med.fetch(Codelists.LITHIUM.codes, 3)
-lithium_level_3_month = hist_med.fetch(Codelists.LITHIUM_LEVEL.codes, 3)
+dataset.lithiumm_6_3_month = lithiumm_6_3_month.exists_for_patient()
 
-###
-# MONITORING COMPOSITE INDICATOR
-# AM - Amiodarone audit (MO_P18)
-####
+lithium_3_month = hist_med.fetch(Codelists.LITHIUM.codes, 3)
+dataset.lithium_3_month = lithium_3_month.exists_for_patient()
+
+lithium_level_3_month = hist_med.fetch(Codelists.LITHIUM_LEVEL.codes, 3)
+dataset.lithium_level_3_month = lithium_level_3_month.exists_for_patient()
+
+# ###
+# # MONITORING COMPOSITE INDICATOR
+# # AM - Amiodarone audit (MO_P18)
+# ####
 
 amiodarone_12_6_month = hist_med.fetch(Codelists.AMIODARONE.codes, 12, 6)
+dataset.amiodarone_12_6_month = amiodarone_12_6_month.exists_for_patient()
+
 amiodarone_6_month = hist_med.fetch(Codelists.AMIODARONE.codes, 6)
+dataset.amiodarone_6_month = amiodarone_6_month.exists_for_patient()
+
 thyroid_function_test = hist_clinical.fetch(Codelists.TFT.codes, 6)
+dataset.thyroid_function_test = thyroid_function_test.exists_for_patient()
+
+dataset.population_filter = (
+    ((dataset.age >= 18) & (dataset.age < 120))
+    & registered_practice.exists_for_patient()
+    & ~(
+        patients.date_of_death.is_not_null()
+        & patients.date_of_death.is_before(INTERVAL.start_date)
+    ) &
+    patients.sex.is_in(["male", "female"])
+)
 
 ## Indicator definitions
 
-indicator_a_denominator = population_filter & ~ppi.exists_for_patient()
+dataset.indicator_a_denominator = dataset.population_filter & ~dataset.ppi
 
-indicator_a_numerator = indicator_a_denominator & oral_nsaid.exists_for_patient()
+dataset.indicator_a_numerator = dataset.indicator_a_denominator & dataset.oral_nsaid
 
-indicator_b_denominator = population_filter & ~ppi.exists_for_patient() & (
-    gi_bleed.exists_for_patient() | peptic_ulcer.exists_for_patient()
+dataset.indicator_b_denominator = dataset.population_filter & ~dataset.ppi & (
+    dataset.gi_bleed | dataset.peptic_ulcer
 )
 
-indicator_b_numerator = indicator_b_denominator & oral_nsaid.exists_for_patient()
+dataset.indicator_b_numerator = dataset.indicator_b_denominator & dataset.oral_nsaid
 
-indicator_c_denominator = population_filter & ~ppi.exists_for_patient() & (
-    gi_bleed.exists_for_patient() | peptic_ulcer.exists_for_patient()
+dataset.indicator_c_denominator = dataset.population_filter & ~dataset.ppi & (
+    dataset.gi_bleed | dataset.peptic_ulcer
 )
 
-indicator_c_numerator = indicator_c_denominator & (
-    antiplatelet_excluding_aspirin.exists_for_patient() | aspirin.exists_for_patient()
+dataset.indicator_c_numerator = dataset.indicator_c_denominator & (
+    dataset.antiplatelet_excluding_aspirin | dataset.aspirin
 )
 
-indicator_d_denominator = population_filter &  anticoagulant.exists_for_patient()
+dataset.indicator_d_denominator = dataset.population_filter & dataset.anticoagulant
 
-indicator_d_numerator = indicator_d_denominator & oral_nsaid.exists_for_patient()
+dataset.indicator_d_numerator = dataset.indicator_d_denominator & dataset.oral_nsaid
 
 
-indicator_e_denominator = population_filter & anticoagulant.exists_for_patient() & ~ppi.exists_for_patient()
+dataset.indicator_e_denominator = dataset.population_filter & dataset.anticoagulant & ~dataset.ppi
 
-indicator_e_numerator = (
-    indicator_e_denominator & co_prescribed_anticoagulant_antiplatelet_including_aspirin
+dataset.indicator_e_numerator = (
+    dataset.indicator_e_denominator & dataset.co_prescribed_anticoagulant_antiplatelet_including_aspirin
 )
 
-indicator_f_denominator = population_filter & aspirin.exists_for_patient() & ~ppi.exists_for_patient()
+dataset.indicator_f_denominator = dataset.population_filter & dataset.aspirin & ~dataset.ppi
 
-indicator_f_numerator = (
-    indicator_f_denominator & co_prescribed_aspirin_antiplatelet_excluding_aspirin
+dataset.indicator_f_numerator = (
+    dataset.indicator_f_denominator & dataset.co_prescribed_aspirin_antiplatelet_excluding_aspirin
 )
 
-indicator_g_denominator = population_filter & asthma.exists_for_patient() & (
+dataset.indicator_g_denominator = dataset.population_filter & dataset.asthma & (
     asthma_resolved.date.maximum_for_patient() < asthma.date.maximum_for_patient()
 )
 
-indicator_g_denominator_alternative = population_filter & (
-    asthma.exists_for_patient() & ~asthma_resolved.exists_for_patient()
+dataset.indicator_g_denominator_alternative = (
+    dataset.population_filter &
+    dataset.asthma & ~dataset.asthma_resolved
 ) | (asthma_resolved.date.maximum_for_patient() <= asthma.date.maximum_for_patient())
 
-indicator_g_numerator = indicator_g_denominator & non_selective_bb.exists_for_patient()
+dataset.indicator_g_numerator = dataset.indicator_g_denominator & dataset.non_selective_bb
 
-indicator_i_denominator = population_filter & heart_failure.exists_for_patient()
+dataset.indicator_i_denominator = dataset.population_filter & dataset.heart_failure
 
-indicator_i_numerator = indicator_i_denominator & oral_nsaid.exists_for_patient()
+dataset.indicator_i_numerator = dataset.indicator_i_denominator & dataset.oral_nsaid
 
-indicator_k_denominator = population_filter & egfr_between_1_and_45
+dataset.indicator_k_denominator = dataset.population_filter & dataset.egfr_between_1_and_45
 
-indicator_k_numerator = indicator_k_denominator & oral_nsaid.exists_for_patient()
+dataset.indicator_k_numerator = dataset.indicator_k_denominator & dataset.oral_nsaid
 
 
-indicator_ac_denominator = population_filter & age_gt_75 & (
-    acei.exists_for_patient() & acei_recent.exists_for_patient()
-) | (loop_diuretic.exists_for_patient() & loop_diuretic_recent.exists_for_patient())
+dataset.indicator_ac_denominator = dataset.population_filter & dataset.age_gt_75 & (
+    dataset.acei & dataset.acei_recent
+) | (dataset.loop_diuretic & dataset.loop_diuretic_recent)
 
-indicator_ac_numerator = indicator_ac_denominator & (
-    ~renal_function_test.exists_for_patient() | ~electrolytes_test.exists_for_patient()
+dataset.indicator_ac_numerator = dataset.indicator_ac_denominator & (
+    ~dataset.renal_function_test | ~dataset.electrolytes_test
 )
 
-indicator_me_denominator = (
-    population_filter &
-    methotrexate_6_3_month.exists_for_patient()
-    & methotrexate_3_month.exists_for_patient()
+dataset.indicator_me_denominator = (
+    dataset.population_filter &
+    dataset.methotrexate_6_3_month
+    & dataset.methotrexate_3_month
 )
 
-indicator_me_no_fbc_numerator = (
-    indicator_me_denominator & ~full_blood_count.exists_for_patient()
+dataset.indicator_me_no_fbc_numerator = (
+    dataset.indicator_me_denominator & ~dataset.full_blood_count
 )
 
-indicator_me_no_lft_numerator = (
-    indicator_me_denominator & ~liver_function_test.exists_for_patient()
+dataset.indicator_me_no_lft_numerator = (
+    dataset.indicator_me_denominator & ~dataset.liver_function_test
 )
 
-indicator_li_denominator = population_filter & (
-    lithiumm_6_3_month.exists_for_patient() & lithium_3_month.exists_for_patient()
+dataset.indicator_li_denominator = (
+    dataset.population_filter &
+    dataset.lithiumm_6_3_month & dataset.lithium_3_month
 )
 
-indicator_li_numerator = (
-    indicator_li_denominator & ~lithium_level_3_month.exists_for_patient()
+dataset.indicator_li_numerator = (
+    dataset.indicator_li_denominator & ~dataset.lithium_level_3_month
 )
 
-indicator_am_denominator = population_filter & (
-    amiodarone_12_6_month.exists_for_patient() & amiodarone_6_month.exists_for_patient()
+dataset.indicator_am_denominator = (
+    dataset.population_filter &
+    dataset.amiodarone_12_6_month & dataset.amiodarone_6_month
 )
 
-indicator_am_numerator = (
-    indicator_am_denominator & ~thyroid_function_test.exists_for_patient()
+dataset.indicator_am_numerator = (
+    dataset.indicator_am_denominator & dataset.thyroid_function_test
 )
+
+
+
+
+any_denominator = (
+    dataset.indicator_a_denominator |
+    dataset.indicator_b_denominator |
+    dataset.indicator_c_denominator |
+    dataset.indicator_d_denominator |
+    dataset.indicator_e_denominator |
+    dataset.indicator_f_denominator |
+    dataset.indicator_g_denominator |
+    dataset.indicator_i_denominator |
+    dataset.indicator_k_denominator |
+    dataset.indicator_ac_denominator |
+    dataset.indicator_me_denominator |
+    dataset.indicator_li_denominator |
+    dataset.indicator_am_denominator
+)
+
+
+if AS_DATASET:
+    dataset.define_population(
+        dataset.population_filter
+        & any_denominator
+        )
 
 ### Measures
 start_date = "2019-01-01"
 num_intervals = calculate_num_intervals(start_date)
 
-
-
 # Initialize the measures
-all_measures = [
-    Measure("a", indicator_a_numerator, indicator_a_denominator),
-    Measure("b", indicator_b_numerator, indicator_b_denominator),
-    Measure("c", indicator_c_numerator, indicator_c_denominator),
-    Measure("d", indicator_d_numerator, indicator_d_denominator),
-    Measure("e", indicator_e_numerator, indicator_e_denominator),
-    Measure("f", indicator_f_numerator, indicator_f_denominator),
-    Measure("k", indicator_k_numerator, indicator_k_denominator),
-    Measure("g", indicator_g_numerator, indicator_g_denominator),
-    Measure("i", indicator_i_numerator, indicator_i_denominator),
-    Measure("ac", indicator_ac_numerator, indicator_ac_denominator),
-    Measure("me_no_fbc", indicator_me_no_fbc_numerator, indicator_me_denominator),
-    Measure("me_no_lft", indicator_me_no_lft_numerator, indicator_me_denominator),
-    Measure("li", indicator_li_numerator, indicator_li_denominator),
-    Measure("am", indicator_am_numerator, indicator_am_denominator),
-]
+all_measures = {
+    "a": Measure("a", dataset.indicator_a_numerator, dataset.indicator_a_denominator),
+    "b": Measure("b", dataset.indicator_b_numerator, dataset.indicator_b_denominator),
+    "c": Measure("c", dataset.indicator_c_numerator, dataset.indicator_c_denominator),
+    "d": Measure("d", dataset.indicator_d_numerator, dataset.indicator_d_denominator),
+    "e": Measure("e", dataset.indicator_e_numerator, dataset.indicator_e_denominator),
+    "f": Measure("f", dataset.indicator_f_numerator, dataset.indicator_f_denominator),
+    "k": Measure("k", dataset.indicator_k_numerator, dataset.indicator_k_denominator),
+    "g": Measure("g", dataset.indicator_g_numerator, dataset.indicator_g_denominator),
+    "i": Measure("i", dataset.indicator_i_numerator, dataset.indicator_i_denominator),
+    "ac": Measure("ac", dataset.indicator_ac_numerator, dataset.indicator_ac_denominator),
+    "me_no_fbc": Measure("me_no_fbc", dataset.indicator_me_no_fbc_numerator, dataset.indicator_me_denominator),
+    "me_no_lft": Measure("me_no_lft", dataset.indicator_me_no_lft_numerator, dataset.indicator_me_denominator),
+    "li": Measure("li", dataset.indicator_li_numerator, dataset.indicator_li_denominator),
+    "am": Measure("am", dataset.indicator_am_numerator, dataset.indicator_am_denominator),
+}
+
 
 measures = Measures()
 
+if args.measure:
 
-for measure in all_measures:
+    measure = all_measures[args.measure]
+
     measures.define_measure(
         name=f"indicator_{measure.name}",
         numerator=measure.numerator,
         denominator=measure.denominator,
         intervals=months(num_intervals).starting_on(start_date),
         group_by={
-            "practice": registered_practice_id,
+            "practice": dataset.registered_practice_id,
         },
     )
+
+else:
+    for _, measure in all_measures.items():
+    
+        measures.define_measure(
+            name=f"indicator_{measure.name}",
+            numerator=measure.numerator,
+            denominator=measure.denominator,
+            intervals=months(num_intervals).starting_on(start_date),
+            group_by={
+                "practice": dataset.registered_practice_id,
+            },
+        )

@@ -208,6 +208,17 @@ actions:
       moderately_sensitive:
         measure_csv: output/measures.csv
 
+  dataset_ehrql:
+    run: >
+      ehrql:v0 generate-dataset analysis/ehrQL/measure_definition.py 
+      --output output/dataset.csv
+      --
+      --population-size 5000
+      --start-date 2019-09-01
+      --end-date 2019-09-30
+    outputs:
+      highly_sensitive:
+        measure_csv: output/dataset.csv
   measures_ehrql_simple:
     run: ehrql:v0 generate-measures analysis/ehrQL/measure_definition_simple.py --output output/measures_simple.csv
     outputs:

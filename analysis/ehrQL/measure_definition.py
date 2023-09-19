@@ -1,4 +1,5 @@
 import argparse
+import os
 
 from ehrql import INTERVAL, Measures, months, Dataset
 from ehrql.tables.beta.core import clinical_events, medications, patients
@@ -11,6 +12,8 @@ from utils import (
     Measure,
     calculate_num_intervals,
 )
+
+BACKEND = os.getenv("OPENSAFELY_BACKEND", "expectations")
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -382,7 +385,11 @@ if AS_DATASET:
 
 ### Measures
 start_date = "2019-01-01"
-num_intervals = calculate_num_intervals(start_date)
+
+if BACKEND == "expectations":
+    num_intervals = 4
+else:
+    num_intervals = calculate_num_intervals(start_date)
 
 # Initialize the measures
 all_measures = {

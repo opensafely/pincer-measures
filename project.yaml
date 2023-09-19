@@ -181,12 +181,6 @@ actions:
     outputs:
       moderately_sensitive:
         notebook: output/report_updating_ehrql.html
-
-  run_tests:
-    run: python:latest python -m pytest --junit-xml=output/pytest.xml --verbose
-    outputs:
-      moderately_sensitive:
-        log: output/pytest.xml
   
   non_zero_count:
     run: python:latest python analysis/non_zero.py

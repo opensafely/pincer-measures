@@ -103,16 +103,16 @@ actions:
       moderately_sensitive:
         measures: output/measure_stripped_*.csv
 
-  # produce_stripped_measures_ehrql:
-  #   run: python:latest python analysis/ehrQL/stripped_measures.py
-  #   needs:
-  #     [
-  #       measures_ehrql
-  #     ]
-  #   outputs:
-  #     moderately_sensitive:
-  #       measures_stripped: output/measure_stripped_*_ehrql.csv
-  #       measures: output/measure_*_ehrql.csv
+  produce_stripped_measures_ehrql:
+    run: python:latest python analysis/ehrQL/stripped_measures.py
+    needs:
+      [
+        measures_ehrql
+      ]
+    outputs:
+      moderately_sensitive:
+        measures_stripped: output/measure_stripped_*_ehrql.csv
+        measures: output/measure_*_ehrql.csv
 
   generate_summary_counts:
     run: python:latest python analysis/summary_statistics.py
@@ -140,15 +140,15 @@ actions:
         counts: output/figures/plot_*.jpeg
         medians: output/medians.json
   
-  # generate_plots_ehrql:
-  #   run: python:latest python analysis/ehrQL/plot_measures.py
-  #   needs:
-  #     [
-  #       produce_stripped_measures_ehrql,
-  #     ]
-  #   outputs:
-  #     moderately_sensitive:
-  #       counts: output/figures_ehrql/plot*.jpeg
+  generate_plots_ehrql:
+    run: python:latest python analysis/ehrQL/plot_measures.py
+    needs:
+      [
+        produce_stripped_measures_ehrql,
+      ]
+    outputs:
+      moderately_sensitive:
+        counts: output/figures_ehrql/plot*.jpeg
 
   generate_plots_alternative:
     run: python:latest python analysis/plot_measures_alternative.py
@@ -175,18 +175,12 @@ actions:
       moderately_sensitive:
         notebook: output/report_updating.html
 
-  # generate_notebook_updating_ehrql:
-  #   run: jupyter:latest jupyter nbconvert /workspace/analysis/ehrQL/report_updating_ehrql.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
-  #   needs: [generate_plots_ehrql]
-  #   outputs:
-  #     moderately_sensitive:
-  #       notebook: output/report_updating_ehrql.html
-
-  run_tests:
-    run: python:latest python -m pytest --junit-xml=output/pytest.xml --verbose
+  generate_notebook_updating_ehrql:
+    run: jupyter:latest jupyter nbconvert /workspace/analysis/ehrQL/report_updating_ehrql.ipynb --execute --to html --template basic --output-dir=/workspace/output --ExecutePreprocessor.timeout=86400 --no-input
+    needs: [generate_plots_ehrql]
     outputs:
       moderately_sensitive:
-        log: output/pytest.xml
+        notebook: output/report_updating_ehrql.html
   
   non_zero_count:
     run: python:latest python analysis/non_zero.py
@@ -202,6 +196,14 @@ actions:
       moderately_sensitive:
         counts: output/numerator_*_distribution*
   
+  measures_ehrql:
+    run: >
+      ehrql:v0 generate-measures analysis/ehrQL/measure_definition.py 
+      --output output/measures.csv
+    outputs:
+      moderately_sensitive:
+        measure_csv: output/measures.csv
+
   measures_ehrql_a:
     run: ehrql:v0 generate-measures analysis/ehrQL/measure_definition.py --output output/a/measures.csv -- --measure "a"
     outputs:
@@ -285,9 +287,15 @@ actions:
     outputs:
       moderately_sensitive:
         measure_csv: output/am/measures.csv
-
-  measures_ehrql_simple:
-    run: ehrql:v0 generate-measures analysis/ehrQL/measure_definition_simple.py --output output/measures_simple.csv
+        
+  dataset_ehrql:
+    run: >
+      ehrql:v0 generate-dataset analysis/ehrQL/measure_definition.py 
+      --output output/dataset.csv
+      --
+      --population-size 5000
+      --start-date 2019-09-01
+      --end-date 2019-09-30
     outputs:
-      moderately_sensitive:
-        measure_csv: output/measures_simple.csv
+      highly_sensitive:
+        measure_csv: output/dataset.csv

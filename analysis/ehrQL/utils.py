@@ -144,13 +144,21 @@ class CoPrescribingVariableGenerator:
         return dates
 
     def _within_28_days(self, date1, date2):
-        if date1 is None or date2 is None:
-            return False
-        else:
-            within_28_days = (
-                ((date1 - date2).days < 28) & ((date1 - date2).days > -28)
-            ) | (((date2 - date1).days < 28) & ((date2 - date1).days > -28))
-            return within_28_days
+        within_28_days = (
+            date1.is_not_null() & 
+            date2.is_not_null() &
+            (
+                (
+                    ((date1 - date2).days < 28) & 
+                    ((date1 - date2).days > -28)
+                ) | 
+                (
+                    ((date2 - date1).days < 28) & 
+                    ((date2 - date1).days > -28)
+                )
+            )
+        )
+        return within_28_days
 
     def _update_dataset(self, dataset: Any, variable, variable_name: str) -> Any:
         
@@ -262,9 +270,8 @@ class CoPrescribingVariableGenerator:
                 )
 
         co_prescribed = reduce(or_, monthly_flags)
-     
         return co_prescribed
-
+    
 class Measure:
     def __init__(self, name: str, numerator: Any, denominator: Any) -> None:
         self.name = name

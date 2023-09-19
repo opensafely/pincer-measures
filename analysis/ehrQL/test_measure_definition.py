@@ -332,7 +332,7 @@ patient_data = {
             "antiplatelet_excluding_aspirin_latest_2": None,
             "antiplatelet_excluding_aspirin_latest_3": date(2018, 10, 25),
             "aspirin_antiplatelet_excluding_aspirin_within_28_days_1_earliest_2_earliest_1": True,
-            "aspirin_antiplatelet_excluding_aspirin_within_28_days_1_earliest_2_earliest_2": None, # there isnt a second antiplatelet
+            "aspirin_antiplatelet_excluding_aspirin_within_28_days_1_earliest_2_earliest_2": False, # there isnt a second antiplatelet
             "aspirin_antiplatelet_excluding_aspirin_within_28_days_1_latest_2_earliest_prev_month_2": True,
             "ppi": False,
             "indicator_f_numerator": True,
@@ -356,11 +356,8 @@ patient_data = {
                 "practice_pseudo_id": 10,
             },
         ],
-        "clinical_events": [
-            
-        ],
+        "clinical_events": [],
         "medications": [
-        
             {
                 "dmd_code": Codelists.ASPIRIN.codes[0],
                 "date": date(2018, 12, 20),
@@ -392,14 +389,12 @@ patient_data = {
             "antiplatelet_excluding_aspirin_latest_1": None,
             "antiplatelet_excluding_aspirin_latest_2": None,
             "antiplatelet_excluding_aspirin_latest_3": date(2018, 10, 20),
-            "aspirin_antiplatelet_excluding_aspirin_within_28_days_1_earliest_2_earliest_1": None,
-            "aspirin_antiplatelet_excluding_aspirin_within_28_days_1_earliest_2_earliest_2": None, # there isnt a second antiplatelet
-            "aspirin_antiplatelet_excluding_aspirin_within_28_days_1_latest_2_earliest_prev_month_2": None,
+            "aspirin_antiplatelet_excluding_aspirin_within_28_days_1_earliest_2_earliest_1": False,
+            "aspirin_antiplatelet_excluding_aspirin_within_28_days_1_earliest_2_earliest_2": False, # there isnt a second antiplatelet
+            "aspirin_antiplatelet_excluding_aspirin_within_28_days_1_latest_2_earliest_prev_month_2": False,
             "ppi": False,
             "indicator_f_numerator": False,
             "indicator_f_denominator": True,
         }
     },
 }
-
-

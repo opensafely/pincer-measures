@@ -107,12 +107,25 @@ actions:
     run: python:latest python analysis/ehrQL/stripped_measures.py
     needs:
       [
-        measures_ehrql
+        measures_ehrql_a,
+        measures_ehrql_b,
+        measures_ehrql_c,
+        measures_ehrql_d,
+        measures_ehrql_e,
+        measures_ehrql_f,
+        measures_ehrql_k,
+        measures_ehrql_g,
+        measures_ehrql_i,
+        measures_ehrql_ac,
+        measures_ehrql_me_no_fbc,
+        measures_ehrql_me_no_lft,
+        measures_ehrql_li,
+        measures_ehrql_am,
+
       ]
     outputs:
       moderately_sensitive:
-        measures_stripped: output/measure_stripped_*_ehrql.csv
-        measures: output/measure_*_ehrql.csv
+        measures: output/*/measure_stripped.csv
 
   generate_summary_counts:
     run: python:latest python analysis/summary_statistics.py

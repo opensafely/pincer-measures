@@ -58,29 +58,32 @@ def produce_stripped_measures(df):
     return df.sample(frac=1).reset_index(drop=True)
 
 def main():
-    if BACKEND == "expectations":
+
+    measures_dict = {}
+
+    for indicator in indicators_list:
+        if BACKEND == "expectations":
         # make a mock data frame with the following columns - measure,interval_start,interval_end,ratio,numerator,denominator
-        
-        measure_df = pd.DataFrame({
-            'measure': pd.Series([], dtype='str'),
-            'interval_start': pd.Series([], dtype='datetime64[ns]'),
-            'interval_end': pd.Series([], dtype='datetime64[ns]'),
-            'ratio': pd.Series([], dtype='float64'),
-            'numerator': pd.Series([], dtype='int64'),
-            'denominator': pd.Series([], dtype='int64'),
-            'practice': pd.Series([], dtype='int64')
-        })
+     
+            measure_df = pd.DataFrame({
+                'measure': pd.Series([], dtype='str'),
+                'interval_start': pd.Series([], dtype='datetime64[ns]'),
+                'interval_end': pd.Series([], dtype='datetime64[ns]'),
+                'ratio': pd.Series([], dtype='float64'),
+                'numerator': pd.Series([], dtype='int64'),
+                'denominator': pd.Series([], dtype='int64'),
+                'practice': pd.Series([], dtype='int64')
+            })
 
-        start_date = pd.to_datetime('2019-01-01')
-        end_date = pd.to_datetime('2021-01-01')
-        months = pd.date_range(start_date, end_date, freq='MS').strftime("%Y-%m-%d").tolist()
-        
-        practice_ids = np.random.choice(range(1, 1000), size=100, replace=False)
+            start_date = pd.to_datetime('2019-01-01')
+            end_date = pd.to_datetime('2021-01-01')
+            months = pd.date_range(start_date, end_date, freq='MS').strftime("%Y-%m-%d").tolist()
+            
+            practice_ids = np.random.choice(range(1, 1000), size=100, replace=False)
 
-        df_data = []
-        for month in months:
-            for practice_id in practice_ids:
-                for indicator in indicators_list:
+            df_data = []
+            for month in months:
+                for practice_id in practice_ids:
                     denominator = np.random.randint(0, 1000)
                     if denominator == 0:
                         numerator = 0
@@ -99,21 +102,19 @@ def main():
                         'denominator': denominator,
                         'practice': practice_id
                     }, index=[0]))
-        measure_df = pd.concat(df_data)
+            measure_df = pd.concat(df_data)
+            
+            measure_df = measure_df.sort_values(by=['measure', 'interval_start', 'practice']).reset_index(drop=True)
         
-        measure_df = measure_df.sort_values(by=['measure', 'interval_start', 'practice']).reset_index(drop=True)
-        
-    
-    else:
-        measure_df = pd.read_csv(OUTPUT_DIR / 'measures.csv')
 
-    for i in indicators_list:
-        measure_subset = measure_df[measure_df['measure'] == f"indicator_{i}"]
-        measure_subset.rename(columns={'ratio': 'value'}, inplace=True)
+        else:
+            measure_df = pd.read_csv(OUTPUT_DIR / f'{indicator}/measures.csv')
 
-        measure_subset.to_csv(OUTPUT_DIR / f"measure_{i}_ehrql.csv", index=False)
-        measure_subset_stripped = produce_stripped_measures(measure_subset)
-        measure_subset_stripped.to_csv(OUTPUT_DIR / f"measure_stripped_{i}_ehrql.csv", index=False)
+
+        measure_df.rename(columns={'ratio': 'value'}, inplace=True)
+
+        measure_df_stripped = produce_stripped_measures(measure_df)
+        measure_df_stripped.to_csv(OUTPUT_DIR / f"{indicator}/measure_stripped.csv", index=False)
 
 
 if __name__ == "__main__":
